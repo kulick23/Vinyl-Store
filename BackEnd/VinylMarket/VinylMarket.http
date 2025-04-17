@@ -1,0 +1,6 @@
+@VinylMarket_HostAddress = http://localhost:5072
+
+GET {{VinylMarket_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

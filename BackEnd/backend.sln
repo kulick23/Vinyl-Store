@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VinylMarket", "VinylMarket\VinylMarket.csproj", "{C22178AE-9190-4712-AF37-210FCA9997C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{DEAA2538-BC43-469B-A982-E8FC01EF853C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{639875AF-3433-4745-A9F1-BCE33DAF5499}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{A2762A2C-0E5E-45CD-AB93-F77C91E283F0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C22178AE-9190-4712-AF37-210FCA9997C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C22178AE-9190-4712-AF37-210FCA9997C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C22178AE-9190-4712-AF37-210FCA9997C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C22178AE-9190-4712-AF37-210FCA9997C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEAA2538-BC43-469B-A982-E8FC01EF853C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEAA2538-BC43-469B-A982-E8FC01EF853C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEAA2538-BC43-469B-A982-E8FC01EF853C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEAA2538-BC43-469B-A982-E8FC01EF853C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{639875AF-3433-4745-A9F1-BCE33DAF5499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{639875AF-3433-4745-A9F1-BCE33DAF5499}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{639875AF-3433-4745-A9F1-BCE33DAF5499}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{639875AF-3433-4745-A9F1-BCE33DAF5499}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2762A2C-0E5E-45CD-AB93-F77C91E283F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2762A2C-0E5E-45CD-AB93-F77C91E283F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2762A2C-0E5E-45CD-AB93-F77C91E283F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2762A2C-0E5E-45CD-AB93-F77C91E283F0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
