@@ -1,190 +1,185 @@
-🎧 Project Description
-We are developing a platform for buying and selling vinyl records — similar to Discogs, but with a modern design and a strong focus on usability for both collectors and casual users.
+# 🎧 Vinyl Store — Modern Vinyl Record Marketplace
 
-1. Market & Audience Analysis
-The vinyl market is steadily growing, especially among audiophiles, collectors, and fans of analog sound.
+## 📌 Project Description
 
-Our target audience includes men and women aged 25–45 who are willing to pay for rare releases, quality service, and a user-friendly experience.
+We are developing a modern online platform for buying and selling **vinyl records** — similar to Discogs, but with a strong focus on **usability, clean design**, and **mobile-first experience**.  
+The platform is designed to serve both **collectors** and **casual users**, with full localization for the **CIS market**.
 
-There is strong monetization potential through:
+---
 
-sales commissions,
+## 📊 Market & Audience Analysis
 
-subscription models,
+The **vinyl market is steadily growing**, especially among:
+- Audiophiles
+- Collectors
+- Fans of analog sound
 
-and featured collections/promotions.
+### 🎯 Target Audience:
+- Men and women aged **25–45**
+- Willing to pay for:
+  - Rare releases
+  - High-quality service
+  - Easy and modern user experience
 
-2. Business Goals
-Launch an online marketplace for listing, buying, and selling vinyl records.
+### 💰 Monetization Potential:
+- Sales commissions
+- Subscription models
+- Featured collections & promotions
 
-Improve access to vinyl across CIS countries.
+---
 
-Become the #1 vinyl sales platform in the region within 2 years.
+## 🎯 Business Goals
 
-3. Core Functionality
-User registration, authentication, and personal accounts.
+- Launch a robust online marketplace for vinyl records
+- Improve vinyl access across **CIS countries**
 
-Search and filtering by genre, artist, release year, and price.
+---
 
-Product detail pages with comprehensive information.
+## ⚙️ Core Functionality
 
-Order processing and purchase history.
+### ✅ Functional Requirements:
+- User registration, login, and personal accounts
+- Advanced search and filtering:
+  - By **genre**
+  - By **artist**
+  - By **release year**
+  - By **price**
+- Product detail pages with full information
+- Order processing & shopping cart
+- Buyer and seller profiles
 
-Seller and buyer profile management.
+### ⚙️ Non-Functional Requirements:
+- Scalability (to support high traffic)
+- Secure data storage
+- Mobile-friendly, responsive UI
+- Integration with:
+  - Payment systems
+  - Shipping APIs
 
-4. Non-Functional Requirements
-Scalability (ability to handle increasing traffic).
+---
 
-Secure data storage.
+## 🆚 Competitor Analysis
 
-Intuitive, mobile-friendly, and responsive UI.
+Compared to **Discogs** and **Avito**, our platform stands out due to:
 
-Integration with payment systems and third-party APIs (e.g., shipping).
+- ✅ Minimalist, modern, and user-friendly interface
+- ✅ Full localization for CIS countries
+- ✅ Seller support & features for collectors
+- ✅ Strong mobile UX
+- ✅ Structured catalog with filters by **year**, **genre**, and **artist**
 
-5. Competitor Analysis
-Unlike Discogs or Avito, our focus is on:
+**Avito**:
+- Not vinyl-focused  
+- Lacks proper filters  
+- Mostly second-hand, unstructured listings
 
-minimalist, user-friendly interface,
+**Discogs**:
+- Powerful, but has outdated and cluttered UI  
+- Not friendly for casual users  
 
-localization for the CIS market,
+---
 
-seller support,
+## 🌟 North Star Metric & KPIs
 
-and a smooth experience for collectors.
+### 🎯 North Star:
+- **Number of successful transactions**
 
-Key advantages: simplicity, speed, and strong mobile UX.
+### 📈 Key KPIs:
+- Number of registered users
+- Average order value
+- Number of new vinyl listings
+- Customer retention rate (repeat purchases)
 
-6. North Star & KPIs
-North Star Metric: number of successful transactions.
+---
 
-KPIs:
+## ⚠️ Risks & Mitigation
 
-number of registered users,
+### 🚧 Potential Risks:
+- **Low initial traffic**
+- **Strong competition** from larger marketplaces
 
-average order value,
+### 🛡️ Mitigation Strategies:
+- Leverage social media & target niche communities
+- Focus on **UX**, **local support**, and **community building**
 
-number of new vinyl listings,
+---
 
-and customer retention rate (repeat purchases).
+## 🗄️ Database Overview
 
-7. Risks & Mitigation
-Low initial traffic → target niche communities and leverage social media marketing.
+We use **PostgreSQL** as the primary relational database.
 
-Strong competition from larger platforms → focus on UX, local support, and community building.
+The schema includes 7 main tables:
 
-🗄️ Database Overview
-We use PostgreSQL as the primary relational database. The schema includes 7 main tables:
+- `Customer` — User data (buyers/sellers)
+- `VinylRecord` — Record listings
+- `Order` / `OrderItem` — Order and cart data
+- `Artist` / `Genre` — Reference data
+- `__EFMigrationsHistory` — For Entity Framework migrations
 
-Customer — user data (buyers/sellers).
+### ✅ Supported Features:
+- Authentication and authorization
+- Order/cart management
+- Analytics: sales, genres, artists, users
 
-VinylRecord — record listings with title, year, genre, artist, and price.
+---
 
-Order / OrderItem — purchase and shopping cart data.
+## 🧩 Tables and Relationships
 
-Artist / Genre — reference data for cataloging.
+### 👤 Customer
+Stores user data (buyers & sellers)
+- `Id`, `FirstName`, `LastName`
+- `Email`, `Phone`, `Password`
+- `Role` (admin / buyer / seller)
 
-EFMigrationsHistory — system table used by Entity Framework for migration tracking.
+🔗 **1-to-many**: A customer can place many orders
 
-The database supports:
+---
 
-User authentication and authorization.
+### 📦 Order
+- `Id`, `OrderDate`, `CustomerId`
 
-Order management and cart functionality.
+🔗 **1-to-many**: An order has many OrderItems
 
-Analytics across users, artists, genres, and sales.
+---
 
+### 🧾 OrderItem
+- `Id`, `OrderId`, `VinylRecordId`, `Quantity`, `Price`
 
+---
 
+### 💿 VinylRecord
+- `Id`, `Title`, `Year`, `ArtistId`, `GenreId`, `Price`
 
+🔗 Many-to-one: linked to Artist and Genre
 
-🗄️ Database Overview
-This is a relational database schema designed for an online vinyl record marketplace. It supports user management, product listings, order processing, and categorization.
+---
 
-📊 Tables and Relationships
-Customer
-Stores user information (buyers and sellers).
+### 🎸 Artist
+- `Id`, `Name`
 
-Id — Primary key
+🔗 One-to-many: one artist → many records
 
-FirstName, LastName — User names
+---
 
-Email, Phone, Password — Contact & auth info
+### 🎼 Genre
+- `Id`, `Name`
 
-Role — Can define user type (e.g., admin, buyer, seller)
+🔗 One-to-many: one genre → many records
 
-🔗 One-to-many: A customer can place many orders.
+---
 
-Order
-Represents an order placed by a user.
+### ⚙️ __EFMigrationsHistory
+- Technical table for tracking EF Core migrations
 
-Id — Primary key
+---
 
-OrderDate — Timestamp of when the order was placed
+## 🔑 Key Notes
 
-CustomerId — Foreign key to Customer
+- Fully normalized schema — no data duplication
+- Built for scalability and growth
+- Enables detailed analytics (e.g. most popular genres, top-selling artists)
+- Secure and production-ready design
 
-🔗 One-to-many: An order can contain multiple items (OrderItem).
+---
 
-OrderItem
-Line items within an order.
-
-Id — Primary key
-
-OrderId — Foreign key to Order
-
-VinylRecordId — Foreign key to VinylRecord
-
-Quantity — Number of copies ordered
-
-Price — Final price at the moment of purchase
-
-VinylRecord
-Core entity — a listed vinyl record for sale.
-
-Id — Primary key
-
-Title — Record name
-
-Year — Release year
-
-ArtistId — Foreign key to Artist
-
-GenreId — Foreign key to Genre
-
-Price — Listed price
-
-🔗 Many-to-one with Artist and Genre
-
-Artist
-Reference table for musical artists.
-
-Id — Primary key
-
-Name — Artist name
-
-🔗 One-to-many: One artist can have many records.
-
-Genre
-Reference table for genres (e.g., Rock, Jazz).
-
-Id — Primary key
-
-Name — Genre name
-
-🔗 One-to-many: One genre can include many records.
-
-__EFMigrationsHistory
-Technical table used by Entity Framework to track applied migrations. Not part of business logic.
-
-📌 Key Notes:
-Fully normalized design (no data duplication).
-
-Designed for scalability: supports multiple users, orders, and products.
-
-Suitable for analytics (e.g., sales per artist, popular genres).
-
-Supports secure authentication & order tracking.
-
-
-
-![image](https://github.com/user-attachments/assets/28b72dcb-b4b9-4cf7-822e-48e74ffbcaf8)
+📍 *This document reflects the current architectural and business goals of the Vinyl Store project.*
