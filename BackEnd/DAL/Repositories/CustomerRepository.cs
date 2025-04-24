@@ -1,20 +1,17 @@
-﻿using DAL.Data;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using DAL.Data;
 using DAL.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DAL.Repositories
 {
-    public class CustomerRepository(AppDbContext context) : Repository<Customer>(context), ICustomerRepository
+    public class CustomerRepository : Repository<Customer>, ICustomerRepository
     {
-        public async Task<Customer?> GetByEmail(string email)
-        {
-            return await _dbSet.FirstOrDefaultAsync(c => c.Email == email);
-        }
+        public CustomerRepository(AppDbContext context) : base(context) { }
+
+        public Task<Customer?> GetByEmailAsync(string email, CancellationToken ct = default) =>
+            _dbSet.FirstOrDefaultAsync(c => c.Email == email, ct);
     }
 }

@@ -1,48 +1,54 @@
-﻿using DAL.Data;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using DAL.Interfaces;
+using DAL.Data;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace DAL.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    /// <summary>
+    /// Generic EF Core repository with async methods and cancellation support.
+    /// SaveChanges are delegated to UnitOfWork.
+    /// </summary>
+    public class Repository<T> : IRepository<T> where T : BaseEntity
     {
+        protected readonly AppDbContext _context;
         protected readonly DbSet<T> _dbSet;
-        protected readonly AppDbContext _appDbContext;
 
         public Repository(AppDbContext context)
         {
-            _appDbContext = context;
-            _dbSet = _appDbContext.Set<T>();
+            _context = context;
+            _dbSet = context.Set<T>();
         }
 
-        public async Task CreateAsync(T entity)
+        public ValueTask<T?> GetByIdAsync(int id, CancellationToken ct = default) =>
+            _dbSet.FindAsync(new object[] { id }, ct);
+
+        public async Task<IReadOnlyList<T>> ListAsync(
+            int pageNumber,
+            int pageSize,
+            CancellationToken ct = default)
         {
-            await _dbSet.AddAsync(entity);
-
-           await _appDbContext.SaveChangesAsync();
+            return await _dbSet
+                .AsNoTracking()
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(ct);
         }
 
-        public async Task DeleteAsync(T entity)
-        {
-             _dbSet.Remove(entity);
-            await _appDbContext.SaveChangesAsync();
-        }
+        public Task AddAsync(T entity, CancellationToken ct = default) =>
+            _dbSet.AddAsync(entity, ct).AsTask();
 
-        public async Task<IEnumerable<T>> GetAllWithPaginationAsync(int pageNumber, int rowCount)
-        {
-            return await _dbSet.Skip((pageNumber - 1) * rowCount).Take(rowCount).ToListAsync();
-        }
+        public void Update(T entity) => _dbSet.Update(entity);
 
-        public async Task<T?> GetByIdAsync(int id)
-        {
-            return await _dbSet.FindAsync(id);
-        }
+        public void Remove(T entity) => _dbSet.Remove(entity);
 
-        public async Task UpdateAsync(T entity)
-        {
-            _dbSet.Update(entity);
-            await _appDbContext.SaveChangesAsync();
-        }
+        public Task<int> SaveChangesAsync(CancellationToken ct = default) =>
+            _context.SaveChangesAsync(ct);   // fallback if UoW not used
+
+        public IQueryable<T> Query() => _dbSet.AsQueryable().AsNoTracking();
     }
 }

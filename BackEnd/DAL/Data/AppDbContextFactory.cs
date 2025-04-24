@@ -9,7 +9,7 @@ namespace DAL.Data
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
-            optionsBuilder.UseNpgsql("");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=VinylMarket;Username=postgres;Password=123");
 
             return new AppDbContext(optionsBuilder.Options);
         }

@@ -39,7 +39,7 @@ namespace DAL.Migrations
                     b.ToTable("Artist");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Customer", b =>
+            modelBuilder.Entity("Domain.Entities.CartItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,9 +47,32 @@ namespace DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Adress")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("InventoryItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryItemId");
+
+                    b.HasIndex("CustomerId", "InventoryItemId")
+                        .IsUnique();
+
+                    b.ToTable("CartItem");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -69,10 +92,6 @@ namespace DAL.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -96,6 +115,48 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genre");
+                });
+
+            modelBuilder.Entity("Domain.Entities.InventoryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Condition")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ReleaseId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SellerId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SellerId");
+
+                    b.HasIndex("ReleaseId", "Price");
+
+                    b.ToTable("InventoryItem");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -127,28 +188,28 @@ namespace DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("OrderId")
+                    b.Property<int>("InventoryItemId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<int>("VinylRecordId")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("InventoryItemId");
 
-                    b.HasIndex("VinylRecordId");
+                    b.HasIndex("OrderId");
 
                     b.ToTable("OrderItem");
                 });
 
-            modelBuilder.Entity("Domain.Entities.VinylRecord", b =>
+            modelBuilder.Entity("Domain.Entities.RecordRelease", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -162,12 +223,10 @@ namespace DAL.Migrations
                     b.Property<int>("GenreId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18, 2)");
-
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<int>("Year")
                         .HasColumnType("integer");
@@ -178,7 +237,80 @@ namespace DAL.Migrations
 
                     b.HasIndex("GenreId");
 
-                    b.ToTable("VinylRecord");
+                    b.HasIndex("Title", "ArtistId", "Year");
+
+                    b.ToTable("RecordRelease");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SellerProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("Rating")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(3,2)")
+                        .HasDefaultValue(0m);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
+
+                    b.ToTable("SellerProfile");
+                });
+
+            modelBuilder.Entity("Domain.Entities.CartItem", b =>
+                {
+                    b.HasOne("Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.InventoryItem", "InventoryItem")
+                        .WithMany()
+                        .HasForeignKey("InventoryItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("InventoryItem");
+                });
+
+            modelBuilder.Entity("Domain.Entities.InventoryItem", b =>
+                {
+                    b.HasOne("Domain.Entities.RecordRelease", "Release")
+                        .WithMany("Listings")
+                        .HasForeignKey("ReleaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.SellerProfile", "Seller")
+                        .WithMany("Listings")
+                        .HasForeignKey("SellerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Release");
+
+                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -194,35 +326,35 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("Domain.Entities.OrderItem", b =>
                 {
+                    b.HasOne("Domain.Entities.InventoryItem", "InventoryItem")
+                        .WithMany()
+                        .HasForeignKey("InventoryItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.VinylRecord", "VinylRecord")
-                        .WithMany()
-                        .HasForeignKey("VinylRecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("InventoryItem");
 
                     b.Navigation("Order");
-
-                    b.Navigation("VinylRecord");
                 });
 
-            modelBuilder.Entity("Domain.Entities.VinylRecord", b =>
+            modelBuilder.Entity("Domain.Entities.RecordRelease", b =>
                 {
                     b.HasOne("Domain.Entities.Artist", "Artist")
-                        .WithMany("VinylRecords")
+                        .WithMany("RecordReleases")
                         .HasForeignKey("ArtistId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Genre", "Genre")
-                        .WithMany("VinylRecords")
+                        .WithMany("RecordReleases")
                         .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Artist");
@@ -230,24 +362,47 @@ namespace DAL.Migrations
                     b.Navigation("Genre");
                 });
 
+            modelBuilder.Entity("Domain.Entities.SellerProfile", b =>
+                {
+                    b.HasOne("Domain.Entities.Customer", "Customer")
+                        .WithOne("SellerProfile")
+                        .HasForeignKey("Domain.Entities.SellerProfile", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("Domain.Entities.Artist", b =>
                 {
-                    b.Navigation("VinylRecords");
+                    b.Navigation("RecordReleases");
                 });
 
             modelBuilder.Entity("Domain.Entities.Customer", b =>
                 {
                     b.Navigation("Orders");
+
+                    b.Navigation("SellerProfile");
                 });
 
             modelBuilder.Entity("Domain.Entities.Genre", b =>
                 {
-                    b.Navigation("VinylRecords");
+                    b.Navigation("RecordReleases");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("Domain.Entities.RecordRelease", b =>
+                {
+                    b.Navigation("Listings");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SellerProfile", b =>
+                {
+                    b.Navigation("Listings");
                 });
 #pragma warning restore 612, 618
         }

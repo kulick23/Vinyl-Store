@@ -1,35 +1,33 @@
-﻿using DAL.Data;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using DAL.Data;
 using DAL.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace DAL.Repositories
 {
-    public class OrderRepository(AppDbContext context) : Repository<Order>(context), IOrderRepository
+    public class OrderRepository : Repository<Order>, IOrderRepository
     {
-        public async Task<IEnumerable<Order>> GetOrdersById(int? id)
-        {
-            return await _dbSet.Where(c => c.Id == id)
-                .Include(c => c.OrderItems)
-                .ToListAsync();
-        }
+        public OrderRepository(AppDbContext context) : base(context) { }
 
-        public async Task<Order?> GetOrderWithItems(int id)
-        {
-            return await _dbSet
+        public async Task<IReadOnlyList<Order>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken ct = default) =>
+            await _dbSet
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.VinylRecord)
-                .FirstOrDefaultAsync(o => o.Id == id);
-        }
+                .Where(o => ids.Contains(o.Id))
+                .ToListAsync(ct);
 
-        public async Task<IEnumerable<Order>> GetOrdersByCustomerId(int customerId)
-        {
-            return await _dbSet
+        public Task<Order?> GetOrderWithItemsAsync(int id, CancellationToken ct = default) =>
+            _dbSet
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == id, ct);
+
+        public async Task<IReadOnlyList<Order>> GetByCustomerIdAsync(int customerId, CancellationToken ct = default) =>
+            await _dbSet
                 .Where(o => o.CustomerId == customerId)
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.VinylRecord)
-                .ToListAsync();
-        }
+                .ToListAsync(ct);
     }
 }

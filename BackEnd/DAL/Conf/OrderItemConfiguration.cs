@@ -1,11 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DAL.Conf
 {
@@ -13,11 +8,19 @@ namespace DAL.Conf
     {
         public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
-            builder.HasKey(c => c.Id);
-            builder
-                .HasOne(v => v.Order)
-                .WithMany(v => v.OrderItems)
-                .HasForeignKey(v => v.OrderId);
+            builder.HasKey(o => o.Id);
+
+            builder.Property(o => o.UnitPrice)
+                   .HasColumnType("decimal(18,2)")
+                   .IsRequired();
+
+            builder.HasOne(o => o.Order)
+                   .WithMany(o => o.OrderItems)
+                   .HasForeignKey(o => o.OrderId);
+
+            builder.HasOne(o => o.InventoryItem)
+                   .WithMany()
+                   .HasForeignKey(o => o.InventoryItemId);
         }
     }
 }

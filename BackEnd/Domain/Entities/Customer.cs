@@ -8,15 +8,14 @@ namespace Domain.Entities
 {
     public class Customer : BaseEntity
     {
-        public required string FirstName { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public required string Email { get; set; }
         public string Phone { get; set; } = string.Empty;
-        public required string Password { get; set; }
-        public required string Adress { get; set; } = string.Empty;
 
-        public required string Role { get; set; }
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
 
-        public ICollection<Order> Orders { get; set; }
+        public SellerProfile? SellerProfile { get; set; }
     }
 }

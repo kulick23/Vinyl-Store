@@ -1,10 +1,11 @@
-﻿using Domain.Entities;
-
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Domain.Entities;
 
 namespace DAL.Interfaces
 {
     public interface ICustomerRepository : IRepository<Customer>
     {
-        public Task<Customer> GetByEmail(string? email);
+        Task<Customer?> GetByEmailAsync(string email, CancellationToken ct = default);
     }
 }

@@ -1,20 +1,17 @@
-﻿using DAL.Data;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using DAL.Data;
 using DAL.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DAL.Repositories
 {
-    public class ArtistRepository(AppDbContext context) : Repository<Artist>(context), IArtistRepository
+    public class ArtistRepository : Repository<Artist>, IArtistRepository
     {
-        public async Task<Artist?> GetByName(string name)
-        {
-            return await _dbSet.FirstOrDefaultAsync(c => c.Name == name);
-        }
+        public ArtistRepository(AppDbContext context) : base(context) { }
+
+        public Task<Artist?> GetByNameAsync(string name, CancellationToken ct = default) =>
+            _dbSet.FirstOrDefaultAsync(a => a.Name == name, ct);
     }
 }

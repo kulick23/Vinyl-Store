@@ -8,9 +8,9 @@ namespace Domain.Entities
 {
     public class Genre : BaseEntity
     {
-        public required string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public ICollection<VinylRecord> VinylRecords { get; set; }
+        public ICollection<RecordRelease> RecordReleases { get; set; } = new List<RecordRelease>();
 
     }
 }

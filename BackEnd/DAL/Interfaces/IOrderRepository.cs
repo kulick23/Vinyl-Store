@@ -1,17 +1,14 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Domain.Entities;
 
 namespace DAL.Interfaces
 {
     public interface IOrderRepository : IRepository<Order>
     {
-        public Task<IEnumerable<Order>> GetOrdersById(int? id);
-
-        public Task<Order?> GetOrderWithItems(int id);
-        public Task<IEnumerable<Order>> GetOrdersByCustomerId(int customerId);
+        Task<IReadOnlyList<Order>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken ct = default);
+        Task<Order?> GetOrderWithItemsAsync(int id, CancellationToken ct = default);
+        Task<IReadOnlyList<Order>> GetByCustomerIdAsync(int customerId, CancellationToken ct = default);
     }
 }

@@ -1,10 +1,11 @@
-﻿using Domain.Entities;
-
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Domain.Entities;
 
 namespace DAL.Interfaces
 {
     public interface IArtistRepository : IRepository<Artist>
     {
-        public Task<Artist> GetByName(string name);
+        Task<Artist?> GetByNameAsync(string name, CancellationToken ct = default);
     }
 }

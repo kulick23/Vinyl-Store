@@ -8,12 +8,12 @@ namespace Domain.Entities
 {
     public class OrderItem : BaseEntity
     {
-        public required int OrderId { get; set; }
-        public required int VinylRecordId { get; set; }
-        public required int Quantity { get; set; }
-        public required decimal Price { get; set; }
+        public int OrderId { get; set; }
+        public int InventoryItemId { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
 
         public Order Order { get; set; }
-        public VinylRecord VinylRecord { get; set; }
+        public InventoryItem InventoryItem { get; set; }
     }
 }
