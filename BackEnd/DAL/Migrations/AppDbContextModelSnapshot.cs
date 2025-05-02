@@ -39,6 +39,33 @@ namespace DAL.Migrations
                     b.ToTable("Artist");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SessionKey")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Cart");
+                });
+
             modelBuilder.Entity("Domain.Entities.CartItem", b =>
                 {
                     b.Property<int>("Id")
@@ -47,7 +74,7 @@ namespace DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int>("CartId")
                         .HasColumnType("integer");
 
                     b.Property<int>("InventoryItemId")
@@ -60,7 +87,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("InventoryItemId");
 
-                    b.HasIndex("CustomerId", "InventoryItemId")
+                    b.HasIndex("CartId", "InventoryItemId")
                         .IsUnique();
 
                     b.ToTable("CartItem");
@@ -275,11 +302,20 @@ namespace DAL.Migrations
                     b.ToTable("SellerProfile");
                 });
 
-            modelBuilder.Entity("Domain.Entities.CartItem", b =>
+            modelBuilder.Entity("Domain.Entities.Cart", b =>
                 {
                     b.HasOne("Domain.Entities.Customer", "Customer")
                         .WithMany()
-                        .HasForeignKey("CustomerId")
+                        .HasForeignKey("CustomerId");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Domain.Entities.CartItem", b =>
+                {
+                    b.HasOne("Domain.Entities.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -289,7 +325,7 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Customer");
+                    b.Navigation("Cart");
 
                     b.Navigation("InventoryItem");
                 });
@@ -376,6 +412,11 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domain.Entities.Artist", b =>
                 {
                     b.Navigation("RecordReleases");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Cart", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Domain.Entities.Customer", b =>

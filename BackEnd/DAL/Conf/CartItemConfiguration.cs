@@ -13,15 +13,16 @@ namespace DAL.Conf
             builder.Property(c => c.Quantity)
                    .IsRequired();
 
-            builder.HasOne(c => c.Customer)
-                   .WithMany()
-                   .HasForeignKey(c => c.CustomerId);
+            builder.HasOne(c => c.Cart)
+              .WithMany(c => c.Items)
+              .HasForeignKey(c => c.CartId)
+              .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(c => c.InventoryItem)
                    .WithMany()
                    .HasForeignKey(c => c.InventoryItemId);
 
-            builder.HasIndex(c => new { c.CustomerId, c.InventoryItemId })
+            builder.HasIndex(c => new { c.CartId, c.InventoryItemId })
                    .IsUnique();
         }
     }
