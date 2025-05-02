@@ -36,7 +36,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Artist");
+                    b.ToTable("Artist", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Cart", b =>
@@ -63,7 +63,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Cart");
+                    b.ToTable("Cart", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.CartItem", b =>
@@ -90,7 +90,7 @@ namespace DAL.Migrations
                     b.HasIndex("CartId", "InventoryItemId")
                         .IsUnique();
 
-                    b.ToTable("CartItem");
+                    b.ToTable("CartItem", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Customer", b =>
@@ -133,7 +133,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customer");
+                    b.ToTable("Customer", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Genre", b =>
@@ -150,7 +150,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genre");
+                    b.ToTable("Genre", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.InventoryItem", b =>
@@ -192,7 +192,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("ReleaseId", "Price");
 
-                    b.ToTable("InventoryItem");
+                    b.ToTable("InventoryItem", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -213,7 +213,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Order", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.OrderItem", b =>
@@ -242,7 +242,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("OrderItem", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.RecordRelease", b =>
@@ -275,7 +275,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("Title", "ArtistId", "Year");
 
-                    b.ToTable("RecordRelease");
+                    b.ToTable("RecordRelease", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.SellerProfile", b =>
@@ -308,7 +308,7 @@ namespace DAL.Migrations
                     b.HasIndex("CustomerId")
                         .IsUnique();
 
-                    b.ToTable("SellerProfile");
+                    b.ToTable("SellerProfile", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Cart", b =>
