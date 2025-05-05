@@ -1,6 +1,49 @@
-@VinylMarket_HostAddress = http://localhost:5072
+@VinylMarket_HostAddress = https://localhost:7236
 
-GET {{VinylMarket_HostAddress}}/weatherforecast/
-Accept: application/json
+
+POST {{VinylMarket_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email":       "alice@example.com",
+  "password":    "Passw0rd!",
+  "firstName":   "Alice",
+  "lastName":    "Cooper"
+}
+
+###
+
+POST {{VinylMarket_HostAddress}}/api/auth/refresh
+Content-Type: application/json
+
+"JBoBWNFYnIkIxqz7tke2HO3HbNDXIaEFphTMO3HbzCM"
+
+###
+
+POST {{VinylMarket_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email":    "alice@example.com",
+  "password": "Passw0rd!"
+}
+
+###
+
+POST {{VinylMarket_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  //LoginDto
+}
+
+###
+
+POST {{VinylMarket_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  //LoginDto
+}
 
 ###

@@ -36,7 +36,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Artist", (string)null);
+                    b.ToTable("Artist");
                 });
 
             modelBuilder.Entity("Domain.Entities.Cart", b =>
@@ -63,7 +63,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Cart", (string)null);
+                    b.ToTable("Cart");
                 });
 
             modelBuilder.Entity("Domain.Entities.CartItem", b =>
@@ -90,7 +90,7 @@ namespace DAL.Migrations
                     b.HasIndex("CartId", "InventoryItemId")
                         .IsUnique();
 
-                    b.ToTable("CartItem", (string)null);
+                    b.ToTable("CartItem");
                 });
 
             modelBuilder.Entity("Domain.Entities.Customer", b =>
@@ -133,7 +133,37 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customer", (string)null);
+                    b.ToTable("Customer");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EmailConfirmationToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("Token")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Used")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("EmailConfirmationToken");
                 });
 
             modelBuilder.Entity("Domain.Entities.Genre", b =>
@@ -150,7 +180,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genre", (string)null);
+                    b.ToTable("Genre");
                 });
 
             modelBuilder.Entity("Domain.Entities.InventoryItem", b =>
@@ -192,7 +222,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("ReleaseId", "Price");
 
-                    b.ToTable("InventoryItem", (string)null);
+                    b.ToTable("InventoryItem");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -213,7 +243,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Order", (string)null);
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("Domain.Entities.OrderItem", b =>
@@ -242,7 +272,37 @@ namespace DAL.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItem", (string)null);
+                    b.ToTable("OrderItem");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PasswordResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("Token")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Used")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("PasswordResetToken");
                 });
 
             modelBuilder.Entity("Domain.Entities.RecordRelease", b =>
@@ -275,7 +335,39 @@ namespace DAL.Migrations
 
                     b.HasIndex("Title", "ArtistId", "Year");
 
-                    b.ToTable("RecordRelease", (string)null);
+                    b.ToTable("RecordRelease");
+                });
+
+            modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Revoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("Domain.Entities.SellerProfile", b =>
@@ -308,7 +400,7 @@ namespace DAL.Migrations
                     b.HasIndex("CustomerId")
                         .IsUnique();
 
-                    b.ToTable("SellerProfile", (string)null);
+                    b.ToTable("SellerProfile");
                 });
 
             modelBuilder.Entity("Domain.Entities.Cart", b =>
@@ -337,6 +429,17 @@ namespace DAL.Migrations
                     b.Navigation("Cart");
 
                     b.Navigation("InventoryItem");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EmailConfirmationToken", b =>
+                {
+                    b.HasOne("Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("Domain.Entities.InventoryItem", b =>
@@ -388,6 +491,17 @@ namespace DAL.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Domain.Entities.PasswordResetToken", b =>
+                {
+                    b.HasOne("Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("Domain.Entities.RecordRelease", b =>
                 {
                     b.HasOne("Domain.Entities.Artist", "Artist")
@@ -405,6 +519,17 @@ namespace DAL.Migrations
                     b.Navigation("Artist");
 
                     b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("Domain.Entities.SellerProfile", b =>
