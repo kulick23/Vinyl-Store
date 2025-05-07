@@ -47,3 +47,29 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{VinylMarket_HostAddress}}/api/catalog/artists
+
+###
+
+GET {{VinylMarket_HostAddress}}/api/catalog/artists
+
+###
+
+GET {{VinylMarket_HostAddress}}/api/catalog/artists
+
+###
+
+@keyword=string
+GET {{VinylMarket_HostAddress}}/api/catalog/releases?keyword={{keyword}}
+
+###
+
+@id=0
+GET {{VinylMarket_HostAddress}}/api/catalog/releases/{{id}}/listings
+
+###
+
+GET {{VinylMarket_HostAddress}}/api/catalog/genres
+
+###

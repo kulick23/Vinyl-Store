@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Application.DTOs;
 using Application.Services;
 using AutoMapper;
+using BLL.DTO;
 using DAL.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -15,14 +16,20 @@ namespace Application.Services.Implementation
     {
         private readonly IRecordReleaseRepository _releaseRepo;
         private readonly IInventoryItemRepository _inventoryRepo;
+        private readonly IGenreRepository _genreRepo;
+        private readonly IArtistRepository _artistRepo;
         private readonly IMapper _mapper;
 
         public CatalogService(IRecordReleaseRepository releaseRepo,
                               IInventoryItemRepository inventoryRepo,
+                              IGenreRepository genreRepo,
+                              IArtistRepository artistRepo,
                               IMapper mapper)
         {
             _releaseRepo = releaseRepo;
             _inventoryRepo = inventoryRepo;
+            _genreRepo = genreRepo;
+            _artistRepo = artistRepo;
             _mapper = mapper;
         }
 
@@ -91,6 +98,23 @@ namespace Application.Services.Implementation
 
             var list = await query.ToListAsync(ct);
             return _mapper.Map<IReadOnlyList<InventoryItemDto>>(list);
+        }
+
+        public async Task<IReadOnlyList<GenreDto>> GetGenresAsync(CancellationToken ct = default)
+        {
+            var list = await _genreRepo.Query()
+                .AsNoTracking()
+                .ToListAsync(ct);
+            
+            return _mapper.Map<IReadOnlyList<GenreDto>>(list);
+        }
+
+        public async Task<IReadOnlyList<ArtistDto>> GetArtistsAsync(CancellationToken ct = default)
+        {
+            var list = await _artistRepo.Query()
+                .AsNoTracking()
+                .ToListAsync(ct);
+            return _mapper.Map<IReadOnlyList<ArtistDto>>(list);
         }
 
     }

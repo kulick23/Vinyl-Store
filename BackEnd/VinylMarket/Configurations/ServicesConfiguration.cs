@@ -24,7 +24,11 @@ namespace VinylRecordShop.Configurations
         {
             var cfg = builder.Configuration;
             var services = builder.Services;
+
+            // AutoMapper
             services.AddAutoMapper(typeof(ReleaseProfile).Assembly);
+            services.AddAutoMapper(typeof(ArtistProfile).Assembly);
+            services.AddAutoMapper(typeof(GenreProfile).Assembly);
 
             // BLL services
             services.AddScoped<IAccountService, AccountService>();
@@ -49,6 +53,7 @@ namespace VinylRecordShop.Configurations
             services.AddScoped<IArtistRepository, ArtistRepository>();
             services.AddScoped<ISellerProfileRepository, SellerProfileRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
             //other
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();

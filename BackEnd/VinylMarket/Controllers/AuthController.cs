@@ -6,7 +6,7 @@ using BLL.DTOs;
 using BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace VinylRecordShop.Api.Controllers
+namespace VinylMarket.Controllers
 {
     [ApiController]
     [Route("api/auth")]
