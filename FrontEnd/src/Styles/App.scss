@@ -1,0 +1,21 @@
+@use './breakpoints' as bp;
+@use './text.scss';
+@use './links.scss';
+
+:root {
+  --title-color: #0E0E07; 
+  --text-color: #454521; 
+  --orange-color: #E5592E; 
+
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+

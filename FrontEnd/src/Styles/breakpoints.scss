@@ -1,0 +1,14 @@
+$breakpoint_phone: 1212px;
+$breakpoint_pc: 1213px;
+
+@mixin phone() {
+  @media (max-width: $breakpoint_phone) {
+    @content;
+  }
+}
+
+@mixin pc() {
+  @media (min-width: $breakpoint_pc) {
+    @content;
+  }
+}
