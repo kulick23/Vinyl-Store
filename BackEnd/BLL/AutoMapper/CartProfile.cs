@@ -10,11 +10,14 @@ namespace BLL.AutoMapper
         public CartProfile()
         {
             CreateMap<CartItem, CartItemDto>()
-                .ForMember(d => d.CartItemId, m => m.MapFrom(s => s.Id))
-                .ForMember(d => d.InventoryItemId, m => m.MapFrom(s => s.InventoryItemId))
-                .ForMember(d => d.ReleaseTitle, m => m.MapFrom(s => s.InventoryItem.Release.Title))
-                .ForMember(d => d.UnitPrice, m => m.MapFrom(s => s.InventoryItem.Price))
-                .ForMember(d => d.LineTotal, m => m.MapFrom(s => s.Quantity * s.InventoryItem.Price));
+            .ConstructUsing(src => new CartItemDto(
+                src.Id,                                      // CartItemId
+                src.InventoryItemId,                         // InventoryItemId
+                src.InventoryItem.Release.Title,             // ReleaseTitle
+                src.InventoryItem.Price,                     // UnitPrice
+                src.Quantity,                                // Quantity
+                src.Quantity * src.InventoryItem.Price       // LineTotal
+            ));
         }
     }
 }

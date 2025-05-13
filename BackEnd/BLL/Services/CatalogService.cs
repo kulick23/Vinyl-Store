@@ -33,26 +33,30 @@ namespace Application.Services.Implementation
             _mapper = mapper;
         }
 
-        public async Task<IReadOnlyList<ReleaseDto>> SearchReleasesAsync(SearchQueryDto query, CancellationToken ct = default)
+        public async Task<IReadOnlyList<ReleaseDto>> SearchReleasesAsync(
+    SearchQueryDto query,
+    CancellationToken ct = default)
         {
-            var releases = _releaseRepo.Query();
+            IQueryable<RecordRelease> releasesQuery = _releaseRepo.Query()
+                .Include(r => r.Artist)
+                .Include(r => r.Genre);
 
             if (!string.IsNullOrWhiteSpace(query.Keyword))
-                releases = releases.Where(r => r.Title.Contains(query.Keyword));
+                releasesQuery = releasesQuery.Where(r => EF.Functions.ILike(r.Title, $"%{query.Keyword}%"));
 
             if (query.ArtistId.HasValue)
-                releases = releases.Where(r => r.ArtistId == query.ArtistId);
+                releasesQuery = releasesQuery.Where(r => r.ArtistId == query.ArtistId.Value);
 
             if (query.GenreId.HasValue)
-                releases = releases.Where(r => r.GenreId == query.GenreId);
+                releasesQuery = releasesQuery.Where(r => r.GenreId == query.GenreId.Value);
 
             if (query.YearFrom.HasValue)
-                releases = releases.Where(r => r.Year >= query.YearFrom);
+                releasesQuery = releasesQuery.Where(r => r.Year >= query.YearFrom.Value);
 
             if (query.YearTo.HasValue)
-                releases = releases.Where(r => r.Year <= query.YearTo);
+                releasesQuery = releasesQuery.Where(r => r.Year <= query.YearTo.Value);
 
-            var list = await releases
+            var list = await releasesQuery
                 .AsNoTracking()
                 .Take(100)
                 .ToListAsync(ct);

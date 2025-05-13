@@ -42,25 +42,24 @@ namespace BLL.Services
             return new CartDto(itemsDto, total);
         }
 
-        public async Task AddItemAsync(int customerId, int inventoryItemId, int quantity, CancellationToken ct = default)
+        public async Task AddItemAsync(int customerId, int invItemId, int qty, CancellationToken ct = default)
         {
-            if (quantity <= 0) throw new ArgumentOutOfRangeException(nameof(quantity));
-
-            var cart = await _cartRepo.GetByCustomerAsync(customerId, ct)
-                       ?? await _cartRepo.CreateAsync(customerId, null, ct);
-
-            var existing = cart.Items.FirstOrDefault(i => i.InventoryItemId == inventoryItemId);
-            if (existing is null)
+            var cart = await _cartRepo.GetByCustomerAsync(customerId, ct);
+            if (cart is null)
             {
-                cart.Items.Add(new CartItem
-                {
-                    InventoryItemId = inventoryItemId,
-                    Quantity = quantity
-                });
+                cart = await _cartRepo.CreateAsync(customerId, null, ct);
+                await _uow.SaveChangesAsync(ct);
+            }
+
+
+            var exists = cart.Items.FirstOrDefault(i => i.InventoryItemId == invItemId);
+            if (exists is null)
+            {
+                cart.Items.Add(new CartItem { InventoryItemId = invItemId, Quantity = qty });
             }
             else
             {
-                existing.Quantity += quantity;
+                exists.Quantity += qty;
             }
 
             await _uow.SaveChangesAsync(ct);
@@ -69,9 +68,11 @@ namespace BLL.Services
         public async Task UpdateQuantityAsync(int customerId, int cartItemId, int quantity, CancellationToken ct = default)
         {
             var cart = await _cartRepo.GetByCustomerAsync(customerId, ct)
-                       ?? throw new InvalidOperationException("Cart not found");
+                      ?? throw new InvalidOperationException("Cart not found");
+
             var item = cart.Items.FirstOrDefault(i => i.Id == cartItemId)
                        ?? throw new InvalidOperationException("Item not found");
+
             if (quantity <= 0)
                 cart.Items.Remove(item);
             else

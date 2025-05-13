@@ -82,3 +82,17 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{VinylMarket_HostAddress}}/api/orders
+
+###
+
+GET {{VinylMarket_HostAddress}}/api/cart{
+  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZW1haWwiOiJzdHJpbmciLCJuYW1lIjoic3RyaW5nIHN0cmluZyIsInJvbGUiOiJVc2VyIiwianRpIjoiYTc5ZWNkN2UtNDE1Yi00ZGE2LWFlZmEtMDYzZWIxMTg4NjliIiwibmJmIjoxNzQ2NzEyNjY4LCJleHAiOjE3NDY3MTM1NjgsImlzcyI6IlZpbnlsTWFya2V0IiwiYXVkIjoiVmlueWxNYXJrZXQtU1BBIn0.vqCNdGl9g71MAQUvunettYzRzbFdlFvy4UaVr5ifKio
+}
+
+###
+
+GET {{VinylMarket_HostAddress}}/api/cart
+
+###

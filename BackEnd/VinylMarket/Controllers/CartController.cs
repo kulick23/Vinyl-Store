@@ -3,6 +3,7 @@ using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Web.Api.Controllers
 {
@@ -20,9 +21,9 @@ namespace Web.Api.Controllers
 
         private int GetUserId()
         {
-            var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+            var val = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                       ?? throw new InvalidOperationException("User ID not found in token");
-            return int.Parse(sub);
+            return int.Parse(val);
         }
 
 
