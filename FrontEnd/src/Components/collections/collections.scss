@@ -1,0 +1,39 @@
+.collections {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    justify-content: center;
+    padding: 0px var(--pading);
+
+    &__title {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        justify-content: center;
+        text-align: center;
+    }
+    &__container{
+        display: flex;
+        gap: 30px;
+        align-items: center;
+        justify-content: center;
+        &--block{
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            img{
+                border-radius: 10px;
+                transition: transform 0.3s ease;
+            }
+            &:hover img {
+                transform: scale(1.05);
+            }
+        }
+    }
+    &__button{
+        align-self: center;
+    }
+}

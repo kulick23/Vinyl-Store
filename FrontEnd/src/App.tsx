@@ -2,13 +2,15 @@ import './Styles/App.scss';
 import HistoryRouter from './Routes/HistoryRouter';
 import browserHistory from './Routes/browserHistory';
 import ScrollToTop from './Routes/ScrollToTop';
-import Header from './Layouts/header/Header';
+import {Header, Footer} from './Layouts/index';
 import { AppRoutes } from './Routes/AppRoutes';
 
 function App() {
   return (
     <div className="App">
       <Header />
+      <AppRoutes />
+      <Footer />
     </div>
   );
 }

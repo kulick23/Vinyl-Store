@@ -1,0 +1,25 @@
+.cover {
+    height: 756px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 100px;
+    padding: 0px var(--pading);
+    background-color: rgba(229, 89, 46, 0.05);
+
+    &__container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        &--buttons {
+            display: flex;
+            gap: 16px;
+        }
+    }
+
+    &__img {
+        height: 500px;
+        width: 500px;
+    }
+}

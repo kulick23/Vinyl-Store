@@ -1,0 +1,24 @@
+@use './breakpoints.scss' as bp;
+
+button {
+    color: white;
+    font-family: 'Inter';
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    display: flex;
+    padding: 14px 30px 14px 30px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    height: 44px;
+    cursor: pointer;
+    border-radius: 7px;
+    border: 1px solid #DEDEBA;
+    background-color: var(--orange-color);
+}
+
+.button-white {
+    color: #0E0E07;
+    background-color: #F8FAF5;
+}

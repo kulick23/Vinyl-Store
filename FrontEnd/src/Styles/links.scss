@@ -5,6 +5,7 @@ a {
     margin-block-start: 0;
     margin-block-end: 0;
     color: var(--text-color);
+    cursor: pointer;
       &:active {
     color: var(--orange-active);
   }
