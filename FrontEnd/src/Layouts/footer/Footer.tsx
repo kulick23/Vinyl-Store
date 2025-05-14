@@ -1,14 +1,17 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './Footer.scss';
 
 export const Footer: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="footer">
-      <small>© 2024 Vinyl Haven. All rights reserved.</small>
+      <small>{t('footer.copyright')}</small>
       <div className="footer__container">
-        <a>Privacy Policy</a>
-        <a>Terms of Service</a>
-        <a>Contact Us</a>
+        <a>{t('footer.privacyPolicy')}</a>
+        <a>{t('footer.terms')}</a>
+        <a>{t('footer.contactUs')}</a>
       </div>
     </footer>
   );

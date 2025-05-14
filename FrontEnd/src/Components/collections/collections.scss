@@ -14,16 +14,17 @@
   }
   &__container {
     display: flex;
-    gap: 30px;
-    align-items: center;
+    gap: 40px;
     justify-content: center;
+    flex-wrap: wrap;
     &--block {
+      flex: 0 1 300px;
       display: flex;
       flex-direction: column;
       gap: 10px;
       text-align: center;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       img {
         border-radius: 10px;
         transition: transform 0.3s ease;

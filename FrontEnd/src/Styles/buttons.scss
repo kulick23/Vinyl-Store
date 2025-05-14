@@ -27,10 +27,12 @@ button {
 .button-img {
   color: var(--white-button-text);
   background-color: var(--background-color);
+
   &:hover {
     background-color: var(--white-button-hover);
   }
 }
+
 .button-img {
   padding: 0px;
   width: 36px;
@@ -38,4 +40,18 @@ button {
   align-items: center;
   justify-content: center;
   border: none;
+}
+
+.empty-button {
+  padding: 0px;
+  height: auto;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: transparent;
+  color: var(--title-color);
+
+  &:hover {
+    background-color: transparent;
+  }
 }

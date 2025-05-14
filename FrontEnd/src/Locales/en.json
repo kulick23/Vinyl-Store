@@ -1,0 +1,33 @@
+{
+  "header": {
+    "home": "Home",
+    "shop": "Shop",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "cover": {
+    "title": "Discover the Magic of Vinyl",
+    "subtitle": "Explore our curated collection of premium vinyl records. From classic jazz to modern indie, we have something for every music lover."
+  },
+  "buttons": {
+    "shopNow": "Shop now",
+    "signIn": "Sign In"
+  },
+  "collections": {
+    "title": "Featured Collections",
+    "subtitle": "Explore our handpicked collections of vinyl records from various genres and eras.",
+    "jazzTitle": "Jazz Classics",
+    "jazzDescription": "Explore our jazz classics collection",
+    "rockTitle": "Rock Legends",
+    "rockDescription": "Explore our rock legends collection",
+    "modernTitle": "Modern Indie",
+    "modernDescription": "Explore our modern indie collection",
+    "viewAll": "View All Collections"
+  },
+  "footer": {
+    "copyright": "© 2024 Vinyl Haven. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contactUs": "Contact Us"
+  }
+}

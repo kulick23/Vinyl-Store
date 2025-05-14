@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './collections.scss';
 
 import jazzImg from '../../Assets/img/jazz.png';
@@ -12,49 +13,52 @@ interface CollectionItem {
   description: string;
 }
 
-const items: CollectionItem[] = [
-  {
-    src: jazzImg,
-    alt: 'Jazz Classics',
-    title: 'Jazz Classics',
-    description: 'Explore our jazz classics collection',
-  },
-  {
-    src: rockImg,
-    alt: 'Rock Legends',
-    title: 'Rock Legends',
-    description: 'Explore our rock legends collection',
-  },
-  {
-    src: modernImg,
-    alt: 'Modern Indie',
-    title: 'Modern Indie',
-    description: 'Explore our modern indie collection',
-  },
-];
+export const Collections: React.FC = () => {
+  const { t } = useTranslation();
 
-export const Collections: React.FC = () => (
-  <section className="collections">
-    <div className="collections__title">
-      <h2>Featured Collections</h2>
-      <p>
-        Explore our handpicked collections of vinyl records from various genres
-        and eras.
-      </p>
-    </div>
+  const items: CollectionItem[] = [
+    {
+      src: jazzImg,
+      alt: t('collections.jazzTitle'),
+      title: t('collections.jazzTitle'),
+      description: t('collections.jazzDescription'),
+    },
+    {
+      src: rockImg,
+      alt: t('collections.rockTitle'),
+      title: t('collections.rockTitle'),
+      description: t('collections.rockDescription'),
+    },
+    {
+      src: modernImg,
+      alt: t('collections.modernTitle'),
+      title: t('collections.modernTitle'),
+      description: t('collections.modernDescription'),
+    },
+  ];
 
-    <div className="collections__container">
-      {items.map(({ src, alt, title, description }) => (
-        <div key={title} className="collections__container--block">
-          <img src={src} alt={alt} />
-          <h3>{title}</h3>
-          <p>{description}</p>
-        </div>
-      ))}
-    </div>
+  return (
+    <section className="collections">
+      <div className="collections__title">
+        <h2>{t('collections.title')}</h2>
+        <p>{t('collections.subtitle')}</p>
+      </div>
 
-    <button className="collections__button">View All Collections</button>
-  </section>
-);
+      <div className="collections__container">
+        {items.map(({ src, alt, title, description }) => (
+          <div key={title} className="collections__container--block">
+            <img src={src} alt={alt} />
+            <h3>{title}</h3>
+            <p>{description}</p>
+          </div>
+        ))}
+      </div>
+
+      <button className="collections__button">
+        {t('collections.viewAll')}
+      </button>
+    </section>
+  );
+};
 
 export default Collections;
