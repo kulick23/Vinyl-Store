@@ -7,10 +7,18 @@ import search from '../../Assets/icons/search.svg';
 import './Header.scss';
 
 export const Header: React.FC = () => {
-  const [isDarkOnTop, setDarkOnTop] = useState(true);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrollDir, setScrollDir] = useState<'up' | 'down'>('up');
   const [pastThreshold, setPastThreshold] = useState(false);
+
+  // Apply data-theme attribute on <html> when theme changes
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      'data-theme',
+      isDarkTheme ? 'dark' : 'light'
+    );
+  }, [isDarkTheme]);
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -29,7 +37,7 @@ export const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const toggleThemeIcons = () => setDarkOnTop(prev => !prev);
+  const toggleTheme = () => setIsDarkTheme((prev) => !prev);
 
   const isHidden = pastThreshold && scrollDir === 'down';
 
@@ -52,23 +60,27 @@ export const Header: React.FC = () => {
         </div>
       </div>
       <div className="header__widgets">
-        <img src={search} alt="search" />
-        <img src={cart} alt="cart" />
-        <div
-          className="header__widgets--theme"
-          onClick={toggleThemeIcons}
+        <button className="button-img">
+          <img src={search} alt="search" />
+        </button>
+        <button className="button-img">
+          <img src={cart} alt="cart" />
+        </button>
+        <button
+          onClick={toggleTheme}
+          className="header__widgets--theme button-img"
         >
-          <img
-            src={dark}
-            alt="dark theme"
-            className={isDarkOnTop ? 'on-top' : ''}
-          />
           <img
             src={light}
             alt="light theme"
-            className={!isDarkOnTop ? 'on-top' : ''}
+            className={isDarkTheme ? 'on-top' : ''}
           />
-        </div>
+          <img
+            src={dark}
+            alt="dark theme"
+            className={!isDarkTheme ? 'on-top' : ''}
+          />
+        </button>
         <a>Sign in</a>
       </div>
     </header>

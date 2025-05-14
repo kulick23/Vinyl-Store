@@ -2,7 +2,7 @@ import './Styles/App.scss';
 import HistoryRouter from './Routes/HistoryRouter';
 import browserHistory from './Routes/browserHistory';
 import ScrollToTop from './Routes/ScrollToTop';
-import {Header, Footer} from './Layouts/index';
+import { Header, Footer } from './Layouts/index';
 import { AppRoutes } from './Routes/AppRoutes';
 
 function App() {

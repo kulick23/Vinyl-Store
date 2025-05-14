@@ -1,9 +1,7 @@
 import React from 'react';
-import "./Footer.scss"
+import './Footer.scss';
 
 export const Footer: React.FC = () => {
-
-
   return (
     <footer className="footer">
       <small>© 2024 Vinyl Haven. All rights reserved.</small>

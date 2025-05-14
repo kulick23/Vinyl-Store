@@ -1,25 +1,28 @@
 .cover {
-    height: 756px;
+  height: 756px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 100px;
+  padding: 0px var(--pading);
+  background-color: var(--cover-color);
+
+  &__container {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 100px;
-    padding: 0px var(--pading);
-    background-color: rgba(229, 89, 46, 0.05);
+    flex-direction: column;
+    gap: 16px;
 
-    &__container {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-
-        &--buttons {
-            display: flex;
-            gap: 16px;
-        }
+    &--buttons {
+      display: flex;
+      gap: 16px;
     }
+  }
 
-    &__img {
-        height: 500px;
-        width: 500px;
-    }
+  &__img {
+    height: 500px;
+    width: 500px;
+    box-shadow: 0 0 20px rgba(229, 89, 46, 0.5);
+    transition: box-shadow 0.3s ease;
+    border-radius: 10px;
+  }
 }

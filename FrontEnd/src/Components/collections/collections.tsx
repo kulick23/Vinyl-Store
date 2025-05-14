@@ -38,17 +38,14 @@ export const Collections: React.FC = () => (
     <div className="collections__title">
       <h2>Featured Collections</h2>
       <p>
-        Explore our handpicked collections of vinyl records from various
-        genres and eras.
+        Explore our handpicked collections of vinyl records from various genres
+        and eras.
       </p>
     </div>
 
     <div className="collections__container">
       {items.map(({ src, alt, title, description }) => (
-        <div
-          key={title}
-          className="collections__container--block"
-        >
+        <div key={title} className="collections__container--block">
           <img src={src} alt={alt} />
           <h3>{title}</h3>
           <p>{description}</p>
@@ -56,9 +53,7 @@ export const Collections: React.FC = () => (
       ))}
     </div>
 
-    <button className="collections__button">
-      View All Collections
-    </button>
+    <button className="collections__button">View All Collections</button>
   </section>
 );
 

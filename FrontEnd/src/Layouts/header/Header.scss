@@ -6,17 +6,15 @@
   left: 0;
   right: 0;
   z-index: 100;
-    background-color: var(--background-color);
+  background-color: var(--background-color);
 
   transition:
     top 0.3s ease,
     background 0.3s ease;
-
-
-
   &.hide {
     top: -100px;
   }
+
   &.show {
     top: 0;
   }
@@ -53,35 +51,45 @@
   &__widgets {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 20px;
+
+    img {
+      width: 16px;
+      height: 16px;
+      filter: var(--icon-filter);
+      transition: filter 0.3s;
+    }
 
     &--theme {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
       position: relative;
-      width: 16px;   // подогнать под размер иконок
-      height: 16px;
       cursor: pointer;
 
       img {
         position: absolute;
-        top: 0;
-        left: 0;
         width: 16px;
         height: 16px;
-        transition: transform 0.2s, z-index 0.2s;
+        top: 40%;
+        left: 40%;
+        transition:
+          transform 0.2s,
+          z-index 0.2s;
       }
-      // смещаем вторую иконку вправо/вниз для перекрытия
+
+      // смещаем «фон»-иконку чуть вправо/вниз от центра
       img:nth-of-type(2) {
-        transform: translate(8px, 7px);
-      }
-      // нажатая (active) иконка становится поверх
-      img.on-top {
-        z-index: 2;
-        transform: translate(0, 0);
-      }
-      // нижняя иконка
-      img:not(.on-top) {
+        transform: translate(calc(-50% + 8px), calc(-50% + 7px));
         z-index: 1;
-        transform: translate(8px, 7px);
+      }
+
+      // активная иконка ровно по центру
+      img.on-top {
+        transform: translate(-50%, -50%);
+        z-index: 2;
       }
     }
   }

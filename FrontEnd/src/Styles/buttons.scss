@@ -1,24 +1,41 @@
 @use './breakpoints.scss' as bp;
 
 button {
-    color: white;
-    font-family: 'Inter';
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    display: flex;
-    padding: 14px 30px 14px 30px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    height: 44px;
-    cursor: pointer;
-    border-radius: 7px;
-    border: 1px solid #DEDEBA;
-    background-color: var(--orange-color);
+  color: white;
+  font-family: 'Inter';
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  display: flex;
+  padding: 14px 30px 14px 30px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  cursor: pointer;
+  border-radius: 7px;
+  border: 1px solid #dedeba;
+  background-color: var(--orange-color);
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--orange-hover);
+  }
 }
 
-.button-white {
-    color: #0E0E07;
-    background-color: #F8FAF5;
+.button-white,
+.button-img {
+  color: var(--white-button-text);
+  background-color: var(--background-color);
+  &:hover {
+    background-color: var(--white-button-hover);
+  }
+}
+.button-img {
+  padding: 0px;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: none;
 }
