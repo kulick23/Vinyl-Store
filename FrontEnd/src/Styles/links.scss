@@ -8,9 +8,10 @@ a {
   cursor: pointer;
   position: relative;
   display: inline-block;
+  text-decoration: none;
 
   &:active {
-    color: var(--orange-active);
+    color: var(--orange-color);
   }
 
   &:after {

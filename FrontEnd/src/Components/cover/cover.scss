@@ -25,4 +25,10 @@
     transition: box-shadow 0.3s ease;
     border-radius: 10px;
   }
+
+  &__Aboutimg {
+    height: 100%;
+    width: auto;
+    // object-fit: contain;
+  }
 }

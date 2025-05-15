@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { NavLink } from 'react-router-dom';
 import logo from '../../Assets/icons/logo.svg';
 import cart from '../../Assets/icons/cart.svg';
 import dark from '../../Assets/icons/dark.svg';
@@ -58,10 +59,39 @@ export const Header: React.FC = () => {
           <h4>Vinyl Haven</h4>
         </div>
         <div className="header__container--link">
-          <a>{t('header.home')}</a>
-          <a>{t('header.shop')}</a>
-          <a>{t('header.about')}</a>
-          <a>{t('header.contact')}</a>
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              isActive ? 'header__link header__link--active' : 'header__link'
+            }
+          >
+            {t('header.home')}
+          </NavLink>
+          <NavLink
+            to="/shop"
+            className={({ isActive }) =>
+              isActive ? 'header__link header__link--active' : 'header__link'
+            }
+          >
+            {t('header.shop')}
+          </NavLink>
+          <NavLink
+            to="/about"
+            className={({ isActive }) =>
+              isActive ? 'header__link header__link--active' : 'header__link'
+            }
+          >
+            {t('header.about')}
+          </NavLink>
+          <NavLink
+            to="/contact"
+            className={({ isActive }) =>
+              isActive ? 'header__link header__link--active' : 'header__link'
+            }
+          >
+            {t('header.contact')}
+          </NavLink>
         </div>
       </div>
       <div className="header__widgets">

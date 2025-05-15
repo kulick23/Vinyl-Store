@@ -7,7 +7,9 @@
   },
   "cover": {
     "title": "Discover the Magic of Vinyl",
-    "subtitle": "Explore our curated collection of premium vinyl records. From classic jazz to modern indie, we have something for every music lover."
+    "subtitle": "Explore our curated collection of premium vinyl records. From classic jazz to modern indie, we have something for every music lover.",
+    "aboutTitle": "Our Story",
+    "aboutSubtitle": "Founded in 2010, Vinyl Heaven started as a small corner shop with just a few hundred records. Our founder, Sarah, began collecting vinyl at age 15 and never stopped. What started as a personal collection soon grew into something much bigger. <br/><br/> Today, we house over 10,000 carefully curated vinyl records from every genre and era. From classic jazz to modern indie, we've handpicked each album for its quality, rarity, and cultural significance.<br/><br/> We believe that vinyl isn't just about nostalgia—it's about experiencing music the way artists intended, with all the warmth, depth, and character that digital formats simply can't replicate."
   },
   "buttons": {
     "shopNow": "Shop now",
@@ -29,5 +31,52 @@
     "privacyPolicy": "Privacy Policy",
     "terms": "Terms of Service",
     "contactUs": "Contact Us"
+  },
+  "titleWithButton": {
+    "title": "Our Passion for Vinyl",
+    "description": "At Vinyl Heaven, we're dedicated to preserving the authentic sound experience that only vinyl can provide. Our journey began with a simple love for music and has evolved into a mission to share that passion with collectors worldwide.",
+    "button": "Shop"
+  },
+  "ourValues": {
+    "title": "Our Values",
+    "blocks": {
+      "quality": {
+        "title": "Quality",
+        "description": "We meticulously inspect each record for audio quality and physical condition before adding it to our collection."
+      },
+      "authenticity": {
+        "title": "Authenticity",
+        "description": "We believe in the authentic vinyl experience, from the artwork to the warm analog sound that digital can't match."
+      },
+      "curation": {
+        "title": "Curation",
+        "description": "Each collection is thoughtfully curated to tell a story and provide a journey through musical history and culture."
+      }
+    }
+  },
+  "ourTeam": {
+    "title": "Meet Our Team",
+    "members": {
+      "sarah": {
+        "name": "Sarah Johnson",
+        "role": "Founder & Curator",
+        "description": "With 20+ years in vinyl collecting, Sarah uncovers the rarest pressings and shapes our unique catalog."
+      },
+      "michael": {
+        "name": "Michael Lee",
+        "role": "Vinyl Specialist",
+        "description": "A crate-digging veteran, Michael’s expertise guarantees every record meets audiophile standards."
+      },
+      "emily": {
+        "name": "Emily Davis",
+        "role": "Marketing Director",
+        "description": "With a flair for storytelling, Emily connects our community through events, newsletters and social media."
+      },
+      "david": {
+        "name": "David Kim",
+        "role": "Logistics Manager",
+        "description": "David ensures your vinyl arrives safely—coordinating shipments from our warehouse to your doorstep."
+      }
+    }
   }
 }

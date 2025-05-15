@@ -6,7 +6,7 @@ import Collections from '../../Components/collections/collections';
 export const HomePage: React.FC = () => {
   return (
     <section className="homepage">
-      <Cover />
+      <Cover variant="home" />
       <Collections />
     </section>
   );
