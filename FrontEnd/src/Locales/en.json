@@ -88,5 +88,9 @@
     "phonePlaceholder": "Phone number",
     "messagePlaceholder": "Message",
     "sendButton": "Send"
+  },
+  "policy": {
+    "title": "Privacy Policy",
+    "update": "Last Updated  on 27th January 2022"
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { NavLink } from 'react-router-dom';
 import './Footer.scss';
 
 export const Footer: React.FC = () => {
@@ -9,9 +10,8 @@ export const Footer: React.FC = () => {
     <footer className="footer">
       <small>{t('footer.copyright')}</small>
       <div className="footer__container">
-        <a>{t('footer.privacyPolicy')}</a>
-        <a>{t('footer.terms')}</a>
-        <a>{t('footer.contactUs')}</a>
+        <NavLink to="/policy">{t('footer.privacyPolicy')}</NavLink>
+        <NavLink to="/contact">{t('footer.contactUs')}</NavLink>
       </div>
     </footer>
   );
