@@ -8,7 +8,7 @@ import OurValues from '../../Components/ourValues/ourValues';
 export const AboutPage: React.FC = () => {
   return (
     <section className="aboutpage">
-      <TitleWithButton />
+      <TitleWithButton variant="about" />
       <Cover variant="about" />
       <OurValues />
       <OurTeam />

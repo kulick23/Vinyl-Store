@@ -1,0 +1,51 @@
+@use '../../Styles/breakpoints.scss' as bp;
+
+.contact {
+  display: grid;
+  width: 100%;
+  gap: 40px;
+  padding: 0px var(--pading);
+  grid-template-columns: 1fr 1fr;
+  box-sizing: border-box;
+  grid-template-areas:
+    'email name'
+    'compani phone'
+    'message message'
+    'button button';
+
+  @include bp.phone {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .email {
+    grid-area: email;
+    padding: 8px;
+  }
+
+  .name {
+    grid-area: name;
+    padding: 8px;
+  }
+
+  .compani {
+    grid-area: compani;
+    padding: 8px;
+  }
+
+  .phone {
+    grid-area: phone;
+    padding: 8px;
+  }
+
+  .message {
+    grid-area: message;
+    padding: 8px;
+    min-height: 120px;
+  }
+
+  .button {
+    grid-area: button;
+    justify-self: center;
+  }
+}
