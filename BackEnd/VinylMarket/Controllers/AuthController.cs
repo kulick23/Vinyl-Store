@@ -18,7 +18,7 @@ namespace VinylMarket.Controllers
         {
             _account = account;
         }
-
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register(
             [FromBody] RegisterDto dto,
