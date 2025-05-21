@@ -398,3 +398,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+
+# Docker build cache / layer exports
+*.tar
+
+**/migrate
