@@ -8,6 +8,7 @@ namespace Domain.Entities
         public int Year { get; set; }
         public int ArtistId { get; set; }
         public int GenreId { get; set; }
+        public string? ImageUrl { get; set; }
 
         public Artist Artist { get; set; }
         public Genre Genre { get; set; }
