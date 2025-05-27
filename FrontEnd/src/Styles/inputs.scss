@@ -1,0 +1,80 @@
+input,
+textarea,
+select,
+.react-tel-input {
+  display: flex;
+  padding: 12px 16px;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  background: var(--cover-color);
+  resize: none;
+  height: 48px;
+  box-sizing: border-box;
+  font-family: 'Inter';
+  font-size: 20px;
+  font-style: normal;
+  color: var(--text-color);
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: #e0e0e0;
+  }
+
+  &::placeholder,
+  .custom-file-label {
+    color: #828282;
+    font-family: 'Inter';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+  }
+
+  .form-control {
+    background-color: transparent !important;
+    height: 100% !important;
+    border: none !important;
+    color: var(--text-color);
+    font-family: 'Inter';
+    font-size: 20px !important;
+
+    &::placeholder {
+      color: #828282;
+      font-family: 'Inter';
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 130%;
+    }
+  }
+}
+
+.react-tel-input {
+  padding: 0 !important;
+}
+
+textarea {
+  height: 160px;
+}
+
+.flag-dropdown {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+input.invalid,
+textarea.invalid,
+select.invalid {
+  border-color: #eb5757;
+}
+
+.input-error {
+  display: block;
+  color: #eb5757;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
