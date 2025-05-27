@@ -319,6 +319,9 @@ namespace DAL.Migrations
                     b.Property<int>("GenreId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)

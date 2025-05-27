@@ -9,6 +9,7 @@ namespace Application.Services
     public interface ICatalogService
     {
         Task<IReadOnlyList<ReleaseDto>> SearchReleasesAsync(SearchQueryDto query, CancellationToken ct = default);
+        Task<IReadOnlyList<ReleaseWithPriceDto>> SearchReleasesWithPriceAsync(SearchQueryDto query, CancellationToken ct = default);
         Task<ReleaseDetailsDto?> GetReleaseAsync(int releaseId, CancellationToken ct = default);
         Task<IReadOnlyList<InventoryItemDto>> GetListingsForReleaseAsync(int releaseId, SortOption sortBy, CancellationToken ct = default);
         Task<IReadOnlyList<GenreDto>> GetGenresAsync(CancellationToken ct = default);

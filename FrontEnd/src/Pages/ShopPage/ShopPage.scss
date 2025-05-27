@@ -1,0 +1,213 @@
+@use '../../Styles/breakpoints.scss' as bp;
+
+.shoppage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--component-gap);
+  padding: 0 var(--pading);
+  margin-top: 100px;
+}
+
+.shop-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  .search-container {
+    position: relative;
+    width: 300px;
+
+    .search-input {
+      width: 100%;
+      padding: 12px 20px;
+      border: 1px solid var(--text-color);
+      border-radius: 8px;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      font-size: 16px;
+      transition: border-color 0.3s;
+
+      &:focus {
+        outline: none;
+        border-color: var(--orange-color);
+      }
+
+      &::placeholder {
+        color: var(--text-color);
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 20px 0;
+}
+
+.record-card {
+  background-color: var(--background-color);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  .record-image {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .sale-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: var(--orange-color);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .favorite-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 20px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .record-info {
+    padding: 20px;
+    flex-grow: 1;
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 18px;
+      color: var(--title-color);
+    }
+
+    .artist {
+      color: var(--text-color);
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .genre {
+      color: var(--text-color);
+      font-size: 14px;
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+
+    .price-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .original-price {
+        color: var(--text-color);
+        text-decoration: line-through;
+        font-size: 14px;
+      }
+
+      .current-price {
+        color: var(--orange-color);
+        font-weight: bold;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .add-to-cart {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--orange-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: var(--orange-hover);
+    }
+  }
+}
+
+.loading-spinner,
+.error-message,
+.empty-state,
+.no-results {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  color: var(--text-color);
+  font-size: 18px;
+  text-align: center;
+  gap: 20px;
+}
+
+.error-message {
+  text-align: center;
+  padding: 40px;
+  background-color: rgba(var(--orange-color-rgb), 0.1);
+  border-radius: 12px;
+  border: 1px solid var(--orange-color);
+
+  p:first-child {
+    color: var(--orange-color);
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+
+  .retry-button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: var(--orange-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: var(--orange-hover);
+    }
+  }
+} 

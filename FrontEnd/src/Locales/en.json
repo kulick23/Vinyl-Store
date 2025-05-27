@@ -67,7 +67,7 @@
       "michael": {
         "name": "Michael Lee",
         "role": "Vinyl Specialist",
-        "description": "A crate-digging veteran, Michael’s expertise guarantees every record meets audiophile standards."
+        "description": "A crate-digging veteran, Michael's expertise guarantees every record meets audiophile standards."
       },
       "emily": {
         "name": "Emily Davis",
@@ -81,6 +81,7 @@
       }
     }
   },
+
   "contact": {
     "emailPlaceholder": "Email address",
     "namePlaceholder": "Name",
@@ -92,5 +93,28 @@
   "policy": {
     "title": "Privacy Policy",
     "update": "Last Updated  on 27th January 2022"
+
+  "shop": {
+    "title": "Shop Vinyl Records",
+    "searchPlaceholder": "Search by title, artist, or genre...",
+    "loading": "Loading records...",
+    "sale": "SALE",
+    "addToCart": "Add to Cart",
+    "noResults": "No records found matching your search",
+    "noRecords": "No records available in the store yet",
+    "filter": {
+      "title": "Filter",
+      "price": "Price",
+      "genre": "Genre",
+      "sortBy": "Sort by"
+    },
+    "errors": {
+      "title": "Something went wrong",
+      "invalidResponse": "Unable to load records. The server response was invalid.",
+      "fetchError": "Failed to fetch records",
+      "unknown": "An unexpected error occurred. Please try again.",
+      "retry": "Try Again"
+    }
+
   }
 }

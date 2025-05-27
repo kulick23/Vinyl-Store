@@ -3,13 +3,28 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Web.Api.Extensions;
+using DAL.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Check if we're running in seed mode
+if (args.Length > 0 && args[0] == "seed-data")
+{
+    builder.ConfigureServices();
+    var seedApp = builder.Build();
+    
+    using var scope = seedApp.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await SeedData.SeedDatabaseAsync(db);
+    Console.WriteLine("Database seeding completed!");
+    return;
+}
 
 builder.ConfigureServices();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerConfiguration();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
@@ -24,7 +39,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwt["Issuer"],
             ValidAudience = jwt["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwt["Secret"]!))
+                                           Encoding.UTF8.GetBytes(jwt["Secret"]!))
         };
     });
 
@@ -32,24 +47,23 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+// Database migrations and seeding are handled by the migration container
+
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwaggerConfiguration();
+app.UseSwaggerConfiguration();
 }
 
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "VinylMarket API v1");
-    c.RoutePrefix = string.Empty;    // теперь UI будет по http://<host>/
+    c.RoutePrefix = string.Empty;
 });
 
 app.MapControllers();
-
 app.Run();

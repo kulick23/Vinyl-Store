@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:15
+    container_name: backend-db
+    environment:
+      POSTGRES_DB: VinylMarket
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d VinylMarket"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    image: mcr.microsoft.com/dotnet/sdk:9.0      # ← единственная строка image
+    container_name: backend-migrate
+    volumes:
+      - .:/src/BackEnd                           # монтируем всю папку BackEnd
+    working_dir: /src/BackEnd                    # здесь лежит backend.sln
+    environment:
+      ConnectionStrings__Default: Host=db;Port=5432;Database=VinylMarket;Username=postgres;Password=123
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >-
+      bash -ec "
+        echo 'Waiting for database to be ready...' ;
+        sleep 5 ;
+        dotnet tool install --global dotnet-ef --version 9.* --ignore-failed-sources ;
+        export PATH=$$PATH:/root/.dotnet/tools ;
+        echo 'Applying migrations...' ;
+        dotnet ef database update --project /src/BackEnd/DAL/DAL.csproj --startup-project /src/BackEnd/VinylMarket/VinylMarket.csproj --context AppDbContext --connection 'Host=db;Port=5432;Database=VinylMarket;Username=postgres;Password=123' ;
+        echo '✔ Migrations applied' ;
+        echo 'Seeding database...' ;
+        cd /src/BackEnd ;
+        dotnet run --project VinylMarket/VinylMarket.csproj seed-data ;
+        echo '✔ Database seeded'
+      "
+
+  api:
+    build:
+      context: .
+      dockerfile: VinylMarket/Dockerfile
+    container_name: backend-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: Host=db;Port=5432;Database=VinylMarket;Username=postgres;Password=123
+    depends_on:
+      migrate:
+        condition: service_completed_successfully  # ждём, пока миграции закончатся
+    ports:
+      - "8080:8080"

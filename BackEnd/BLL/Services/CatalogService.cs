@@ -39,7 +39,7 @@ namespace Application.Services.Implementation
         {
             IQueryable<RecordRelease> releasesQuery = _releaseRepo.Query()
                 .Include(r => r.Artist)
-                .Include(r => r.Genre);
+                .Include(r => r.Genre); 
 
             if (!string.IsNullOrWhiteSpace(query.Keyword))
                 releasesQuery = releasesQuery.Where(r => EF.Functions.ILike(r.Title, $"%{query.Keyword}%"));
@@ -62,6 +62,63 @@ namespace Application.Services.Implementation
                 .ToListAsync(ct);
 
             return _mapper.Map<IReadOnlyList<ReleaseDto>>(list);
+        }
+
+        public async Task<IReadOnlyList<ReleaseWithPriceDto>> SearchReleasesWithPriceAsync(
+            SearchQueryDto query,
+            CancellationToken ct = default)
+        {
+            IQueryable<RecordRelease> releasesQuery = _releaseRepo.Query()
+                .Include(r => r.Artist)
+                .Include(r => r.Genre); 
+
+            if (!string.IsNullOrWhiteSpace(query.Keyword))
+                releasesQuery = releasesQuery.Where(r => EF.Functions.ILike(r.Title, $"%{query.Keyword}%"));
+
+            if (query.ArtistId.HasValue)
+                releasesQuery = releasesQuery.Where(r => r.ArtistId == query.ArtistId.Value);
+
+            if (query.GenreId.HasValue)
+                releasesQuery = releasesQuery.Where(r => r.GenreId == query.GenreId.Value);
+
+            if (query.YearFrom.HasValue)
+                releasesQuery = releasesQuery.Where(r => r.Year >= query.YearFrom.Value);
+
+            if (query.YearTo.HasValue)
+                releasesQuery = releasesQuery.Where(r => r.Year <= query.YearTo.Value);
+
+            var releases = await releasesQuery
+                .AsNoTracking()
+                .Take(100)
+                .ToListAsync(ct);
+
+            var releaseIds = releases.Select(r => r.Id).ToList();
+            var cheapestInventoryItems = await _inventoryRepo.Query()
+                .Where(i => releaseIds.Contains(i.ReleaseId) && i.Quantity > 0)
+                .GroupBy(i => i.ReleaseId)
+                .Select(g => g.OrderBy(i => i.Price).First())
+                .AsNoTracking()
+                .ToListAsync(ct);
+
+            var result = releases.Select(release =>
+            {
+                var cheapestItem = cheapestInventoryItems.FirstOrDefault(i => i.ReleaseId == release.Id);
+                return new ReleaseWithPriceDto
+                {
+                    Id = release.Id,
+                    Title = release.Title,
+                    Year = release.Year,
+                    Artist = release.Artist.Name,
+                    Genre = release.Genre.Name,
+                    ImageUrl = release.ImageUrl,
+                    Price = cheapestItem?.Price,
+                    Condition = cheapestItem?.Condition,
+                    IsAvailable = cheapestItem != null,
+                    InventoryItemId = cheapestItem?.Id
+                };
+            }).ToList();
+
+            return result;
         }
 
         public async Task<ReleaseDetailsDto?> GetReleaseAsync(int releaseId, CancellationToken ct = default)
