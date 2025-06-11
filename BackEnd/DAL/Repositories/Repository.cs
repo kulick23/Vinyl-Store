@@ -46,8 +46,19 @@ namespace DAL.Repositories
 
         public void Remove(T entity) => _dbSet.Remove(entity);
 
+        public async Task RemoveAsync(int Id)
+        {
+            var entity = await GetByIdAsync(Id);
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            _dbSet.Remove(entity);
+        }
+
         public Task<int> SaveChangesAsync(CancellationToken ct = default) =>
-            _context.SaveChangesAsync(ct);   // fallback if UoW not used
+            _context.SaveChangesAsync(ct);
 
         public IQueryable<T> Query() => _dbSet.AsQueryable().AsNoTracking();
     }

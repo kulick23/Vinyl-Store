@@ -35,17 +35,6 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-
-//    db.Database.Migrate();
-
-
-//    // если хочешь просто создать схему без миграций, раскомментируй:
-//    // db.Database.EnsureCreated();
-//}
 
 
 app.UseHttpsRedirection();

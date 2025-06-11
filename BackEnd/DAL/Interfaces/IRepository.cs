@@ -25,6 +25,12 @@ namespace DAL.Interfaces
 
         /// <summary>Persists pending changes.</summary>
         Task<int> SaveChangesAsync(CancellationToken ct = default);
+        /// <summary>
+        /// Deletes entity from db with Id of entity.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        Task RemoveAsync(int Id);
 
         /// <summary>Exposes IQueryable for custom LINQ or specification queries.</summary>
         IQueryable<T> Query();
