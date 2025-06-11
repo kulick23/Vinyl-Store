@@ -33,9 +33,11 @@
     "contactUs": "Contact Us"
   },
   "titleWithButton": {
-    "title": "Our Passion for Vinyl",
-    "description": "At Vinyl Heaven, we're dedicated to preserving the authentic sound experience that only vinyl can provide. Our journey began with a simple love for music and has evolved into a mission to share that passion with collectors worldwide.",
-    "button": "Shop"
+    "aboutTitle": "Our Passion for Vinyl",
+    "aboutDescription": "At Vinyl Heaven, we're dedicated to preserving the authentic sound experience that only vinyl can provide. Our journey began with a simple love for music and has evolved into a mission to share that passion with collectors worldwide.",
+    "button": "Shop",
+    "contactTitle": "Get in Touch",
+    "contactDescription": "Have questions or feedback? Fill out the form below and we'll respond shortly."
   },
   "ourValues": {
     "title": "Our Values",
@@ -65,7 +67,7 @@
       "michael": {
         "name": "Michael Lee",
         "role": "Vinyl Specialist",
-        "description": "A crate-digging veteran, Michael’s expertise guarantees every record meets audiophile standards."
+        "description": "A crate-digging veteran, Michael's expertise guarantees every record meets audiophile standards."
       },
       "emily": {
         "name": "Emily Davis",
@@ -78,5 +80,41 @@
         "description": "David ensures your vinyl arrives safely—coordinating shipments from our warehouse to your doorstep."
       }
     }
+  },
+
+  "contact": {
+    "emailPlaceholder": "Email address",
+    "namePlaceholder": "Name",
+    "companyPlaceholder": "Company (optional)",
+    "phonePlaceholder": "Phone number",
+    "messagePlaceholder": "Message",
+    "sendButton": "Send"
+  },
+  "policy": {
+    "title": "Privacy Policy",
+    "update": "Last Updated  on 27th January 2022"
+
+  "shop": {
+    "title": "Shop Vinyl Records",
+    "searchPlaceholder": "Search by title, artist, or genre...",
+    "loading": "Loading records...",
+    "sale": "SALE",
+    "addToCart": "Add to Cart",
+    "noResults": "No records found matching your search",
+    "noRecords": "No records available in the store yet",
+    "filter": {
+      "title": "Filter",
+      "price": "Price",
+      "genre": "Genre",
+      "sortBy": "Sort by"
+    },
+    "errors": {
+      "title": "Something went wrong",
+      "invalidResponse": "Unable to load records. The server response was invalid.",
+      "fetchError": "Failed to fetch records",
+      "unknown": "An unexpected error occurred. Please try again.",
+      "retry": "Try Again"
+    }
+
   }
 }

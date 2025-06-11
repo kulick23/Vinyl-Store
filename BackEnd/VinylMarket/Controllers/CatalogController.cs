@@ -38,6 +38,7 @@ namespace VinylMarket.Controllers
             [FromQuery] decimal? priceMin,
             [FromQuery] decimal? priceMax,
             [FromQuery] RecordCondition condition,
+            [FromQuery] bool includePrice = false,
             CancellationToken ct = default)
         {
             var query = new SearchQueryDto(
@@ -50,8 +51,16 @@ namespace VinylMarket.Controllers
         priceMax,
         MinCondition: null);
 
-            var releases = await _catalog.SearchReleasesAsync(query, ct);
-            return Ok(releases);
+            if (includePrice)
+            {
+                var releasesWithPrice = await _catalog.SearchReleasesWithPriceAsync(query, ct);
+                return Ok(releasesWithPrice);
+            }
+            else
+            {
+                var releases = await _catalog.SearchReleasesAsync(query, ct);
+                return Ok(releases);
+            }
         }
 
         [HttpGet("releases/{id:int}")]
