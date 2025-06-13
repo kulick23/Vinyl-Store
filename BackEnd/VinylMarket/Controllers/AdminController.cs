@@ -1,22 +1,173 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.DTOs;
+using AutoMapper;
+using BLL.DTO;
+using BLL.DTOs;
+using BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VinylMarket.Controllers
 {
     [ApiController]
-    [Authorize(Roles="Admin")]
+    [Authorize(Roles = "Admin")]
     [Route("api/admin")]
-    public class AdminController : Controller
+    public class AdminController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Index()
+        private readonly IAdminService _admin;
+
+        public AdminController(IAdminService admin)
         {
-            return View();
+            _admin = admin;
         }
 
-        //[HttpGet("genres")]
-        //public IActionResult Get() { }
+        [HttpGet("artists")]
+        public async Task<IActionResult> GetArtists(CancellationToken ct = default)
+        {
+            var result = await _admin.GetAllArtistsAsync(ct);
+            return Ok(result);
+        }
 
+        [HttpPost("artists")]
+        public async Task<IActionResult> CreateArtist([FromBody] ArtistDto dto, CancellationToken ct = default)
+        {
+            var created = await _admin.CreateArtistAsync(dto, ct);
+            return Ok(created);
+        }
 
+        [HttpPut("artists/{id:int}")]
+        public async Task<IActionResult> UpdateArtist(int id,
+                                                     [FromBody] ArtistDto dto,
+                                                     CancellationToken ct = default)
+        {
+            await _admin.UpdateArtistAsync(id, dto, ct);
+            return NoContent();
+        }
+
+        [HttpDelete("artists/{id:int}")]
+        public async Task<IActionResult> DeleteArtist(int id, CancellationToken ct = default)
+        {
+            await _admin.DeleteArtistAsync(id, ct);
+            return NoContent();
+        }
+
+        [HttpGet("genres")]
+        public async Task<IActionResult> GetGenres(CancellationToken ct = default)
+        {
+            var result = await _admin.GetAllGenresAsync(ct);
+            return Ok(result);
+        }
+
+        [HttpPost("genres")]
+        public async Task<IActionResult> CreateGenre([FromBody] GenreDto dto, CancellationToken ct = default)
+        {
+            var created = await _admin.CreateGenreAsync(dto, ct);
+            return Ok(created);
+        }
+
+        [HttpPut("genres/{id:int}")]
+        public async Task<IActionResult> UpdateGenre(int id,
+                                                     [FromBody] GenreDto dto,
+                                                     CancellationToken ct = default)
+        {
+            await _admin.UpdateGenreAsync(id, dto, ct);
+            return NoContent();
+        }
+
+        [HttpDelete("genres/{id:int}")]
+        public async Task<IActionResult> DeleteGenre(int id, CancellationToken ct = default)
+        {
+            await _admin.DeleteGenreAsync(id, ct);
+            return NoContent();
+        }
+
+        [HttpGet("releases")]
+        public async Task<IActionResult> GetReleases(CancellationToken ct = default)
+        {
+            var result = await _admin.GetAllReleasesAsync(ct);
+            return Ok(result);
+        }
+
+        [HttpPost("releases")]
+        public async Task<IActionResult> CreateRelease([FromBody] ReleaseDto dto, CancellationToken ct = default)
+        {
+            var created = await _admin.CreateReleaseAsync(dto, ct);
+            return Ok(created);
+        }
+
+        [HttpPut("releases/{id:int}")]
+        public async Task<IActionResult> UpdateRelease(int id,
+                                                       [FromBody] ReleaseUpdateDto dto,
+                                                       CancellationToken ct = default)
+        {
+            await _admin.UpdateReleaseAsync(id, dto, ct);
+            return NoContent();
+        }
+
+        [HttpDelete("releases/{id:int}")]
+        public async Task<IActionResult> DeleteRelease(int id, CancellationToken ct = default)
+        {
+            await _admin.DeleteReleaseAsync(id, ct);
+            return NoContent();
+        }
+
+        [HttpGet("sellers")]
+        public async Task<IActionResult> GetSellers(CancellationToken ct = default)
+        {
+            var result = await _admin.GetAllSellersAsync(ct);
+            return Ok(result);
+        }
+
+        [HttpPost("sellers")]
+        public async Task<IActionResult> CreateSeller([FromBody] SellerProfileDto dto, CancellationToken ct = default)
+        {
+            var created = await _admin.CreateSellerAsync(dto, ct);
+            return Ok(created);
+        }
+
+        [HttpPut("sellers/{id:int}")]
+        public async Task<IActionResult> UpdateSeller(int id,
+                                                      [FromBody] SellerProfileUpdateDto dto,
+                                                      CancellationToken ct = default)
+        {
+            await _admin.UpdateSellerAsync(id, dto, ct);
+            return NoContent();
+        }
+
+        [HttpDelete("sellers/{id:int}")]
+        public async Task<IActionResult> DeleteSeller(int id, CancellationToken ct = default)
+        {
+            await _admin.DeleteSellerAsync(id, ct);
+            return NoContent();
+        }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers(CancellationToken ct = default)
+        {
+            var result = await _admin.GetAllUsersAsync(ct);
+            return Ok(result);
+        }
+
+        [HttpPost("users")]
+        public async Task<IActionResult> CreateUser([FromBody] CustomerDto dto, CancellationToken ct = default)
+        {
+            var created = await _admin.CreateUserAsync(dto, ct);
+            return Ok(created);
+        }
+
+        [HttpPut("users/{id:int}")]
+        public async Task<IActionResult> UpdateUser(int id,
+                                                    [FromBody] CustomerUpdateDto dto,
+                                                    CancellationToken ct = default)
+        {
+            await _admin.UpdateUserAsync(id, dto, ct);
+            return NoContent();
+        }
+
+        [HttpDelete("users/{id:int}")]
+        public async Task<IActionResult> DeleteUser(int id, CancellationToken ct = default)
+        {
+            await _admin.DeleteUserAsync(id, ct);
+            return NoContent();
+        }
     }
 }
