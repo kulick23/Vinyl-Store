@@ -10,6 +10,6 @@ namespace Domain.Entities
         public decimal Rating { get; set; }
 
         public Customer Customer { get; set; }
-        public ICollection<InventoryItem> Listings { get; set; } = new List<InventoryItem>();
+        public ICollection<InventoryItem> Listings { get; set; } = [];
     }
 }

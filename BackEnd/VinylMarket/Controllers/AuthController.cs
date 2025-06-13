@@ -4,6 +4,7 @@ using Application.DTOs;
 using Application.Services;
 using BLL.DTOs;
 using BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VinylMarket.Controllers
@@ -45,6 +46,14 @@ namespace VinylMarket.Controllers
         {
             var tokens = await _account.RefreshAsync(refreshToken, ct);
             return Ok(tokens);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmEmail([FromBody] string token, CancellationToken ct)
+        {
+            var ok = await _account.ConfirmEmailAsync(token, ct);
+            return ok ? Ok("E-mail confirmed") : BadRequest("Invalid or expired token");
         }
     }
 }

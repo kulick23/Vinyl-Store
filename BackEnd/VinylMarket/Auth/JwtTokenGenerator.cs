@@ -32,8 +32,6 @@ namespace Web.Api.Auth
             _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         }
 
-        /* ---------- Access-token ---------- */
-
         public string GenerateAccessToken(Customer user)
         {
             var claims = new[]
@@ -58,7 +56,6 @@ namespace Web.Api.Auth
             return _handler.WriteToken(jwt);
         }
 
-        /* ---------- Refresh-token ---------- */
 
         public string GenerateRefreshToken()
         {

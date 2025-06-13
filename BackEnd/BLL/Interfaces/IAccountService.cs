@@ -11,5 +11,7 @@ namespace BLL.Interfaces
         Task<AuthTokensDto> RefreshAsync(string refreshToken, CancellationToken ct = default);
         Task LogoutAsync(string refreshToken, CancellationToken ct = default);
         Task LogoutAllAsync(int customerId, CancellationToken ct = default);
+        Task SendEmailConfirmationAsync(int customerId, CancellationToken ct);
+        Task<bool> ConfirmEmailAsync(string rawToken, CancellationToken ct = default);
     }
 }

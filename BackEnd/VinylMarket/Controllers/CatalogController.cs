@@ -28,7 +28,7 @@ namespace VinylMarket.Controllers
             return Ok(artists);
         }
 
-        [HttpGet("releases")]
+        [HttpGet("releases")]   
         public async Task<IActionResult> SearchReleases(
             [FromQuery] string? keyword,
             [FromQuery] int? artistId,

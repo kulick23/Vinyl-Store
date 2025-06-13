@@ -21,5 +21,6 @@ namespace Domain.Entities
 
         public SellerProfile? SellerProfile { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<RecordRelease> Releases { get; set; } = [];
     }
 }

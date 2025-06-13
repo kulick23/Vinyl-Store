@@ -5,16 +5,14 @@ using BLL.Services;
 using DAL;
 using DAL.Interfaces;
 using DAL.Repositories;
-using Microsoft.Extensions.DependencyInjection;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Web.Api.Auth;
 using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using BLL.AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Common.Options;
+using NotificationsService.Providers;
 
 namespace VinylRecordShop.Configurations
 {
@@ -58,6 +56,8 @@ namespace VinylRecordShop.Configurations
             //other
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<IPasswordHasher<Customer>, PasswordHasher<Customer>>();
+            services.Configure<EmailOptions>(cfg.GetSection(EmailOptions.Section));
+            services.AddTransient<IEmailProvider, EmailProvider>();
 
             builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));

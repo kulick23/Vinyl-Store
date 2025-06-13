@@ -11,7 +11,23 @@ namespace DAL.Repositories
     {
         public CustomerRepository(AppDbContext context) : base(context) { }
 
-        public Task<Customer?> GetByEmailAsync(string email, CancellationToken ct = default) =>
-            _dbSet.FirstOrDefaultAsync(c => c.Email == email, ct);
+        public async Task AddToWishlistAsync(int userId, RecordRelease release, CancellationToken ct)
+        {
+            var customer = await _dbSet
+        .Include(c => c.Releases)
+        .FirstOrDefaultAsync(c => c.Id == userId, ct)
+        ?? throw new KeyNotFoundException($"No Customer found with Id {userId}.");
+
+            if (customer.Releases.Any(r => r.Id == release.Id))
+                return;
+
+            _context.Set<RecordRelease>().Attach(release);
+            customer.Releases.Add(release);
+
+            await _context.SaveChangesAsync(ct);
+        }
+
+        public async Task<Customer?> GetByEmailAsync(string email, CancellationToken ct = default) =>
+            await _dbSet.FirstOrDefaultAsync(c => c.Email == email, ct);
     }
 }

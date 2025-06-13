@@ -7,6 +7,10 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using BLL.DTOs;
 using BLL.Interfaces;
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using NotificationsService.Providers;
 
 namespace BLL.Services
 {
@@ -18,6 +22,8 @@ namespace BLL.Services
         private readonly IUnitOfWork _uow;
         private readonly IPasswordHasher<Customer> _hasher;
         private readonly IJwtTokenGenerator _jwt;
+        private readonly IConfiguration _cfg;
+        private readonly IEmailProvider _email;
 
         public AccountService(
             IAccountRepository accountRepo,
@@ -25,7 +31,9 @@ namespace BLL.Services
             IPasswordResetTokenRepository resetRepo,
             IUnitOfWork uow,
             IPasswordHasher<Customer> hasher,
-            IJwtTokenGenerator jwt)
+            IJwtTokenGenerator jwt,
+            IEmailProvider email,
+            IConfiguration cfg)
         {
             _accountRepo = accountRepo;
             _emailTokenRepo = emailTokenRepo;
@@ -33,6 +41,8 @@ namespace BLL.Services
             _uow = uow;
             _hasher = hasher;
             _jwt = jwt;
+            _email = email;
+            _cfg = cfg;
         }
 
 
@@ -54,7 +64,7 @@ namespace BLL.Services
             await _accountRepo.AddAsync(customer, ct);
             await _uow.SaveChangesAsync(ct);
 
-
+            await SendEmailConfirmationAsync(customer.Id, ct);
             return await IssueTokensAsync(customer, ct);
         }
 
@@ -112,33 +122,49 @@ namespace BLL.Services
         }
 
 
-        public async Task SendEmailConfirmationAsync(int customerId, CancellationToken ct = default)
+        public async Task SendEmailConfirmationAsync(int customerId, CancellationToken ct)
         {
-            var token = new EmailConfirmationToken
+            var user = await _accountRepo.GetByIdAsync(customerId, ct)
+                       ?? throw new KeyNotFoundException();
+            var raw = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+            var hash = Convert.ToHexString(
+                         SHA256.HashData(Encoding.UTF8.GetBytes(raw)));
+
+            await _emailTokenRepo.AddAsync(new EmailToken
             {
-                Token = Guid.NewGuid(),
                 CustomerId = customerId,
+                TokenHash = hash,
                 ExpiresAt = DateTime.UtcNow.AddHours(24)
-            };
-            await _emailTokenRepo.AddAsync(token, ct);
-            await _uow.SaveChangesAsync(ct);
+            }, ct);
 
+            var link = $"{_cfg["Frontend:BaseUrl"]}/confirm?token={raw}";
+            var body = $"""
+        <p>Hello!</p>
+        <p>For email confirmation press:
+           <a href="{link}">This link</a>. Link active for 24&nbsp;hours.</p>
+        <hr/><p>Vinyl&nbsp;Market Team</p>
+        """;
 
+            await _email.SendEmailAsync(user.Email,
+                "Email Confirmation — Vinyl Market", body, ct);
         }
 
-        public async Task ConfirmEmailAsync(Guid tokenId, CancellationToken ct = default)
+
+        public async Task<bool> ConfirmEmailAsync(string rawToken, CancellationToken ct = default)
         {
-            var token = await _emailTokenRepo.GetAsync(tokenId, ct)
-                        ?? throw new InvalidOperationException("Token not found.");
+            var hash = Convert.ToHexString(
+                         SHA256.HashData(Encoding.UTF8.GetBytes(rawToken)));
 
-            if (token.Used || token.ExpiresAt < DateTime.UtcNow)
-                throw new InvalidOperationException("Token invalid.");
+            var token = await _emailTokenRepo.GetValidAsync(hash, ct);
+            if (token is null) return false;
 
-            token.Used = true;
+            token.ConfirmedAt = DateTime.UtcNow;
             token.Customer.IsEmailConfirmed = true;
 
             await _uow.SaveChangesAsync(ct);
+            return true;
         }
+
 
 
 

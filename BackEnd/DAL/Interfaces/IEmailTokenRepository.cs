@@ -1,16 +1,12 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Domain.Entities;
 
-namespace DAL.Interfaces
+namespace DAL.Interfaces;
+
+public interface IEmailTokenRepository : IRepository<EmailToken>
 {
-    public interface IEmailTokenRepository
-    {
-        Task AddAsync(EmailConfirmationToken token, CancellationToken ct = default);
-        Task<EmailConfirmationToken?> GetAsync(Guid token, CancellationToken ct = default);
-        Task MarkUsedAsync(Guid token, CancellationToken ct = default);
-    }
+    Task AddAsync(EmailToken entity, CancellationToken ct = default);
+    Task<EmailToken?> GetValidAsync(string hash, CancellationToken ct = default);
+    Task ConfirmAsync(string hash, CancellationToken ct = default);
 }

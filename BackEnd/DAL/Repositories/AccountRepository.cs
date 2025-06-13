@@ -22,7 +22,6 @@ namespace DAL.Repositories
             _refresh = ctx.Set<RefreshToken>();
         }
 
-        /* ---------- Customer ---------- */
 
         public Task<Customer?> GetByEmailAsync(string email, CancellationToken ct = default) =>
             _users.Include(u => u.SellerProfile)
@@ -34,7 +33,8 @@ namespace DAL.Repositories
         public Task AddAsync(Customer customer, CancellationToken ct = default) =>
             _users.AddAsync(customer, ct).AsTask();
 
-        /* ---------- Refresh-токены ---------- */
+        public Task<Customer?> GetByIdAsync(int id, CancellationToken ct = default) =>
+            _users.FirstOrDefaultAsync(u => u.Id == id);
 
         public Task AddRefreshTokenAsync(RefreshToken token, CancellationToken ct = default) =>
             _refresh.AddAsync(token, ct).AsTask();

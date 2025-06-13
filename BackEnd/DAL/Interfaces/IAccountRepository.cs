@@ -12,6 +12,7 @@ namespace DAL.Interfaces
         Task<Customer?> GetByEmailAsync(string email, CancellationToken ct = default);
         Task<bool> EmailExistsAsync(string email, CancellationToken ct = default);
         Task AddAsync(Customer customer, CancellationToken ct = default);
+        Task<Customer?> GetByIdAsync(int id, CancellationToken ct = default);
 
         //Tokensы
         Task AddRefreshTokenAsync(RefreshToken token, CancellationToken ct = default);
