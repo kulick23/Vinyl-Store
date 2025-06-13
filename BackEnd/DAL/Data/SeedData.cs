@@ -7,8 +7,6 @@ namespace DAL.Data
     {
         public static async Task SeedDatabaseAsync(AppDbContext context)
         {
-            if (await context.Set<Artist>().AnyAsync())
-                return;
 
             var genres = new[]
             {
