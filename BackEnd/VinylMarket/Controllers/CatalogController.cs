@@ -51,16 +51,8 @@ namespace VinylMarket.Controllers
         priceMax,
         MinCondition: null);
 
-            if (includePrice)
-            {
-                var releasesWithPrice = await _catalog.SearchReleasesWithPriceAsync(query, ct);
-                return Ok(releasesWithPrice);
-            }
-            else
-            {
-                var releases = await _catalog.SearchReleasesAsync(query, ct);
-                return Ok(releases);
-            }
+            var releases = await _catalog.SearchReleasesAsync(query, ct);
+            return Ok(releases);
         }
 
         [HttpGet("releases/{id:int}")]

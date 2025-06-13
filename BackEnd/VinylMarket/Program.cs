@@ -6,9 +6,9 @@ using Web.Api.Extensions;
 using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder();
 
-// Check if we're running in seed mode
+
 if (args.Length > 0 && args[0] == "seed-data")
 {
     builder.ConfigureServices();
@@ -46,18 +46,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-
-//    db.Database.Migrate();
-
-
-//    // если хочешь просто создать схему без миграций, раскомментируй:
-//    // db.Database.EnsureCreated();
-//}
 
 
 app.UseHttpsRedirection();
