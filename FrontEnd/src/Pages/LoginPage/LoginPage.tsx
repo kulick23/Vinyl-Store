@@ -2,6 +2,8 @@ import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { useLoginMutation } from '../../redux/auth/api';
+import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
 import './LoginPage.scss';
 
 interface LoginFormData {
@@ -19,13 +21,14 @@ interface FormErrors {
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [login, { isLoading }] = useLoginMutation();
+
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
     rememberMe: false,
   });
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -67,51 +70,46 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
     setErrors({});
 
     try {
-      // Here you would typically make an API call to authenticate the user
-      // For now, we'll simulate a login process
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const result = await login({
+        email: formData.email,
+        password: formData.password,
+      }).unwrap();
 
-      // Simulate login logic
-      if (
-        formData.email === 'demo@vinylhaven.com' &&
-        formData.password === 'demo123'
-      ) {
-        // Successful login
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', formData.email);
+      // Store tokens
+      localStorage.setItem('accessToken', result.accessToken);
+      localStorage.setItem('refreshToken', result.refreshToken);
+      localStorage.setItem('accessExpiresAt', result.accessExpiresAt);
 
-        if (formData.rememberMe) {
-          localStorage.setItem('rememberMe', 'true');
-        }
-
-        // Redirect to home page or previous page
-        navigate('/');
-      } else {
-        // Failed login
-        setErrors({ general: t('login.errors.loginFailed') });
+      if (formData.rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
       }
-    } catch (error) {
+
+      // Redirect to home page
+      navigate('/');
+    } catch (error: any) {
       console.error('Login error:', error);
-      setErrors({ general: t('login.errors.loginFailed') });
-    } finally {
-      setIsLoading(false);
+      setErrors({
+        general: error.data?.message || t('login.errors.loginFailed'),
+      });
     }
   };
 
   const handleGoogleLogin = () => {
     // Here you would implement Google OAuth login
     console.log('Google login clicked');
-    // For demo purposes, just show an alert
     alert('Google login would be implemented here');
   };
 
   return (
     <div className="loginpage">
       <div className="login-container">
+        <div className="vinyl-animation">
+          <VinylSpinner size="large" />
+        </div>
+
         <div className="login-header">
           <h1 className="login-title">{t('login.title')}</h1>
           <p className="login-subtitle">{t('login.subtitle')}</p>
@@ -175,7 +173,11 @@ export const LoginPage: React.FC = () => {
           </div>
 
           <button type="submit" className="login-button" disabled={isLoading}>
-            {isLoading ? '...' : t('login.signInButton')}
+            {isLoading ? (
+              <VinylSpinner size="small" />
+            ) : (
+              t('login.signInButton')
+            )}
           </button>
         </form>
 

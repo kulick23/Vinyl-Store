@@ -1,35 +1,56 @@
-'use client';
-
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGetReleasesQuery } from '../../redux/catalog/api';
 import TitleWithButton from '../../Components/TitleWithButton/TitleWithButton';
+import ShopFilters from '../../Components/ShopFilters/ShopFilters';
+import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
 import { Link } from 'react-router-dom';
+import type { FilterOptions } from '../../redux/catalog/types';
 import './ShopPage.scss';
 
 export const ShopPage: React.FC = () => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<FilterOptions>({
+    includePrice: true,
+  });
+  const [showFilters, setShowFilters] = useState(false);
+
+  const queryParams = useMemo(
+    () => ({
+      ...filters,
+      keyword: searchQuery || undefined,
+    }),
+    [filters, searchQuery]
+  );
+
   const {
     data: records = [],
     error,
     isLoading,
-  } = useGetReleasesQuery({
-    keyword: searchQuery,
-    includePrice: true,
-  });
+  } = useGetReleasesQuery(queryParams);
 
-  const filteredRecords = records.filter(
-    (r) =>
-      r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (r.genre?.toLowerCase() || '').includes(searchQuery.toLowerCase())
-  );
+  const handleFiltersChange = (newFilters: FilterOptions) => {
+    setFilters({ ...newFilters, includePrice: true });
+  };
+
+  const handleClearFilters = () => {
+    setFilters({ includePrice: true });
+    setSearchQuery('');
+  };
 
   const renderContent = () => {
-    if (isLoading)
-      return <div className="loading-spinner">{t('shop.loading')}</div>;
-    if (error)
+    if (isLoading) {
+      return (
+        <div className="loading-spinner">
+          <VinylSpinner size="large" />
+          <p>{t('shop.loading')}</p>
+        </div>
+      );
+    }
+
+    if (error) {
       return (
         <div className="error-message">
           <p>{t('shop.errors.title')}</p>
@@ -42,28 +63,31 @@ export const ShopPage: React.FC = () => {
           </button>
         </div>
       );
-    if (records.length === 0)
+    }
+
+    if (records.length === 0) {
       return (
         <div className="empty-state">
-          <p>{t('shop.noRecords')}</p>
+          <p>
+            {searchQuery || Object.keys(filters).length > 1
+              ? t('shop.noResults')
+              : t('shop.noRecords')}
+          </p>
         </div>
       );
-    if (filteredRecords.length === 0)
-      return (
-        <div className="no-results">
-          <p>{t('shop.noResults')}</p>
-        </div>
-      );
+    }
+
     return (
       <div className="records-grid">
-        {filteredRecords.map((record) => (
+        {records.map((record) => (
           <div key={record.id} className="record-card">
             <Link to={`/product/${record.id}`} className="record-link">
               <div className="record-image">
                 <img
                   src={
                     record.imageUrl ||
-                    '/placeholder.svg?height=250&width=250&query=vinyl record'
+                    '/placeholder.svg?height=250&width=250&query=vinyl record' ||
+                    '/placeholder.svg'
                   }
                   alt={`${record.title} by ${record.artist}`}
                   onError={(e) => {
@@ -85,14 +109,17 @@ export const ShopPage: React.FC = () => {
                 <h3>{record.title}</h3>
                 <p className="artist">{record.artist}</p>
                 {record.genre && <p className="genre">{record.genre}</p>}
-                <div className="price-container">
-                  {record.isOnSale && record.originalPrice && (
-                    <span className="original-price">
-                      ${record.originalPrice}
-                    </span>
-                  )}
-                  <span className="current-price">${record.price}</span>
-                </div>
+                {record.year && <p className="year">{record.year}</p>}
+                {record.price && (
+                  <div className="price-container">
+                    {record.isOnSale && record.originalPrice && (
+                      <span className="original-price">
+                        ${record.originalPrice}
+                      </span>
+                    )}
+                    <span className="current-price">${record.price}</span>
+                  </div>
+                )}
               </div>
             </Link>
             <button
@@ -116,17 +143,35 @@ export const ShopPage: React.FC = () => {
       <div className="shop-container">
         <div className="shop-header">
           <h1>{t('shop.title')}</h1>
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder={t('shop.searchPlaceholder')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
+          <div className="header-controls">
+            <div className="search-container">
+              <input
+                type="text"
+                placeholder={t('shop.searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+            </div>
+            <button
+              className="filter-toggle"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              {t('shop.filter.title')}
+            </button>
           </div>
         </div>
-        {renderContent()}
+
+        <div className="shop-content">
+          <div className={`filters-sidebar ${showFilters ? 'show' : ''}`}>
+            <ShopFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+            />
+          </div>
+          <div className="records-section">{renderContent()}</div>
+        </div>
       </div>
     </section>
   );

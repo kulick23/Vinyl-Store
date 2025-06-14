@@ -93,7 +93,6 @@
     "title": "Политика конфиденциальности",
     "update": "Последнее обновление 27 января 2022 года"
   },
-
   "shop": {
     "title": "Магазин виниловых пластинок",
     "searchPlaceholder": "Поиск по названию, исполнителю или жанру...",
@@ -104,9 +103,33 @@
     "noRecords": "В магазине пока нет пластинок",
     "filter": {
       "title": "Фильтр",
+      "clear": "Очистить все",
       "price": "Цена",
+      "priceRange": "Диапазон цен",
+      "minPrice": "Мин. цена",
+      "maxPrice": "Макс. цена",
       "genre": "Жанр",
-      "sortBy": "Сортировать по"
+      "allGenres": "Все жанры",
+      "artist": "Исполнитель",
+      "allArtists": "Все исполнители",
+      "yearRange": "Диапазон лет",
+      "yearFrom": "С года",
+      "yearTo": "По год",
+      "condition": "Состояние",
+      "allConditions": "Все состояния",
+      "poor": "Плохое (P)",
+      "fair": "Удовлетворительное (F)",
+      "good": "Хорошее (G)",
+      "veryGood": "Очень хорошее (VG)",
+      "nearMint": "Почти новое (NM)",
+      "mint": "Новое (M)",
+      "sortBy": "Сортировать по",
+      "titleAsc": "Название А-Я",
+      "titleDesc": "Название Я-А",
+      "priceAsc": "Цена по возрастанию",
+      "priceDesc": "Цена по убыванию",
+      "yearAsc": "Год старые-новые",
+      "yearDesc": "Год новые-старые"
     },
     "errors": {
       "title": "Что-то пошло не так",
@@ -122,6 +145,7 @@
     "backToShop": "Вернуться в магазин",
     "addToCart": "В корзину",
     "quantity": "Количество",
+    "available": "доступно",
     "description": "Описание",
     "details": "Детали товара",
     "artist": "Исполнитель",
@@ -134,7 +158,8 @@
     "outOfStock": "Нет в наличии",
     "price": "Цена",
     "originalPrice": "Первоначальная цена",
-    "sale": "СКИДКА"
+    "sale": "СКИДКА",
+    "availableListings": "Доступные предложения"
   },
   "login": {
     "title": "Войти в аккаунт",
@@ -155,6 +180,36 @@
       "emailInvalid": "Введите корректный email",
       "passwordRequired": "Пароль обязателен",
       "loginFailed": "Неверный email или пароль"
+    }
+  },
+  "signup": {
+    "title": "Создать аккаунт",
+    "subtitle": "Присоединяйтесь к нашему сообществу любителей винила и начните собирать свою коллекцию уже сегодня.",
+    "firstNameLabel": "Имя",
+    "firstNamePlaceholder": "Введите ваше имя",
+    "lastNameLabel": "Фамилия",
+    "lastNamePlaceholder": "Введите вашу фамилию",
+    "emailLabel": "Адрес электронной почты",
+    "emailPlaceholder": "Введите ваш email",
+    "passwordLabel": "Пароль",
+    "passwordPlaceholder": "Создайте пароль",
+    "confirmPasswordLabel": "Подтвердите пароль",
+    "confirmPasswordPlaceholder": "Подтвердите ваш пароль",
+    "agreeToTerms": "Я согласен с",
+    "termsLink": "Условиями обслуживания и Политикой конфиденциальности",
+    "signUpButton": "Создать аккаунт",
+    "haveAccount": "Уже есть аккаунт?",
+    "signInLink": "Войти",
+    "errors": {
+      "firstNameRequired": "Имя обязательно",
+      "lastNameRequired": "Фамилия обязательна",
+      "emailRequired": "Email обязателен",
+      "emailInvalid": "Введите корректный email",
+      "passwordRequired": "Пароль обязателен",
+      "passwordTooShort": "Пароль должен содержать минимум 6 символов",
+      "passwordMismatch": "Пароли не совпадают",
+      "agreeToTerms": "Вы должны согласиться с условиями",
+      "registrationFailed": "Регистрация не удалась. Попробуйте снова."
     }
   }
 }

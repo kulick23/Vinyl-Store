@@ -26,10 +26,20 @@
   padding: 20px var(--pading);
   border-bottom: 1px solid #454521;
 
+  @include bp.phone {
+    padding: 15px var(--pading);
+    flex-wrap: wrap;
+  }
+
   &__container {
     display: flex;
     align-items: center;
     gap: 15vw;
+
+    @include bp.phone {
+      gap: 20px;
+      flex: 1;
+    }
 
     &--logo {
       display: flex;
@@ -40,12 +50,35 @@
         height: 20px;
         width: 20px;
       }
+
+      h4 {
+        @include bp.phone {
+          font-size: 14px;
+        }
+      }
     }
 
     &--link {
       display: flex;
       align-items: center;
       gap: 24px;
+
+      @include bp.phone {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--background-color);
+        border-top: 1px solid #454521;
+        padding: 20px var(--pading);
+        flex-direction: column;
+        gap: 16px;
+
+        &.mobile-menu-open {
+          display: flex;
+        }
+      }
     }
   }
 
@@ -54,9 +87,17 @@
     align-items: center;
     gap: 20px;
 
+    @include bp.phone {
+      gap: 12px;
+    }
+
     &--lang {
       display: flex;
       gap: 3px;
+
+      @include bp.phone {
+        display: none;
+      }
     }
 
     img {
@@ -75,6 +116,11 @@
       position: relative;
       cursor: pointer;
 
+      @include bp.phone {
+        width: 32px;
+        height: 32px;
+      }
+
       img {
         position: absolute;
         width: 16px;
@@ -84,15 +130,18 @@
         transition:
           transform 0.2s,
           z-index 0.2s;
+
+        @include bp.phone {
+          width: 14px;
+          height: 14px;
+        }
       }
 
-      // смещаем «фон»-иконку чуть вправо/вниз от центра
       img:nth-of-type(2) {
         transform: translate(calc(-50% + 8px), calc(-50% + 7px));
         z-index: 1;
       }
 
-      // активная иконка ровно по центру
       img.on-top {
         transform: translate(-50%, -50%);
         z-index: 2;
@@ -103,9 +152,30 @@
     color: var(--text-color);
     text-decoration: none;
     transition: color 0.2s;
+    font-size: 16px;
+
+    @include bp.phone {
+      font-size: 18px;
+      padding: 8px 0;
+    }
 
     &--active {
       color: var(--orange-color);
+    }
+  }
+
+  &__mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px;
+    height: auto;
+
+    @include bp.phone {
+      display: block;
     }
   }
 }

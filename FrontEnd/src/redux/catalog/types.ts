@@ -2,12 +2,13 @@ export interface VinylRecord {
   id: number;
   title: string;
   artist: string;
-  price: number;
-  imageUrl: string;
+  year: number;
   genre?: string;
+  price?: number;
+  imageUrl?: string;
+  isOnSale?: boolean;
+  originalPrice?: number | null;
   releaseYear?: number;
-  isOnSale: boolean;
-  originalPrice: number | null;
 }
 
 export interface Genre {
@@ -22,13 +23,29 @@ export interface Artist {
 
 export interface Listing {
   id: number;
+  releaseId: number;
+  sellerId: number;
+  sellerDisplayName: string;
   price: number;
+  quantity: number;
   condition: number;
-  [key: string]: any;
+  sellerRating: number;
+  notes?: string;
 }
 
-// Если в будущем понадобится обёртка из API
 export interface ReleaseResponse {
   release: VinylRecord;
   listings: Listing[];
+}
+
+export interface FilterOptions {
+  keyword?: string;
+  artistId?: number;
+  genreId?: number;
+  yearFrom?: number;
+  yearTo?: number;
+  priceMin?: number;
+  priceMax?: number;
+  condition?: number;
+  includePrice?: boolean;
 }

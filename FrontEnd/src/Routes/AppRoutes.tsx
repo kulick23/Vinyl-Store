@@ -7,6 +7,7 @@ import PolicyPage from '../Pages/PolicyPage/PolicyPage';
 import ShopPage from '../Pages/ShopPage/ShopPage';
 import ProductPage from '../Pages/ProductPage/ProductPage';
 import LoginPage from '../Pages/LoginPage/LoginPage';
+import SignupPage from '../Pages/SignupPage/SignupPage';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/shop" element={<ShopPage />} />
       <Route path="/product/:id" element={<ProductPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
       <Route path="*" element={<div>Page Not Found</div>} />
     </Routes>
   );

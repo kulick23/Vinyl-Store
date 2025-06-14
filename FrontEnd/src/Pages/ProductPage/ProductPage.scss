@@ -11,6 +11,7 @@
   @include bp.phone {
     padding: 0 20px;
     margin-top: 80px;
+    gap: 20px;
   }
 }
 
@@ -42,7 +43,7 @@
 
   @include bp.phone {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 30px;
   }
 }
 
@@ -86,6 +87,10 @@
   flex-direction: column;
   gap: 32px;
 
+  @include bp.phone {
+    gap: 24px;
+  }
+
   .product-header {
     display: flex;
     flex-direction: column;
@@ -99,7 +104,7 @@
       margin: 0;
 
       @include bp.phone {
-        font-size: 36px;
+        font-size: 32px;
       }
     }
 
@@ -243,8 +248,9 @@
       transition:
         background-color 0.3s,
         transform 0.2s;
+      height: auto;
 
-      &:hover {
+      &:hover:not(:disabled) {
         background-color: var(--orange-hover);
         transform: translateY(-2px);
       }
@@ -319,6 +325,82 @@
       color: var(--text-color);
     }
   }
+
+  .listings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    h3 {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--title-color);
+      margin: 0;
+    }
+
+    .listings-grid {
+      display: grid;
+      gap: 16px;
+
+      .listing-card {
+        background-color: var(--cover-color);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(229, 89, 46, 0.1);
+
+        @include bp.phone {
+          padding: 16px;
+        }
+
+        .listing-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+
+          .listing-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--orange-color);
+          }
+
+          .listing-condition {
+            font-size: 14px;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+          }
+        }
+
+        .listing-details {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+
+          .seller-name {
+            font-weight: 500;
+            color: var(--title-color);
+            margin: 0;
+          }
+
+          .seller-rating,
+          .quantity {
+            font-size: 14px;
+            color: var(--text-color);
+            margin: 0;
+          }
+
+          .listing-notes {
+            font-size: 14px;
+            color: var(--text-color);
+            font-style: italic;
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
 }
 
 .loading-spinner,
@@ -333,6 +415,12 @@
   font-size: 18px;
   text-align: center;
   gap: 20px;
+
+  @include bp.phone {
+    min-height: 300px;
+    font-size: 16px;
+    padding: 20px;
+  }
 }
 
 .error-message,
@@ -341,6 +429,10 @@
   border-radius: 12px;
   border: 1px solid var(--orange-color);
   padding: 40px;
+
+  @include bp.phone {
+    padding: 20px;
+  }
 
   p:first-child {
     color: var(--orange-color);
