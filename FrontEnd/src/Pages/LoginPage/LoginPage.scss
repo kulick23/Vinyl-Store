@@ -1,0 +1,377 @@
+@use '../../Styles/breakpoints.scss' as bp;
+
+.loginpage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 140px);
+  padding: 40px var(--pading);
+  margin-top: 100px;
+
+  @include bp.phone {
+    padding: 20px;
+    margin-top: 80px;
+    min-height: calc(100vh - 100px);
+  }
+}
+
+.login-container {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--background-color);
+  border-radius: 16px;
+  padding: 48px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(229, 89, 46, 0.1);
+  position: relative;
+  overflow: hidden;
+
+  @include bp.phone {
+    padding: 32px 24px;
+    border-radius: 12px;
+    max-width: 100%;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      rgba(229, 89, 46, 0.05) 0%,
+      transparent 70%
+    );
+    animation: rotate 20s linear infinite;
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.vinyl-animation {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+
+  @include bp.phone {
+    margin-bottom: 24px;
+  }
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+
+  @include bp.phone {
+    margin-bottom: 32px;
+  }
+
+  .login-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--title-color);
+    margin-bottom: 12px;
+
+    @include bp.phone {
+      font-size: 28px;
+    }
+  }
+
+  .login-subtitle {
+    font-size: 16px;
+    color: var(--text-color);
+    opacity: 0.8;
+    line-height: 1.5;
+
+    @include bp.phone {
+      font-size: 14px;
+    }
+  }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @include bp.phone {
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .form-label {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--title-color);
+
+      @include bp.phone {
+        font-size: 14px;
+      }
+    }
+
+    .form-input {
+      padding: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      transition:
+        border-color 0.3s,
+        box-shadow 0.3s;
+
+      @include bp.phone {
+        padding: 14px;
+        font-size: 14px;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: var(--orange-color);
+        box-shadow: 0 0 0 3px rgba(229, 89, 46, 0.1);
+      }
+
+      &::placeholder {
+        color: var(--text-color);
+        opacity: 0.5;
+      }
+
+      &.error {
+        border-color: #ef4444;
+      }
+    }
+
+    .error-message {
+      color: #ef4444;
+      font-size: 14px;
+      margin-top: 4px;
+
+      @include bp.phone {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px 0;
+
+    @include bp.phone {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-color);
+
+      @include bp.phone {
+        font-size: 12px;
+      }
+
+      input[type='checkbox'] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--orange-color);
+      }
+    }
+
+    .forgot-password {
+      font-size: 14px;
+      color: var(--orange-color);
+      text-decoration: none;
+      transition: opacity 0.3s;
+
+      @include bp.phone {
+        font-size: 12px;
+      }
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .login-button {
+    width: 100%;
+    padding: 16px;
+    background-color: var(--orange-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition:
+      background-color 0.3s,
+      transform 0.2s;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    @include bp.phone {
+      padding: 14px;
+      font-size: 14px;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: var(--orange-hover);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  margin: 32px 0;
+  color: var(--text-color);
+  opacity: 0.6;
+
+  @include bp.phone {
+    margin: 24px 0;
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: currentColor;
+    opacity: 0.3;
+  }
+
+  span {
+    padding: 0 16px;
+    font-size: 14px;
+
+    @include bp.phone {
+      font-size: 12px;
+      padding: 0 12px;
+    }
+  }
+}
+
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .google-login-button {
+    width: 100%;
+    padding: 16px;
+    background-color: white;
+    color: #333;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: auto;
+
+    @include bp.phone {
+      padding: 14px;
+      font-size: 14px;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: var(--orange-color);
+      box-shadow: 0 0 0 3px rgba(229, 89, 46, 0.1);
+    }
+
+    &::before {
+      content: 'G';
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(45deg, #4285f4, #34a853, #fbbc05, #ea4335);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+  }
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 14px;
+  color: var(--text-color);
+
+  @include bp.phone {
+    margin-top: 24px;
+    font-size: 12px;
+  }
+
+  a {
+    color: var(--orange-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+.login-error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  color: #ef4444;
+  font-size: 14px;
+  text-align: center;
+
+  @include bp.phone {
+    padding: 12px;
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

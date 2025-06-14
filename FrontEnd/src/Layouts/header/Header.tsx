@@ -1,135 +1,156 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
-import logo from '../../Assets/icons/logo.svg';
-import cart from '../../Assets/icons/cart.svg';
-import dark from '../../Assets/icons/dark.svg';
-import light from '../../Assets/icons/light.svg';
-import search from '../../Assets/icons/search.svg';
-import './Header.scss';
+"use client"
+
+import type React from "react"
+import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
+import { NavLink, Link } from "react-router-dom"
+import { useGetCurrentUserQuery } from "../../redux/auth/api"
+import { useGetCartQuery } from "../../redux/cart/api"
+import logo from "../../Assets/icons/logo.svg"
+import cart from "../../Assets/icons/cart.svg"
+import dark from "../../Assets/icons/dark.svg"
+import light from "../../Assets/icons/light.svg"
+import search from "../../Assets/icons/search.svg"
+import "./Header.scss"
 
 export const Header: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [scrollDir, setScrollDir] = useState<'up' | 'down'>('up');
-  const [pastThreshold, setPastThreshold] = useState(false);
+  const { t, i18n } = useTranslation()
+  const [isDarkTheme, setIsDarkTheme] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [scrollDir, setScrollDir] = useState<"up" | "down">("up")
+  const [pastThreshold, setPastThreshold] = useState(false)
 
-  const changeLanguage = (lng: 'en' | 'ru') => {
-    i18n.changeLanguage(lng);
-  };
+  // Check if user is logged in
+  const token = localStorage.getItem("accessToken")
+  const { data: user } = useGetCurrentUserQuery(undefined, {
+    skip: !token,
+  })
+  const { data: cartItems = [] } = useGetCartQuery(undefined, {
+    skip: !token,
+  })
+
+  const changeLanguage = (lng: "en" | "ru") => {
+    i18n.changeLanguage(lng)
+  }
 
   useEffect(() => {
-    document.documentElement.setAttribute(
-      'data-theme',
-      isDarkTheme ? 'dark' : 'light'
-    );
-  }, [isDarkTheme]);
+    document.documentElement.setAttribute("data-theme", isDarkTheme ? "dark" : "light")
+  }, [isDarkTheme])
 
   useEffect(() => {
-    let lastY = window.scrollY;
+    let lastY = window.scrollY
     const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 0);
+      const y = window.scrollY
+      setScrolled(y > 0)
       if (y > 150) {
-        setPastThreshold(true);
-        setScrollDir(y > lastY ? 'down' : 'up');
+        setPastThreshold(true)
+        setScrollDir(y > lastY ? "down" : "up")
       } else {
-        setPastThreshold(false);
+        setPastThreshold(false)
       }
-      lastY = y;
-    };
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+      lastY = y
+    }
+    window.addEventListener("scroll", onScroll)
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
-  const toggleTheme = () => setIsDarkTheme((prev) => !prev);
+  const toggleTheme = () => setIsDarkTheme((prev) => !prev)
 
-  const isHidden = pastThreshold && scrollDir === 'down';
+  const isHidden = pastThreshold && scrollDir === "down"
 
   return (
-    <header
-      className={`header ${scrolled ? 'scrolled' : ''} ${
-        isHidden ? 'hide' : 'show'
-      }`}
-    >
+    <header className={`header ${scrolled ? "scrolled" : ""} ${isHidden ? "hide" : "show"}`}>
       <div className="header__container">
         <div className="header__container--logo">
-          <img src={logo} alt="Logo" />
+          <img src={logo || "/placeholder.svg"} alt="Logo" />
           <h4>Vinyl Haven</h4>
         </div>
         <div className="header__container--link">
           <NavLink
             to="/"
             end
-            className={({ isActive }) =>
-              isActive ? 'header__link header__link--active' : 'header__link'
-            }
+            className={({ isActive }) => (isActive ? "header__link header__link--active" : "header__link")}
           >
-            {t('header.home')}
+            {t("header.home")}
           </NavLink>
           <NavLink
             to="/shop"
-            className={({ isActive }) =>
-              isActive ? 'header__link header__link--active' : 'header__link'
-            }
+            className={({ isActive }) => (isActive ? "header__link header__link--active" : "header__link")}
           >
-            {t('header.shop')}
+            {t("header.shop")}
           </NavLink>
           <NavLink
             to="/about"
-            className={({ isActive }) =>
-              isActive ? 'header__link header__link--active' : 'header__link'
-            }
+            className={({ isActive }) => (isActive ? "header__link header__link--active" : "header__link")}
           >
-            {t('header.about')}
+            {t("header.about")}
           </NavLink>
           <NavLink
             to="/contact"
-            className={({ isActive }) =>
-              isActive ? 'header__link header__link--active' : 'header__link'
-            }
+            className={({ isActive }) => (isActive ? "header__link header__link--active" : "header__link")}
           >
-            {t('header.contact')}
+            {t("header.contact")}
           </NavLink>
         </div>
       </div>
       <div className="header__widgets">
         <div className="header__widgets--lang">
-          <button className="empty-button" onClick={() => changeLanguage('en')}>
+          <button className="empty-button" onClick={() => changeLanguage("en")}>
             EN
           </button>
           <p>|</p>
-          <button className="empty-button" onClick={() => changeLanguage('ru')}>
+          <button className="empty-button" onClick={() => changeLanguage("ru")}>
             RU
           </button>
         </div>
         <button className="button-img">
-          <img src={search} alt="search" />
-        </button>
-        <button className="button-img">
-          <img src={cart} alt="cart" />
-        </button>
-        <button
-          onClick={toggleTheme}
-          className="header__widgets--theme button-img"
-        >
-          <img
-            src={light}
-            alt="light theme"
-            className={isDarkTheme ? 'on-top' : ''}
-          />
-          <img
-            src={dark}
-            alt="dark theme"
-            className={!isDarkTheme ? 'on-top' : ''}
-          />
+          <img src={search || "/placeholder.svg"} alt="search" />
         </button>
 
-        <a>{t('buttons.signIn')}</a>
+        {user && (
+          <Link to="/cart" className="button-img" style={{ position: "relative" }}>
+            <img src={cart || "/placeholder.svg"} alt="cart" />
+            {cartItems.length > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  backgroundColor: "var(--orange-color)",
+                  color: "white",
+                  borderRadius: "50%",
+                  width: "20px",
+                  height: "20px",
+                  fontSize: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                {cartItems.length}
+              </span>
+            )}
+          </Link>
+        )}
+
+        <button onClick={toggleTheme} className="header__widgets--theme button-img">
+          <img src={light || "/placeholder.svg"} alt="light theme" className={isDarkTheme ? "on-top" : ""} />
+          <img src={dark || "/placeholder.svg"} alt="dark theme" className={!isDarkTheme ? "on-top" : ""} />
+        </button>
+
+        {user ? (
+          <Link to="/profile" className="header__link">
+            {user.firstName}
+          </Link>
+        ) : (
+          <Link to="/login" className="header__link">
+            {t("buttons.signIn")}
+          </Link>
+        )}
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

@@ -8,6 +8,7 @@
   --title-color: #0e0e07;
   --text-color: #454521;
   --orange-color: #e5592e;
+  --orange-color-rgb: 229, 89, 46;
   --orange-hover: #cc4f29;
   --pading: 45px;
   --component-gap: 140px;
@@ -16,12 +17,18 @@
   --icon-filter: none;
   --white-button-text: #0e0e07;
   --white-button-hover: #adc388;
+
+  @include bp.phone {
+    --pading: 20px;
+    --component-gap: 80px;
+  }
 }
 
 [data-theme='dark'] {
   --title-color: #ffffff;
   --text-color: #cccccc;
   --orange-color: #e5592e;
+  --orange-color-rgb: 229, 89, 46;
   --orange-hover: #cc4f29;
   --pading: 45px;
   --component-gap: 140px;
@@ -30,6 +37,11 @@
   --icon-filter: invert(1) brightness(1.5);
   --white-button-text: white;
   --white-button-hover: #45552b;
+
+  @include bp.phone {
+    --pading: 20px;
+    --component-gap: 80px;
+  }
 }
 
 @font-face {
@@ -41,6 +53,10 @@
 
 html {
   font-size: 16px;
+
+  @include bp.phone {
+    font-size: 14px;
+  }
 }
 
 body {
@@ -49,4 +65,15 @@ body {
   margin: 0;
   font-family: Inter;
   background-color: var(--background-color);
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }

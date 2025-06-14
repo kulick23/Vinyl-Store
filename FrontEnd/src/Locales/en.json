@@ -81,7 +81,6 @@
       }
     }
   },
-
   "contact": {
     "emailPlaceholder": "Email address",
     "namePlaceholder": "Name",
@@ -94,7 +93,6 @@
     "title": "Privacy Policy",
     "update": "Last Updated  on 27th January 2022"
   },
-
   "shop": {
     "title": "Shop Vinyl Records",
     "searchPlaceholder": "Search by title, artist, or genre...",
@@ -105,9 +103,33 @@
     "noRecords": "No records available in the store yet",
     "filter": {
       "title": "Filter",
+      "clear": "Clear All",
       "price": "Price",
+      "priceRange": "Price Range",
+      "minPrice": "Min Price",
+      "maxPrice": "Max Price",
       "genre": "Genre",
-      "sortBy": "Sort by"
+      "allGenres": "All Genres",
+      "artist": "Artist",
+      "allArtists": "All Artists",
+      "yearRange": "Year Range",
+      "yearFrom": "From Year",
+      "yearTo": "To Year",
+      "condition": "Condition",
+      "allConditions": "All Conditions",
+      "poor": "Poor (P)",
+      "fair": "Fair (F)",
+      "good": "Good (G)",
+      "veryGood": "Very Good (VG)",
+      "nearMint": "Near Mint (NM)",
+      "mint": "Mint (M)",
+      "sortBy": "Sort by",
+      "titleAsc": "Title A-Z",
+      "titleDesc": "Title Z-A",
+      "priceAsc": "Price Low-High",
+      "priceDesc": "Price High-Low",
+      "yearAsc": "Year Old-New",
+      "yearDesc": "Year New-Old"
     },
     "errors": {
       "title": "Something went wrong",
@@ -116,6 +138,78 @@
       "unknown": "An unexpected error occurred. Please try again.",
       "retry": "Try Again"
     }
-
+  },
+  "product": {
+    "loading": "Loading product...",
+    "notFound": "Product not found",
+    "backToShop": "Back to Shop",
+    "addToCart": "Add to Cart",
+    "quantity": "Quantity",
+    "available": "available",
+    "description": "Description",
+    "details": "Product Details",
+    "artist": "Artist",
+    "genre": "Genre",
+    "releaseYear": "Release Year",
+    "label": "Label",
+    "format": "Format",
+    "condition": "Condition",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "price": "Price",
+    "originalPrice": "Original Price",
+    "sale": "SALE",
+    "availableListings": "Available Listings"
+  },
+  "login": {
+    "title": "Sign In to Your Account",
+    "subtitle": "Welcome back! Please enter your credentials to access your account.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "signInButton": "Sign In",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign up here",
+    "orContinueWith": "Or continue with",
+    "googleSignIn": "Continue with Google",
+    "errors": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "passwordRequired": "Password is required",
+      "loginFailed": "Invalid email or password"
+    }
+  },
+  "signup": {
+    "title": "Create Your Account",
+    "subtitle": "Join our vinyl community and start building your collection today.",
+    "firstNameLabel": "First Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastNameLabel": "Last Name",
+    "lastNamePlaceholder": "Enter your last name",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Create a password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "agreeToTerms": "I agree to the",
+    "termsLink": "Terms of Service and Privacy Policy",
+    "signUpButton": "Create Account",
+    "haveAccount": "Already have an account?",
+    "signInLink": "Sign in here",
+    "errors": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "passwordMismatch": "Passwords do not match",
+      "agreeToTerms": "You must agree to the terms and conditions",
+      "registrationFailed": "Registration failed. Please try again."
+    }
   }
 }

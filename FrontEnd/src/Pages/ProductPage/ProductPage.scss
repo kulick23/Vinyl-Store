@@ -1,0 +1,442 @@
+@use '../../Styles/breakpoints.scss' as bp;
+
+.productpage {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 0 var(--pading);
+  margin-top: 100px;
+  min-height: calc(100vh - 200px);
+
+  @include bp.phone {
+    padding: 0 20px;
+    margin-top: 80px;
+    gap: 20px;
+  }
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.3s;
+  width: fit-content;
+
+  &:hover {
+    color: var(--orange-color);
+  }
+
+  &::before {
+    content: '←';
+    font-size: 18px;
+  }
+}
+
+.product-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+
+  @include bp.phone {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+.product-image-section {
+  position: sticky;
+  top: 120px;
+
+  @include bp.phone {
+    position: static;
+  }
+
+  .product-image {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 10px 30px rgba(229, 89, 46, 0.2);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  .sale-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: var(--orange-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(229, 89, 46, 0.3);
+  }
+}
+
+.product-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  @include bp.phone {
+    gap: 24px;
+  }
+
+  .product-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .product-title {
+      font-size: 48px;
+      font-weight: bold;
+      line-height: 1.1;
+      color: var(--title-color);
+      margin: 0;
+
+      @include bp.phone {
+        font-size: 32px;
+      }
+    }
+
+    .product-artist {
+      font-size: 24px;
+      color: var(--text-color);
+      margin: 0;
+      opacity: 0.8;
+
+      @include bp.phone {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .price-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .current-price {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--orange-color);
+
+      @include bp.phone {
+        font-size: 28px;
+      }
+    }
+
+    .original-price {
+      font-size: 24px;
+      color: var(--text-color);
+      text-decoration: line-through;
+      opacity: 0.6;
+
+      @include bp.phone {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .stock-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 500;
+
+    &.in-stock {
+      color: #22c55e;
+    }
+
+    &.out-of-stock {
+      color: #ef4444;
+    }
+
+    &::before {
+      content: '●';
+      font-size: 12px;
+    }
+  }
+
+  .quantity-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .quantity-label {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--title-color);
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .quantity-input {
+        display: flex;
+        align-items: center;
+        border: 2px solid var(--text-color);
+        border-radius: 8px;
+        overflow: hidden;
+
+        button {
+          width: 40px;
+          height: 40px;
+          border: none;
+          background-color: var(--background-color);
+          color: var(--text-color);
+          font-size: 18px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background-color 0.3s;
+
+          &:hover {
+            background-color: var(--cover-color);
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+
+        input {
+          width: 60px;
+          height: 40px;
+          border: none;
+          text-align: center;
+          font-size: 16px;
+          font-weight: 500;
+          background-color: var(--background-color);
+          color: var(--text-color);
+
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+    }
+  }
+
+  .add-to-cart-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .add-to-cart-button {
+      width: 100%;
+      padding: 16px 32px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: var(--orange-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition:
+        background-color 0.3s,
+        transform 0.2s;
+      height: auto;
+
+      &:hover:not(:disabled) {
+        background-color: var(--orange-hover);
+        transform: translateY(-2px);
+      }
+
+      &:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+  }
+
+  .product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    .details-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--title-color);
+      margin: 0;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+
+      @include bp.phone {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .detail-label {
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--text-color);
+          opacity: 0.7;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+          font-size: 16px;
+          color: var(--title-color);
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .product-description {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .description-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--title-color);
+      margin: 0;
+    }
+
+    .description-text {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--text-color);
+    }
+  }
+
+  .listings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    h3 {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--title-color);
+      margin: 0;
+    }
+
+    .listings-grid {
+      display: grid;
+      gap: 16px;
+
+      .listing-card {
+        background-color: var(--cover-color);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(229, 89, 46, 0.1);
+
+        @include bp.phone {
+          padding: 16px;
+        }
+
+        .listing-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+
+          .listing-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--orange-color);
+          }
+
+          .listing-condition {
+            font-size: 14px;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+          }
+        }
+
+        .listing-details {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+
+          .seller-name {
+            font-weight: 500;
+            color: var(--title-color);
+            margin: 0;
+          }
+
+          .seller-rating,
+          .quantity {
+            font-size: 14px;
+            color: var(--text-color);
+            margin: 0;
+          }
+
+          .listing-notes {
+            font-size: 14px;
+            color: var(--text-color);
+            font-style: italic;
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+.loading-spinner,
+.error-message,
+.not-found {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  color: var(--text-color);
+  font-size: 18px;
+  text-align: center;
+  gap: 20px;
+
+  @include bp.phone {
+    min-height: 300px;
+    font-size: 16px;
+    padding: 20px;
+  }
+}
+
+.error-message,
+.not-found {
+  background-color: rgba(var(--orange-color-rgb), 0.1);
+  border-radius: 12px;
+  border: 1px solid var(--orange-color);
+  padding: 40px;
+
+  @include bp.phone {
+    padding: 20px;
+  }
+
+  p:first-child {
+    color: var(--orange-color);
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+}
