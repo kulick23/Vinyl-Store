@@ -244,7 +244,6 @@ namespace BLL.Services
             if (updateDto.LastName is not null) item.LastName = updateDto.LastName;
             if (updateDto.Email is not null) item.Email = updateDto.Email;
             if (updateDto.phone is not null) item.Phone = updateDto.phone;
-            item.IsEmailConfirmed = updateDto.isEmailConfirmed;
 
             await _unitOfWork.SaveChangesAsync();
         }

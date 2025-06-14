@@ -13,5 +13,7 @@ namespace BLL.Interfaces
         Task LogoutAllAsync(int customerId, CancellationToken ct = default);
         Task SendEmailConfirmationAsync(int customerId, CancellationToken ct);
         Task<bool> ConfirmEmailAsync(string rawToken, CancellationToken ct = default);
+        Task<CustomerUpdateDto> GetByIdAsync(int userId, CancellationToken ct);
+        Task<CustomerUpdateDto> UpdateProfileAsync(int userId, CustomerUpdateDto dto, CancellationToken ct = default);
     }
 }

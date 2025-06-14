@@ -29,5 +29,6 @@ namespace DAL.Repositories
 
         public async Task<Customer?> GetByEmailAsync(string email, CancellationToken ct = default) =>
             await _dbSet.FirstOrDefaultAsync(c => c.Email == email, ct);
+
     }
 }

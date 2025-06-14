@@ -26,7 +26,6 @@ namespace DAL.Repositories
         public Task<Customer?> GetByEmailAsync(string email, CancellationToken ct = default) =>
             _users.Include(u => u.SellerProfile)
                   .FirstOrDefaultAsync(u => u.Email == email, ct);
-
         public Task<bool> EmailExistsAsync(string email, CancellationToken ct = default) =>
             _users.AnyAsync(u => u.Email == email, ct);
 

@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using NotificationsService.Providers;
+using AutoMapper;
 
 namespace BLL.Services
 {
@@ -24,6 +25,7 @@ namespace BLL.Services
         private readonly IJwtTokenGenerator _jwt;
         private readonly IConfiguration _cfg;
         private readonly IEmailProvider _email;
+        private readonly IMapper _mapper;
 
         public AccountService(
             IAccountRepository accountRepo,
@@ -33,7 +35,8 @@ namespace BLL.Services
             IPasswordHasher<Customer> hasher,
             IJwtTokenGenerator jwt,
             IEmailProvider email,
-            IConfiguration cfg)
+            IConfiguration cfg,
+            IMapper mapper)
         {
             _accountRepo = accountRepo;
             _emailTokenRepo = emailTokenRepo;
@@ -43,8 +46,41 @@ namespace BLL.Services
             _jwt = jwt;
             _email = email;
             _cfg = cfg;
+            _mapper = mapper;
         }
 
+
+        public async Task<CustomerUpdateDto> GetByIdAsync(int userId, CancellationToken ct)
+        {
+            var customer = await _accountRepo.GetByIdAsync(userId);
+
+            if (customer == null)
+                throw new ArgumentNullException(nameof(customer));
+
+            return _mapper.Map<CustomerUpdateDto>(customer);
+        }
+
+        public async Task<CustomerUpdateDto> UpdateProfileAsync(
+        int userId,
+        CustomerUpdateDto dto,
+        CancellationToken ct = default)
+        {
+            var customer = await _accountRepo.GetByIdAsync(userId, ct)
+                           ?? throw new KeyNotFoundException("Customer not found");
+
+            if (!string.IsNullOrWhiteSpace(dto.FirstName))
+                customer.FirstName = dto.FirstName!.Trim();
+
+            if (!string.IsNullOrWhiteSpace(dto.LastName))
+                customer.LastName = dto.LastName!.Trim();
+
+            if (!string.IsNullOrWhiteSpace(dto.phone))
+                customer.Phone = dto.phone.Trim();
+
+            await _uow.SaveChangesAsync(ct);
+
+            return _mapper.Map<CustomerUpdateDto>(customer);
+        }
 
         public async Task<AuthTokensDto> RegisterAsync(RegisterDto dto, CancellationToken ct = default)
         {
