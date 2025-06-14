@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRegisterMutation } from '../../redux/auth/api';
 import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../redux/auth/authSlice';
 import './SignupPage.scss';
 
 interface SignupFormData {
@@ -28,6 +30,7 @@ interface FormErrors {
 export const SignupPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [register, { isLoading }] = useRegisterMutation();
 
   const [formData, setFormData] = useState<SignupFormData>({
@@ -107,13 +110,13 @@ export const SignupPage: React.FC = () => {
         email: formData.email,
         password: formData.password,
       }).unwrap();
-
-      // Store tokens
-      localStorage.setItem('accessToken', result.accessToken);
-      localStorage.setItem('refreshToken', result.refreshToken);
-      localStorage.setItem('accessExpiresAt', result.accessExpiresAt);
-
-      // Redirect to home page
+      // пишем в redux + localStorage
+      dispatch(
+        setCredentials({
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+        })
+      );
       navigate('/');
     } catch (error: any) {
       console.error('Registration error:', error);

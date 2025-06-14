@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '../../redux/auth/api';
 import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../redux/auth/authSlice';
 import './LoginPage.scss';
 
 interface LoginFormData {
@@ -21,6 +23,7 @@ interface FormErrors {
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginMutation();
 
   const [formData, setFormData] = useState<LoginFormData>({
@@ -78,16 +81,15 @@ export const LoginPage: React.FC = () => {
         password: formData.password,
       }).unwrap();
 
-      // Store tokens
-      localStorage.setItem('accessToken', result.accessToken);
-      localStorage.setItem('refreshToken', result.refreshToken);
-      localStorage.setItem('accessExpiresAt', result.accessExpiresAt);
-
+      dispatch(
+        setCredentials({
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+        })
+      );
       if (formData.rememberMe) {
         localStorage.setItem('rememberMe', 'true');
       }
-
-      // Redirect to home page
       navigate('/');
     } catch (error: any) {
       console.error('Login error:', error);

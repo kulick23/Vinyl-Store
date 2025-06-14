@@ -1,13 +1,17 @@
-import type React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import HomePage from '../Pages/HomePage/HomePage';
-import AboutPage from '../Pages/AboutPage/AboutPage';
-import ContactPage from '../Pages/ContactPage/ContactPage';
-import PolicyPage from '../Pages/PolicyPage/PolicyPage';
-import ShopPage from '../Pages/ShopPage/ShopPage';
-import ProductPage from '../Pages/ProductPage/ProductPage';
-import LoginPage from '../Pages/LoginPage/LoginPage';
-import SignupPage from '../Pages/SignupPage/SignupPage';
+import type React from "react"
+import { Routes, Route } from "react-router-dom"
+import HomePage from "../Pages/HomePage/HomePage"
+import AboutPage from "../Pages/AboutPage/AboutPage"
+import ContactPage from "../Pages/ContactPage/ContactPage"
+import PolicyPage from "../Pages/PolicyPage/PolicyPage"
+import ShopPage from "../Pages/ShopPage/ShopPage"
+import ProductPage from "../Pages/ProductPage/ProductPage"
+import LoginPage from "../Pages/LoginPage/LoginPage"
+import SignupPage from "../Pages/SignupPage/SignupPage"
+import ProfilePage from "../Pages/ProfilePage/ProfilePage"
+import CartPage from "../Pages/CartPage/CartPage"
+import AdminPage from "../Pages/AdminPage/AdminPage"
+import SellerPage from "../Pages/SellerPage/SellerPage"
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -20,7 +24,11 @@ export const AppRoutes: React.FC = () => {
       <Route path="/product/:id" element={<ProductPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/cart" element={<CartPage />} />
+      <Route path="/admin/*" element={<AdminPage />} />
+      <Route path="/seller/*" element={<SellerPage />} />
       <Route path="*" element={<div>Page Not Found</div>} />
     </Routes>
-  );
-};
+  )
+}
