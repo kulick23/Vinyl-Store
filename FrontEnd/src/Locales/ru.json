@@ -93,6 +93,7 @@
     "title": "Политика конфиденциальности",
     "update": "Последнее обновление 27 января 2022 года"
   },
+
   "shop": {
     "title": "Магазин виниловых пластинок",
     "searchPlaceholder": "Поиск по названию, исполнителю или жанру...",
@@ -114,6 +115,46 @@
       "unknown": "Произошла непредвиденная ошибка. Пожалуйста, попробуйте снова.",
       "retry": "Попробовать снова"
     }
-
+  },
+  "product": {
+    "loading": "Загрузка товара...",
+    "notFound": "Товар не найден",
+    "backToShop": "Вернуться в магазин",
+    "addToCart": "В корзину",
+    "quantity": "Количество",
+    "description": "Описание",
+    "details": "Детали товара",
+    "artist": "Исполнитель",
+    "genre": "Жанр",
+    "releaseYear": "Год выпуска",
+    "label": "Лейбл",
+    "format": "Формат",
+    "condition": "Состояние",
+    "inStock": "В наличии",
+    "outOfStock": "Нет в наличии",
+    "price": "Цена",
+    "originalPrice": "Первоначальная цена",
+    "sale": "СКИДКА"
+  },
+  "login": {
+    "title": "Войти в аккаунт",
+    "subtitle": "Добро пожаловать! Введите свои данные для входа в аккаунт.",
+    "emailLabel": "Адрес электронной почты",
+    "emailPlaceholder": "Введите ваш email",
+    "passwordLabel": "Пароль",
+    "passwordPlaceholder": "Введите ваш пароль",
+    "rememberMe": "Запомнить меня",
+    "forgotPassword": "Забыли пароль?",
+    "signInButton": "Войти",
+    "noAccount": "Нет аккаунта?",
+    "signUpLink": "Зарегистрироваться",
+    "orContinueWith": "Или продолжить с",
+    "googleSignIn": "Войти через Google",
+    "errors": {
+      "emailRequired": "Email обязателен",
+      "emailInvalid": "Введите корректный email",
+      "passwordRequired": "Пароль обязателен",
+      "loginFailed": "Неверный email или пароль"
+    }
   }
 }

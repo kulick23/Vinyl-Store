@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+'use client';
+
+import type React from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import logo from '../../Assets/icons/logo.svg';
 import cart from '../../Assets/icons/cart.svg';
 import dark from '../../Assets/icons/dark.svg';
@@ -49,13 +52,11 @@ export const Header: React.FC = () => {
 
   return (
     <header
-      className={`header ${scrolled ? 'scrolled' : ''} ${
-        isHidden ? 'hide' : 'show'
-      }`}
+      className={`header ${scrolled ? 'scrolled' : ''} ${isHidden ? 'hide' : 'show'}`}
     >
       <div className="header__container">
         <div className="header__container--logo">
-          <img src={logo} alt="Logo" />
+          <img src={logo || '/placeholder.svg'} alt="Logo" />
           <h4>Vinyl Haven</h4>
         </div>
         <div className="header__container--link">
@@ -105,28 +106,30 @@ export const Header: React.FC = () => {
           </button>
         </div>
         <button className="button-img">
-          <img src={search} alt="search" />
+          <img src={search || '/placeholder.svg'} alt="search" />
         </button>
         <button className="button-img">
-          <img src={cart} alt="cart" />
+          <img src={cart || '/placeholder.svg'} alt="cart" />
         </button>
         <button
           onClick={toggleTheme}
           className="header__widgets--theme button-img"
         >
           <img
-            src={light}
+            src={light || '/placeholder.svg'}
             alt="light theme"
             className={isDarkTheme ? 'on-top' : ''}
           />
           <img
-            src={dark}
+            src={dark || '/placeholder.svg'}
             alt="dark theme"
             className={!isDarkTheme ? 'on-top' : ''}
           />
         </button>
 
-        <a>{t('buttons.signIn')}</a>
+        <Link to="/login" className="header__link">
+          {t('buttons.signIn')}
+        </Link>
       </div>
     </header>
   );

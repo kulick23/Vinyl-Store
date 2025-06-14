@@ -67,6 +67,14 @@
     transform: translateY(-5px);
   }
 
+  .record-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
   .record-image {
     position: relative;
     aspect-ratio: 1;
@@ -210,4 +218,4 @@
       background-color: var(--orange-hover);
     }
   }
-} 
+}

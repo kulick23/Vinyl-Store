@@ -116,6 +116,46 @@
       "unknown": "An unexpected error occurred. Please try again.",
       "retry": "Try Again"
     }
-
+  },
+  "product": {
+    "loading": "Loading product...",
+    "notFound": "Product not found",
+    "backToShop": "Back to Shop",
+    "addToCart": "Add to Cart",
+    "quantity": "Quantity",
+    "description": "Description",
+    "details": "Product Details",
+    "artist": "Artist",
+    "genre": "Genre",
+    "releaseYear": "Release Year",
+    "label": "Label",
+    "format": "Format",
+    "condition": "Condition",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "price": "Price",
+    "originalPrice": "Original Price",
+    "sale": "SALE"
+  },
+  "login": {
+    "title": "Sign In to Your Account",
+    "subtitle": "Welcome back! Please enter your credentials to access your account.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "signInButton": "Sign In",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign up here",
+    "orContinueWith": "Or continue with",
+    "googleSignIn": "Continue with Google",
+    "errors": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "passwordRequired": "Password is required",
+      "loginFailed": "Invalid email or password"
+    }
   }
 }
