@@ -50,6 +50,26 @@
       height: 60px;
     }
   }
+
+  &.loading {
+    .loading-spinner {
+      animation: spin 1.5s linear infinite;
+      transform-origin: center;
+    }
+  }
+
+  &.success {
+    svg {
+      animation: scaleIn 0.6s ease-out;
+    }
+  }
+
+  &.error {
+    svg {
+      filter: none; // Don't apply theme filter to error icon
+      animation: shake 0.5s ease-out;
+    }
+  }
 }
 
 .approval-title {
@@ -60,6 +80,10 @@
   line-height: 1.2;
   margin: 0;
   animation: fadeInUp 0.8s ease-out 0.2s both;
+
+  &.error {
+    color: #e74c3c;
+  }
 
   @include bp.phone {
     font-size: 24px;
@@ -106,10 +130,44 @@
     transform: translateY(0);
   }
 
+  &.secondary {
+    background-color: transparent;
+    color: var(--title-color);
+    border-color: var(--title-color);
+
+    &:hover {
+      background-color: var(--title-color);
+      color: var(--background-color);
+    }
+  }
+
+  &.retry {
+    background-color: #3498db;
+    border-color: #3498db;
+
+    &:hover {
+      background-color: #2980b9;
+      border-color: #2980b9;
+    }
+  }
+
   @include bp.phone {
     padding: 14px 24px;
     font-size: 14px;
     min-width: 180px;
+  }
+}
+
+.approval-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+
+  @include bp.phone {
+    flex-direction: column;
+    gap: 12px;
   }
 }
 
@@ -136,5 +194,26 @@
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
   }
 } 
