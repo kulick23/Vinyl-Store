@@ -211,5 +211,10 @@
       "agreeToTerms": "You must agree to the terms and conditions",
       "registrationFailed": "Registration failed. Please try again."
     }
+  },
+  "approval": {
+    "title": "Your Email Confirmed",
+    "message": "Thank you for confirming your email address. Your account is now fully activated and you can start exploring our vinyl collection.",
+    "goToMainPage": "Go to Main Page"
   }
 }

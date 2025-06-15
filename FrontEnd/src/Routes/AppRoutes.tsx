@@ -12,6 +12,7 @@ import ProfilePage from "../Pages/ProfilePage/ProfilePage"
 import CartPage from "../Pages/CartPage/CartPage"
 import AdminPage from "../Pages/AdminPage/AdminPage"
 import SellerPage from "../Pages/SellerPage/SellerPage"
+import ApprovalPage from "../Pages/ApprovalPage/ApprovalPage"
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -28,6 +29,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/cart" element={<CartPage />} />
       <Route path="/admin/*" element={<AdminPage />} />
       <Route path="/seller/*" element={<SellerPage />} />
+      <Route path="/approval" element={<ApprovalPage />} />
       <Route path="*" element={<div>Page Not Found</div>} />
     </Routes>
   )
