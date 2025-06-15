@@ -1,12 +1,12 @@
 ﻿namespace BLL.DTOs
 {
-    public record CustomerDto(
-        Guid id,
-        string Email,
-        bool isEmailConfirmed,
-        string FirstName,
-        string? LastName,
-        string phone,
-        DateTime LastLoginAt,
-        DateTime CreatedAt);
+    public record class CustomerDto
+    {
+        public int Id { get; init; }
+        public string Email { get; init; } = default!;
+        public string FirstName { get; init; } = default!;
+        public string LastName { get; init; } = default!;
+        public string? Phone { get; init; }
+        public bool IsEmailConfirmed { get; init; }
+    }
 }

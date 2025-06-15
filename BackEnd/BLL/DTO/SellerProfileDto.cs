@@ -1,8 +1,9 @@
-namespace Application.DTOs
+namespace Application.DTOs;
+
+public record SellerProfileDto
 {
-    public record SellerProfileDto(
-        int SellerId,
-        string DisplayName,
-        string Description,
-        decimal Rating);
+    public int Id { get; init; }
+    public string DisplayName { get; init; } = string.Empty;
+    public string? Description { get; init; }
+    public decimal Rating { get; init; }
 }
