@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import {
   useGetAdminGenresQuery,
   useCreateAdminGenreMutation,
@@ -10,16 +11,22 @@ import {
 } from "../../redux/admin/api"
 import type { AdminGenre } from "../../redux/admin/types"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
+import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog"
+import { useNotification } from "../../hooks/useNotification"
 
 const AdminGenres: React.FC = () => {
+  const { t } = useTranslation()
   const [isCreating, setIsCreating] = useState(false)
   const [editingGenre, setEditingGenre] = useState<AdminGenre | null>(null)
   const [formData, setFormData] = useState({ name: "" })
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [genreToDelete, setGenreToDelete] = useState<number | null>(null)
 
   const { data: genres = [], isLoading, error } = useGetAdminGenresQuery()
   const [createGenre] = useCreateAdminGenreMutation()
   const [updateGenre] = useUpdateAdminGenreMutation()
   const [deleteGenre] = useDeleteAdminGenreMutation()
+  const { showSuccess, showError } = useNotification()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,13 +36,16 @@ const AdminGenres: React.FC = () => {
       if (editingGenre) {
         await updateGenre({ ...editingGenre, name: formData.name }).unwrap()
         setEditingGenre(null)
+        showSuccess(t('admin.genres.updateSuccess'))
       } else {
         await createGenre({ id: 0, name: formData.name }).unwrap()
         setIsCreating(false)
+        showSuccess(t('admin.genres.createSuccess'))
       }
       setFormData({ name: "" })
     } catch (error) {
       console.error("Failed to save genre:", error)
+      showError(t('admin.genres.saveError'))
     }
   }
 
@@ -45,14 +55,28 @@ const AdminGenres: React.FC = () => {
     setIsCreating(false)
   }
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this genre?")) {
+  const handleDeleteClick = (id: number) => {
+    setGenreToDelete(id)
+    setShowDeleteDialog(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (genreToDelete) {
       try {
-        await deleteGenre(id).unwrap()
+        await deleteGenre(genreToDelete).unwrap()
+        setShowDeleteDialog(false)
+        setGenreToDelete(null)
+        showSuccess(t('admin.genres.deleteSuccess'))
       } catch (error) {
         console.error("Failed to delete genre:", error)
+        showError(t('admin.genres.deleteError'))
       }
     }
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false)
+    setGenreToDelete(null)
   }
 
   const handleCancel = () => {
@@ -65,7 +89,7 @@ const AdminGenres: React.FC = () => {
     return (
       <div className="loading-spinner">
         <VinylSpinner size="large" />
-        <p>Loading genres...</p>
+        <p>{t('admin.genres.loading')}</p>
       </div>
     )
   }
@@ -73,7 +97,7 @@ const AdminGenres: React.FC = () => {
   if (error) {
     return (
       <div className="error-message">
-        <p>Failed to load genres. Please try again.</p>
+        <p>{t('admin.genres.loadError')}</p>
       </div>
     )
   }
@@ -81,22 +105,13 @@ const AdminGenres: React.FC = () => {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-        <h2 className="section-title">Manage Genres</h2>
+        <h2 className="section-title">{t('admin.genres.title')}</h2>
         <button
           onClick={() => setIsCreating(true)}
+          className="primary"
           disabled={isCreating || editingGenre !== null}
-          style={{
-            backgroundColor: "var(--orange-color)",
-            color: "white",
-            border: "none",
-            padding: "12px 24px",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "500",
-            height: "auto",
-          }}
         >
-          Add Genre
+          {t('admin.genres.form.createButton')}
         </button>
       </div>
 
@@ -113,22 +128,22 @@ const AdminGenres: React.FC = () => {
           }}
         >
           <div className="form-group">
-            <label htmlFor="genreName">Genre Name</label>
+            <label htmlFor="genreName">{t('admin.genres.form.name')}</label>
             <input
               type="text"
               id="genreName"
               value={formData.name}
               onChange={(e) => setFormData({ name: e.target.value })}
-              placeholder="Enter genre name"
+              placeholder={t('admin.genres.form.namePlaceholder')}
               required
             />
           </div>
           <div className="form-actions">
             <button type="submit" className="primary">
-              {editingGenre ? "Update Genre" : "Create Genre"}
+              {editingGenre ? t('admin.genres.form.updateButton') : t('admin.genres.form.createButton')}
             </button>
             <button type="button" onClick={handleCancel} className="secondary">
-              Cancel
+              {t('admin.genres.form.cancelButton')}
             </button>
           </div>
         </form>
@@ -137,9 +152,9 @@ const AdminGenres: React.FC = () => {
       <table className="admin-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Actions</th>
+            <th>{t('admin.genres.table.id')}</th>
+            <th>{t('admin.genres.table.name')}</th>
+            <th>{t('admin.genres.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -154,14 +169,14 @@ const AdminGenres: React.FC = () => {
                     className="edit"
                     disabled={isCreating || editingGenre !== null}
                   >
-                    Edit
+                    {t('admin.genres.table.editButton')}
                   </button>
                   <button
-                    onClick={() => handleDelete(genre.id)}
+                    onClick={() => handleDeleteClick(genre.id)}
                     className="delete"
                     disabled={isCreating || editingGenre !== null}
                   >
-                    Delete
+                    {t('admin.genres.table.deleteButton')}
                   </button>
                 </div>
               </td>
@@ -172,9 +187,18 @@ const AdminGenres: React.FC = () => {
 
       {genres.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--text-color)" }}>
-          <p>No genres found. Create your first genre to get started.</p>
+          <p>{t('admin.genres.noGenres')}</p>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        title={t('admin.genres.deleteConfirmTitle')}
+        message={t('admin.genres.deleteConfirmMessage')}
+        type="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   )
 }

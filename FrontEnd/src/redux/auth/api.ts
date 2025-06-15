@@ -30,12 +30,17 @@ export const authApi = createApi({
       providesTags: ['User']
     }),
     /** POST /confirm - Confirm email address */
-    confirmEmail: builder.mutation<void, string>({
+    confirmEmail: builder.mutation<string, string>({
       query: token => ({
         url: 'confirm',
         method: 'POST',
         body: JSON.stringify(token),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        responseHandler: async (response) => {
+          // Handle text response instead of JSON
+          const text = await response.text()
+          return text
+        }
       })
     }),
     /** POST /editProfile - Edit user profile */

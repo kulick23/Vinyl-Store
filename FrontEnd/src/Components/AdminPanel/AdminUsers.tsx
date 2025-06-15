@@ -2,11 +2,15 @@
 
 import type React from "react"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useGetAdminUsersQuery, useUpdateAdminUserMutation, useDeleteAdminUserMutation } from "../../redux/admin/api"
 import type { AdminUser } from "../../redux/admin/types"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
+import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog"
+import { useNotification } from "../../hooks/useNotification"
 
 const AdminUsers: React.FC = () => {
+  const { t } = useTranslation()
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null)
   const [formData, setFormData] = useState({
     email: "",
@@ -15,10 +19,13 @@ const AdminUsers: React.FC = () => {
     phone: "",
     isEmailConfirmed: false,
   })
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [userToDelete, setUserToDelete] = useState<string | null>(null)
 
   const { data: users = [], isLoading, error } = useGetAdminUsersQuery()
   const [updateUser] = useUpdateAdminUserMutation()
   const [deleteUser] = useDeleteAdminUserMutation()
+  const { showSuccess, showError } = useNotification()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,8 +44,10 @@ const AdminUsers: React.FC = () => {
       }).unwrap()
       setEditingUser(null)
       setFormData({ email: "", firstName: "", lastName: "", phone: "", isEmailConfirmed: false })
+      showSuccess(t('admin.users.updateSuccess'))
     } catch (error) {
       console.error("Failed to update user:", error)
+      showError(t('admin.users.updateError'))
     }
   }
 
@@ -53,14 +62,28 @@ const AdminUsers: React.FC = () => {
     })
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
+  const handleDeleteClick = (id: string) => {
+    setUserToDelete(id)
+    setShowDeleteDialog(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (userToDelete) {
       try {
-        await deleteUser(id).unwrap()
+        await deleteUser(userToDelete).unwrap()
+        setShowDeleteDialog(false)
+        setUserToDelete(null)
+        showSuccess(t('admin.users.deleteSuccess'))
       } catch (error) {
         console.error("Failed to delete user:", error)
+        showError(t('admin.users.deleteError'))
       }
     }
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false)
+    setUserToDelete(null)
   }
 
   const handleCancel = () => {
@@ -72,7 +95,7 @@ const AdminUsers: React.FC = () => {
     return (
       <div className="loading-spinner">
         <VinylSpinner size="large" />
-        <p>Loading users...</p>
+        <p>{t('admin.users.loading')}</p>
       </div>
     )
   }
@@ -80,7 +103,7 @@ const AdminUsers: React.FC = () => {
   if (error) {
     return (
       <div className="error-message">
-        <p>Failed to load users. Please try again.</p>
+        <p>{t('admin.users.loadError')}</p>
       </div>
     )
   }
@@ -88,7 +111,7 @@ const AdminUsers: React.FC = () => {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-        <h2 className="section-title">Manage Users</h2>
+        <h2 className="section-title">{t('admin.users.title')}</h2>
       </div>
 
       {editingUser && (
@@ -104,46 +127,46 @@ const AdminUsers: React.FC = () => {
           }}
         >
           <div className="form-group">
-            <label htmlFor="userEmail">Email</label>
+            <label htmlFor="userEmail">{t('admin.users.form.email')}</label>
             <input
               type="email"
               id="userEmail"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="Enter email"
+              placeholder={t('admin.users.form.emailPlaceholder')}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="userFirstName">First Name</label>
+            <label htmlFor="userFirstName">{t('admin.users.form.firstName')}</label>
             <input
               type="text"
               id="userFirstName"
               value={formData.firstName}
               onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-              placeholder="Enter first name"
+              placeholder={t('admin.users.form.firstNamePlaceholder')}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="userLastName">Last Name</label>
+            <label htmlFor="userLastName">{t('admin.users.form.lastName')}</label>
             <input
               type="text"
               id="userLastName"
               value={formData.lastName}
               onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-              placeholder="Enter last name"
+              placeholder={t('admin.users.form.lastNamePlaceholder')}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="userPhone">Phone</label>
+            <label htmlFor="userPhone">{t('admin.users.form.phone')}</label>
             <input
               type="tel"
               id="userPhone"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder="Enter phone number"
+              placeholder={t('admin.users.form.phonePlaceholder')}
             />
           </div>
           <div className="form-group">
@@ -153,15 +176,15 @@ const AdminUsers: React.FC = () => {
                 checked={formData.isEmailConfirmed}
                 onChange={(e) => setFormData({ ...formData, isEmailConfirmed: e.target.checked })}
               />
-              Email Confirmed
+              {t('admin.users.form.emailConfirmed')}
             </label>
           </div>
           <div className="form-actions">
             <button type="submit" className="primary">
-              Update User
+              {t('admin.users.form.updateButton')}
             </button>
             <button type="button" onClick={handleCancel} className="secondary">
-              Cancel
+              {t('admin.users.form.cancelButton')}
             </button>
           </div>
         </form>
@@ -170,13 +193,13 @@ const AdminUsers: React.FC = () => {
       <table className="admin-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Email</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Email Confirmed</th>
-            <th>Last Login</th>
-            <th>Actions</th>
+            <th>{t('admin.users.table.id')}</th>
+            <th>{t('admin.users.table.email')}</th>
+            <th>{t('admin.users.table.name')}</th>
+            <th>{t('admin.users.table.phone')}</th>
+            <th>{t('admin.users.table.emailConfirmed')}</th>
+            <th>{t('admin.users.table.lastLogin')}</th>
+            <th>{t('admin.users.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -187,16 +210,16 @@ const AdminUsers: React.FC = () => {
               <td>
                 {user.firstName} {user.lastName}
               </td>
-              <td>{user.phone || "N/A"}</td>
+              <td>{user.phone || t('admin.users.table.notAvailable')}</td>
               <td>{user.isEmailConfirmed ? "✅" : "❌"}</td>
               <td>{new Date(user.lastLoginAt).toLocaleDateString()}</td>
               <td>
                 <div className="action-buttons">
                   <button onClick={() => handleEdit(user)} className="edit" disabled={editingUser !== null}>
-                    Edit
+                    {t('admin.users.table.editButton')}
                   </button>
-                  <button onClick={() => handleDelete(user.id)} className="delete" disabled={editingUser !== null}>
-                    Delete
+                  <button onClick={() => handleDeleteClick(user.id)} className="delete" disabled={editingUser !== null}>
+                    {t('admin.users.table.deleteButton')}
                   </button>
                 </div>
               </td>
@@ -207,9 +230,18 @@ const AdminUsers: React.FC = () => {
 
       {users.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--text-color)" }}>
-          <p>No users found.</p>
+          <p>{t('admin.users.noUsers')}</p>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        title={t('admin.users.deleteConfirmTitle')}
+        message={t('admin.users.deleteConfirmMessage')}
+        type="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   )
 }

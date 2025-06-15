@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import {
   useGetAdminSellersQuery,
   useCreateAdminSellerMutation,
@@ -10,8 +11,11 @@ import {
 } from "../../redux/admin/api"
 import type { AdminSeller } from "../../redux/admin/types"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
+import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog"
+import { useNotification } from "../../hooks/useNotification"
 
 const AdminSellers: React.FC = () => {
+  const { t } = useTranslation()
   const [isCreating, setIsCreating] = useState(false)
   const [editingSeller, setEditingSeller] = useState<AdminSeller | null>(null)
   const [formData, setFormData] = useState({
@@ -20,11 +24,14 @@ const AdminSellers: React.FC = () => {
     description: "",
     rating: 5,
   })
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [sellerToDelete, setSellerToDelete] = useState<number | null>(null)
 
   const { data: sellers = [], isLoading, error } = useGetAdminSellersQuery()
   const [createSeller] = useCreateAdminSellerMutation()
   const [updateSeller] = useUpdateAdminSellerMutation()
   const [deleteSeller] = useDeleteAdminSellerMutation()
+  const { showSuccess, showError } = useNotification()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,13 +49,16 @@ const AdminSellers: React.FC = () => {
       if (editingSeller) {
         await updateSeller(sellerData).unwrap()
         setEditingSeller(null)
+        showSuccess(t('admin.sellers.updateSuccess'))
       } else {
         await createSeller(sellerData).unwrap()
         setIsCreating(false)
+        showSuccess(t('admin.sellers.updateSuccess'))
       }
       setFormData({ sellerId: 0, displayName: "", description: "", rating: 5 })
     } catch (error) {
       console.error("Failed to save seller:", error)
+      showError(t('admin.sellers.updateError'))
     }
   }
 
@@ -63,14 +73,28 @@ const AdminSellers: React.FC = () => {
     setIsCreating(false)
   }
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this seller?")) {
+  const handleDeleteClick = (id: number) => {
+    setSellerToDelete(id)
+    setShowDeleteDialog(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (sellerToDelete) {
       try {
-        await deleteSeller(id).unwrap()
+        await deleteSeller(sellerToDelete).unwrap()
+        setShowDeleteDialog(false)
+        setSellerToDelete(null)
+        showSuccess(t('admin.sellers.deleteSuccess'))
       } catch (error) {
         console.error("Failed to delete seller:", error)
+        showError(t('admin.sellers.deleteError'))
       }
     }
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false)
+    setSellerToDelete(null)
   }
 
   const handleCancel = () => {
@@ -83,7 +107,7 @@ const AdminSellers: React.FC = () => {
     return (
       <div className="loading-spinner">
         <VinylSpinner size="large" />
-        <p>Loading sellers...</p>
+        <p>{t('admin.sellers.loading')}</p>
       </div>
     )
   }
@@ -91,7 +115,7 @@ const AdminSellers: React.FC = () => {
   if (error) {
     return (
       <div className="error-message">
-        <p>Failed to load sellers. Please try again.</p>
+        <p>{t('admin.sellers.loadError')}</p>
       </div>
     )
   }
@@ -99,22 +123,13 @@ const AdminSellers: React.FC = () => {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-        <h2 className="section-title">Manage Sellers</h2>
+        <h2 className="section-title">{t('admin.sellers.title')}</h2>
         <button
           onClick={() => setIsCreating(true)}
+          className="primary"
           disabled={isCreating || editingSeller !== null}
-          style={{
-            backgroundColor: "var(--orange-color)",
-            color: "white",
-            border: "none",
-            padding: "12px 24px",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "500",
-            height: "auto",
-          }}
         >
-          Add Seller
+          {t('admin.sellers.form.updateButton')}
         </button>
       </div>
 
@@ -142,13 +157,13 @@ const AdminSellers: React.FC = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="displayName">Display Name</label>
+            <label htmlFor="displayName">{t('admin.sellers.form.name')}</label>
             <input
               type="text"
               id="displayName"
               value={formData.displayName}
               onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-              placeholder="Enter display name"
+              placeholder={t('admin.sellers.form.namePlaceholder')}
               required
             />
           </div>
@@ -158,7 +173,7 @@ const AdminSellers: React.FC = () => {
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Enter seller description"
+              placeholder="Enter description"
               required
             />
           </div>
@@ -177,10 +192,10 @@ const AdminSellers: React.FC = () => {
           </div>
           <div className="form-actions">
             <button type="submit" className="primary">
-              {editingSeller ? "Update Seller" : "Create Seller"}
+              {t('admin.sellers.form.updateButton')}
             </button>
             <button type="button" onClick={handleCancel} className="secondary">
-              Cancel
+              {t('admin.sellers.form.cancelButton')}
             </button>
           </div>
         </form>
@@ -189,12 +204,12 @@ const AdminSellers: React.FC = () => {
       <table className="admin-table">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>{t('admin.sellers.table.id')}</th>
             <th>Seller ID</th>
-            <th>Display Name</th>
+            <th>{t('admin.sellers.table.name')}</th>
             <th>Description</th>
             <th>Rating</th>
-            <th>Actions</th>
+            <th>{t('admin.sellers.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -212,14 +227,14 @@ const AdminSellers: React.FC = () => {
                     className="edit"
                     disabled={isCreating || editingSeller !== null}
                   >
-                    Edit
+                    {t('admin.sellers.table.editButton')}
                   </button>
                   <button
-                    onClick={() => handleDelete(seller.id)}
+                    onClick={() => handleDeleteClick(seller.id)}
                     className="delete"
                     disabled={isCreating || editingSeller !== null}
                   >
-                    Delete
+                    {t('admin.sellers.table.deleteButton')}
                   </button>
                 </div>
               </td>
@@ -230,9 +245,18 @@ const AdminSellers: React.FC = () => {
 
       {sellers.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--text-color)" }}>
-          <p>No sellers found. Create your first seller to get started.</p>
+          <p>{t('admin.sellers.noSellers')}</p>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        title={t('admin.sellers.deleteConfirmTitle')}
+        message={t('admin.sellers.deleteConfirmMessage')}
+        type="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   )
 }

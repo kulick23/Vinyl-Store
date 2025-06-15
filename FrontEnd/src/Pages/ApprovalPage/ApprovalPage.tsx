@@ -16,26 +16,59 @@ export const ApprovalPage: React.FC = () => {
 
   useEffect(() => {
     const handleConfirmEmail = async () => {
-      const token = searchParams.get('token');
+      const rawToken = searchParams.get('token');
       const email = searchParams.get('email');
       
+      console.log('Raw token from URL:', rawToken);
+      
       // If there's no token but there's an email, user just registered
-      if (!token && email) {
+      if (!rawToken && email) {
         setState('success');
         return;
       }
       
-      if (!token) {
+      if (!rawToken) {
         setState('invalid');
         return;
       }
 
+      // URL decode the token in case it contains special characters
+      const token = decodeURIComponent(rawToken);
+      console.log('Decoded token:', token);
+      
+      // Additional fix for Base64 tokens: replace spaces with plus signs
+      // This handles cases where + got converted to space during URL transmission
+      const fixedToken = token.replace(/ /g, '+');
+      console.log('Fixed token (spaces->plus):', fixedToken);
+
       try {
-        await confirmEmail(token).unwrap();
+        const result = await confirmEmail(fixedToken).unwrap();
+        console.log('Email confirmation success:', result);
         setState('success');
       } catch (error: any) {
         console.error('Email confirmation error:', error);
-        setErrorMessage(error.data?.message || t('approval.error.confirmationFailed'));
+        
+        // Handle different types of errors
+        let userFriendlyMessage = t('approval.error.confirmationFailed');
+        
+        if (error.status === 500) {
+          userFriendlyMessage = t('approval.error.serverError');
+        } else if (error.status === 400) {
+          userFriendlyMessage = t('approval.error.invalidToken');
+        } else if (error.status === 404) {
+          userFriendlyMessage = t('approval.error.tokenNotFound');
+        } else if (error.originalStatus === 200 && error.status === 'PARSING_ERROR') {
+          // This was actually successful but had a JSON parsing error
+          console.log('Email confirmation successful despite parsing error');
+          setState('success');
+          return;
+        } else if (error.originalStatus === 500 && error.status === 'PARSING_ERROR') {
+          userFriendlyMessage = t('approval.error.serverError');
+        } else if (error.data?.message) {
+          userFriendlyMessage = error.data.message;
+        }
+        
+        setErrorMessage(userFriendlyMessage);
         setState('error');
       }
     };
@@ -49,15 +82,45 @@ export const ApprovalPage: React.FC = () => {
 
   const handleRetry = async () => {
     setState('loading');
-    const token = searchParams.get('token');
+    const rawToken = searchParams.get('token');
     
-    if (token) {
+    if (rawToken) {
+      // URL decode the token in case it contains special characters
+      const token = decodeURIComponent(rawToken);
+      console.log('Retry with decoded token:', token);
+      
+      // Additional fix for Base64 tokens: replace spaces with plus signs
+      const fixedToken = token.replace(/ /g, '+');
+      console.log('Retry with fixed token (spaces->plus):', fixedToken);
+      
       try {
-        await confirmEmail(token).unwrap();
+        const result = await confirmEmail(fixedToken).unwrap();
+        console.log('Email confirmation retry success:', result);
         setState('success');
       } catch (error: any) {
         console.error('Email confirmation retry error:', error);
-        setErrorMessage(error.data?.message || t('approval.error.confirmationFailed'));
+        
+        // Handle different types of errors
+        let userFriendlyMessage = t('approval.error.confirmationFailed');
+        
+        if (error.status === 500) {
+          userFriendlyMessage = t('approval.error.serverError');
+        } else if (error.status === 400) {
+          userFriendlyMessage = t('approval.error.invalidToken');
+        } else if (error.status === 404) {
+          userFriendlyMessage = t('approval.error.tokenNotFound');
+        } else if (error.originalStatus === 200 && error.status === 'PARSING_ERROR') {
+          // This was actually successful but had a JSON parsing error
+          console.log('Email confirmation retry successful despite parsing error');
+          setState('success');
+          return;
+        } else if (error.originalStatus === 500 && error.status === 'PARSING_ERROR') {
+          userFriendlyMessage = t('approval.error.serverError');
+        } else if (error.data?.message) {
+          userFriendlyMessage = error.data.message;
+        }
+        
+        setErrorMessage(userFriendlyMessage);
         setState('error');
       }
     }

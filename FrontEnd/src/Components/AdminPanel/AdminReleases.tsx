@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import {
   useGetAdminReleasesQuery,
   useCreateAdminReleaseMutation,
@@ -11,8 +12,11 @@ import {
 import { useGetAdminArtistsQuery, useGetAdminGenresQuery } from "../../redux/admin/api"
 import type { AdminRelease } from "../../redux/admin/types"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
+import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog"
+import { useNotification } from "../../hooks/useNotification"
 
 const AdminReleases: React.FC = () => {
+  const { t } = useTranslation()
   const [isCreating, setIsCreating] = useState(false)
   const [editingRelease, setEditingRelease] = useState<AdminRelease | null>(null)
   const [formData, setFormData] = useState({
@@ -21,6 +25,8 @@ const AdminReleases: React.FC = () => {
     artist: "",
     genre: "",
   })
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [releaseToDelete, setReleaseToDelete] = useState<number | null>(null)
 
   const { data: releases = [], isLoading, error } = useGetAdminReleasesQuery()
   const { data: artists = [] } = useGetAdminArtistsQuery()
@@ -28,10 +34,11 @@ const AdminReleases: React.FC = () => {
   const [createRelease] = useCreateAdminReleaseMutation()
   const [updateRelease] = useUpdateAdminReleaseMutation()
   const [deleteRelease] = useDeleteAdminReleaseMutation()
+  const { showSuccess, showError } = useNotification()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.title.trim() || !formData.artist || !formData.genre) return
+    if (!formData.title.trim() || !formData.artist.trim() || !formData.genre.trim()) return
 
     try {
       const releaseData = {
@@ -43,15 +50,27 @@ const AdminReleases: React.FC = () => {
       }
 
       if (editingRelease) {
-        await updateRelease(releaseData).unwrap()
+        await updateRelease({
+          id: editingRelease.id,
+          data: {
+            title: formData.title,
+            year: formData.year,
+            artistId: 1, // TODO: Implement proper artist selection
+            genreId: 1, // TODO: Implement proper genre selection
+            listings: []
+          }
+        }).unwrap()
         setEditingRelease(null)
+        showSuccess(t('admin.releases.updateSuccess'))
       } else {
         await createRelease(releaseData).unwrap()
         setIsCreating(false)
+        showSuccess(t('admin.releases.createSuccess'))
       }
       setFormData({ title: "", year: new Date().getFullYear(), artist: "", genre: "" })
     } catch (error) {
       console.error("Failed to save release:", error)
+      showError(t('admin.releases.saveError'))
     }
   }
 
@@ -66,14 +85,28 @@ const AdminReleases: React.FC = () => {
     setIsCreating(false)
   }
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this release?")) {
+  const handleDeleteClick = (id: number) => {
+    setReleaseToDelete(id)
+    setShowDeleteDialog(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (releaseToDelete) {
       try {
-        await deleteRelease(id).unwrap()
+        await deleteRelease(releaseToDelete).unwrap()
+        setShowDeleteDialog(false)
+        setReleaseToDelete(null)
+        showSuccess(t('admin.releases.deleteSuccess'))
       } catch (error) {
         console.error("Failed to delete release:", error)
+        showError(t('admin.releases.deleteError'))
       }
     }
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false)
+    setReleaseToDelete(null)
   }
 
   const handleCancel = () => {
@@ -86,7 +119,7 @@ const AdminReleases: React.FC = () => {
     return (
       <div className="loading-spinner">
         <VinylSpinner size="large" />
-        <p>Loading releases...</p>
+        <p>{t('admin.releases.loading')}</p>
       </div>
     )
   }
@@ -94,7 +127,7 @@ const AdminReleases: React.FC = () => {
   if (error) {
     return (
       <div className="error-message">
-        <p>Failed to load releases. Please try again.</p>
+        <p>{t('admin.releases.loadError')}</p>
       </div>
     )
   }
@@ -102,22 +135,13 @@ const AdminReleases: React.FC = () => {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-        <h2 className="section-title">Manage Releases</h2>
+        <h2 className="section-title">{t('admin.releases.title')}</h2>
         <button
           onClick={() => setIsCreating(true)}
+          className="primary"
           disabled={isCreating || editingRelease !== null}
-          style={{
-            backgroundColor: "var(--orange-color)",
-            color: "white",
-            border: "none",
-            padding: "12px 24px",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "500",
-            height: "auto",
-          }}
         >
-          Add Release
+          {t('admin.releases.form.createButton')}
         </button>
       </div>
 
@@ -134,66 +158,57 @@ const AdminReleases: React.FC = () => {
           }}
         >
           <div className="form-group">
-            <label htmlFor="releaseTitle">Title</label>
+            <label htmlFor="releaseTitle">{t('admin.releases.form.title')}</label>
             <input
               type="text"
               id="releaseTitle"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Enter release title"
+              placeholder={t('admin.releases.form.titlePlaceholder')}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="releaseYear">Year</label>
+            <label htmlFor="releaseYear">{t('admin.releases.form.year')}</label>
             <input
               type="number"
               id="releaseYear"
               value={formData.year}
               onChange={(e) => setFormData({ ...formData, year: Number(e.target.value) })}
+              placeholder={t('admin.releases.form.yearPlaceholder')}
               min="1900"
               max={new Date().getFullYear() + 1}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="releaseArtist">Artist</label>
-            <select
+            <label htmlFor="releaseArtist">{t('admin.releases.form.artist')}</label>
+            <input
+              type="text"
               id="releaseArtist"
               value={formData.artist}
               onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+              placeholder={t('admin.releases.form.artistPlaceholder')}
               required
-            >
-              <option value="">Select an artist</option>
-              {artists.map((artist) => (
-                <option key={artist.id} value={artist.name}>
-                  {artist.name}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div className="form-group">
-            <label htmlFor="releaseGenre">Genre</label>
-            <select
+            <label htmlFor="releaseGenre">{t('admin.releases.form.genre')}</label>
+            <input
+              type="text"
               id="releaseGenre"
               value={formData.genre}
               onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
+              placeholder={t('admin.releases.form.genrePlaceholder')}
               required
-            >
-              <option value="">Select a genre</option>
-              {genres.map((genre) => (
-                <option key={genre.id} value={genre.name}>
-                  {genre.name}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div className="form-actions">
             <button type="submit" className="primary">
-              {editingRelease ? "Update Release" : "Create Release"}
+              {editingRelease ? t('admin.releases.form.updateButton') : t('admin.releases.form.createButton')}
             </button>
             <button type="button" onClick={handleCancel} className="secondary">
-              Cancel
+              {t('admin.releases.form.cancelButton')}
             </button>
           </div>
         </form>
@@ -202,12 +217,12 @@ const AdminReleases: React.FC = () => {
       <table className="admin-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Artist</th>
-            <th>Genre</th>
-            <th>Year</th>
-            <th>Actions</th>
+            <th>{t('admin.releases.table.id')}</th>
+            <th>{t('admin.releases.table.title')}</th>
+            <th>{t('admin.releases.table.artist')}</th>
+            <th>{t('admin.releases.table.genre')}</th>
+            <th>{t('admin.releases.table.year')}</th>
+            <th>{t('admin.releases.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -225,14 +240,14 @@ const AdminReleases: React.FC = () => {
                     className="edit"
                     disabled={isCreating || editingRelease !== null}
                   >
-                    Edit
+                    {t('admin.releases.table.editButton')}
                   </button>
                   <button
-                    onClick={() => handleDelete(release.id)}
+                    onClick={() => handleDeleteClick(release.id)}
                     className="delete"
                     disabled={isCreating || editingRelease !== null}
                   >
-                    Delete
+                    {t('admin.releases.table.deleteButton')}
                   </button>
                 </div>
               </td>
@@ -243,9 +258,18 @@ const AdminReleases: React.FC = () => {
 
       {releases.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--text-color)" }}>
-          <p>No releases found. Create your first release to get started.</p>
+          <p>{t('admin.releases.noReleases')}</p>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        title={t('admin.releases.deleteConfirmTitle')}
+        message={t('admin.releases.deleteConfirmMessage')}
+        type="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   )
 }

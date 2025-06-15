@@ -10,6 +10,7 @@ import { useGetOrdersQuery } from "../../redux/orders/api"
 import { clearCredentials } from "../../redux/auth/authSlice"
 import { useDispatch } from "react-redux"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
+import { useNotification } from "../../hooks/useNotification"
 import "./UserProfile.scss"
 
 type ProfileSection = "overview" | "orders" | "cart" | "settings"
@@ -34,6 +35,7 @@ export const UserProfile: React.FC = () => {
     skip: !user,
   })
   const [editProfile, { isLoading: isUpdating }] = useEditProfileMutation()
+  const { showSuccess, showError } = useNotification()
 
   // Get cart items from CartDto structure
   const cart = cartData?.items || []
@@ -75,8 +77,10 @@ export const UserProfile: React.FC = () => {
     try {
       await editProfile(formData).unwrap()
       setIsEditing(false)
+      showSuccess("Profile updated successfully!")
     } catch (error) {
       console.error('Failed to update profile:', error)
+      showError("Failed to update profile. Please try again.")
     }
   }
 
