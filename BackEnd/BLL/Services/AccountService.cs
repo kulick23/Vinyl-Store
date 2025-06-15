@@ -173,7 +173,7 @@ namespace BLL.Services
                 ExpiresAt = DateTime.UtcNow.AddHours(24)
             }, ct);
 
-            var link = $"{_cfg["Frontend:BaseUrl"]}/confirm?token={raw}";
+            var link = $"http://localhost:3000/approval?token={raw}";
             var body = $"""
         <p>Hello!</p>
         <p>For email confirmation press:
