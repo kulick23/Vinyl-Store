@@ -5,7 +5,9 @@ export function createBaseQuery(args: FetchBaseQueryArgs) {
     credentials: 'include',
     prepareHeaders: headers => {
       const token = localStorage.getItem('accessToken')
-      if (token) headers.set('Authorization', `Bearer ${token}`)
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`)
+      }
       return headers
     },
     ...args

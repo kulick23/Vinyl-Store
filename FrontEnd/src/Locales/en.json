@@ -217,6 +217,10 @@
       "title": "Confirming Your Email",
       "message": "Please wait while we verify your email address..."
     },
+    "registration": {
+      "title": "Registration Successful!",
+      "message": "Thank you for signing up! We've sent a confirmation email to {{email}}. Please check your inbox and click the confirmation link to activate your account."
+    },
     "success": {
       "title": "Your Email Confirmed",
       "message": "Thank you for confirming your email address. Your account is now fully activated and you can start exploring our vinyl collection."
@@ -233,5 +237,87 @@
       "message": "This confirmation link is invalid or missing required information. Please check your email for the correct link."
     },
     "goToMainPage": "Go to Main Page"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "clear": "Clear"
+  },
+  "confirmDialog": {
+    "clearCart": {
+      "title": "Clear Cart",
+      "message": "Are you sure you want to clear your cart? This action cannot be undone."
+    },
+    "deleteItem": {
+      "title": "Delete Item",
+      "message": "Are you sure you want to delete this item? This action cannot be undone."
+    }
+  },
+  "notifications": {
+    "loginRequired": "Please log in to add items to cart",
+    "itemAdded": "Item added to cart!",
+    "itemAddedWithDetails": "Added {{quantity}} x {{title}} to cart!",
+    "itemAddFailed": "Failed to add item to cart.",
+    "orderPlaced": "Order placed successfully!",
+    "orderFailed": "Failed to place order. Please try again.",
+    "googleLoginDemo": "Google login would be implemented here",
+    "cartCleared": "Cart cleared successfully",
+    "cartClearFailed": "Failed to clear cart",
+    "itemRemoved": "Item removed from cart",
+    "itemRemoveFailed": "Failed to remove item from cart",
+    "quantityUpdated": "Quantity updated",
+    "quantityUpdateFailed": "Failed to update quantity"
+  },
+  "profile": {
+    "pageTitle": "My Profile",
+    "navigation": "Navigation",
+    "overview": "Overview",
+    "orders": "My Orders",
+    "cart": "My Cart",
+    "settings": "Settings",
+    "accountOverview": "Account Overview",
+    "accountInformation": "Account Information",
+    "personalInformation": "Personal Information",
+    "accountStatus": "Account Status",
+    "totalOrders": "Total Orders",
+    "itemsInCart": "Items in Cart",
+    "activeRoles": "Active Roles",
+    "memberSince": "Member since",
+    "lastLogin": "Last login",
+    "emailConfirmed": "Confirmed",
+    "emailNotConfirmed": "Not confirmed",
+    "phone": "Phone",
+    "notProvided": "Not provided",
+    "email": "Email",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "roles": "Roles",
+    "adminPanel": "Admin Panel",
+    "sellerDashboard": "Seller Dashboard",
+    "logout": "Logout",
+    "noOrders": "You haven't placed any orders yet.",
+    "startShopping": "Start shopping",
+    "cartEmpty": "Your cart is empty.",
+    "orderNumber": "Order #{{number}}",
+    "items": "Items",
+    "shipping": "Shipping",
+    "payment": "Payment",
+    "itemId": "Item ID",
+    "quantity": "Quantity",
+    "settingsComingSoon": "Settings functionality coming soon...",
+    "editProfile": "Edit Profile",
+    "changePassword": "Change Password",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "theme": "Theme",
+    "lightTheme": "Switch to Light Theme",
+    "darkTheme": "Switch to Dark Theme",
+    "language": "Language",
+    "saveChanges": "Save Changes",
+    "accountActions": "Account Actions",
+    "releaseTitle": "Release",
+    "unitPrice": "Unit Price",
+    "lineTotal": "Line Total"
   }
 }

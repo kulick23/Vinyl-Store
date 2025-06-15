@@ -23,9 +23,9 @@ export interface User {
   lastName: string
   phone?: string
   isEmailConfirmed: boolean
-  roles: string[]
+  role?: string
   lastLoginAt: string
   createdAt: string
 }
 
-export type UserRole = "Admin" | "Seller" | "Customer"
+export type UserRole = "Admin" | "Seller" | "Customer" | "User"

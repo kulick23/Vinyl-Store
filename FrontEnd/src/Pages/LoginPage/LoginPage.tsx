@@ -6,6 +6,7 @@ import { useLoginMutation } from '../../redux/auth/api';
 import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../redux/auth/authSlice';
+import { useNotification } from '../../hooks/useNotification';
 import './LoginPage.scss';
 
 interface LoginFormData {
@@ -25,6 +26,7 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginMutation();
+  const { showInfo } = useNotification();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -102,7 +104,7 @@ export const LoginPage: React.FC = () => {
   const handleGoogleLogin = () => {
     // Here you would implement Google OAuth login
     console.log('Google login clicked');
-    alert('Google login would be implemented here');
+    showInfo('notifications.googleLoginDemo');
   };
 
   return (

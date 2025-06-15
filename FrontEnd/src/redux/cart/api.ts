@@ -1,19 +1,17 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { CartItem, CartItemPayload } from './types'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import { createBaseQuery } from '../base'
+import type { CartDto, CartItemPayload } from './types'
 
 export const cartApi = createApi({
   reducerPath: 'cartApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: '/api/Cart',
-    credentials: 'include'
-  }),
+  baseQuery: createBaseQuery({ baseUrl: '/api/Cart' }),
   tagTypes: ['Cart'],
   endpoints: builder => ({
     /**
      * GET /api/Cart
-     * Response: CartItem[]
+     * Response: CartDto
      */
-    getCart: builder.query<CartItem[], void>({
+    getCart: builder.query<CartDto, void>({
       query: () => '',
       providesTags: ['Cart']
     }),

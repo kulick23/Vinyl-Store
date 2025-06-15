@@ -12,42 +12,22 @@ import {
 } from "../../redux/cart/api"
 import { useGetInventoryByIdQuery } from "../../redux/inventory/api"
 import { useCreateOrderMutation } from "../../redux/orders/api"
+import { useNotification } from "../../hooks/useNotification"
+import { ConfirmDialog } from "../ConfirmDialog"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
+import type { CartItemDto } from "../../redux/cart/types"
 import "./Cart.scss"
 
-interface CartItemWithDetails {
-  id: number
-  inventoryItemId: number
-  quantity: number
-  inventoryItem?: {
-    id: number
-    releaseId: number
-    price: number
-    condition: number
-    notes?: string
-  }
-}
-
 const CartItemComponent: React.FC<{
-  item: CartItemWithDetails
+  item: CartItemDto
   onUpdateQuantity: (itemId: number, quantity: number) => void
   onRemove: (itemId: number) => void
 }> = ({ item, onUpdateQuantity, onRemove }) => {
   const { data: inventoryItem } = useGetInventoryByIdQuery(item.inventoryItemId)
 
-  if (!inventoryItem) {
-    return (
-      <div className="cart-item">
-        <div className="loading-spinner">
-          <VinylSpinner size="small" />
-        </div>
-      </div>
-    )
-  }
-
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity > 0) {
-      onUpdateQuantity(item.id, newQuantity)
+      onUpdateQuantity(item.cartItemId, newQuantity)
     }
   }
 
@@ -55,10 +35,9 @@ const CartItemComponent: React.FC<{
     <div className="cart-item">
       <img src="/placeholder.svg?height=120&width=120" alt="Vinyl Record" className="item-image" />
       <div className="item-details">
-        <h3 className="item-title">Vinyl Record #{inventoryItem.releaseId}</h3>
-        <p className="item-artist">Release ID: {inventoryItem.releaseId}</p>
-        <p className="item-price">${inventoryItem.price}</p>
-        {inventoryItem.notes && <p className="item-notes">{inventoryItem.notes}</p>}
+        <h3 className="item-title">{item.releaseTitle}</h3>
+        <p className="item-artist">Inventory Item ID: {item.inventoryItemId}</p>
+        <p className="item-price">${item.unitPrice}</p>
         <div className="item-controls">
           <div className="quantity-controls">
             <button onClick={() => handleQuantityChange(item.quantity - 1)} disabled={item.quantity <= 1}>
@@ -72,7 +51,7 @@ const CartItemComponent: React.FC<{
             />
             <button onClick={() => handleQuantityChange(item.quantity + 1)}>+</button>
           </div>
-          <button className="remove-button" onClick={() => onRemove(item.id)}>
+          <button className="remove-button" onClick={() => onRemove(item.cartItemId)}>
             Remove
           </button>
         </div>
@@ -84,12 +63,18 @@ const CartItemComponent: React.FC<{
 export const Cart: React.FC = () => {
   const { t } = useTranslation()
   const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
+  const { showSuccess, showError } = useNotification()
 
-  const { data: cartItems = [], isLoading } = useGetCartQuery()
+  const { data: cartData, isLoading } = useGetCartQuery()
   const [clearCart] = useClearCartMutation()
   const [updateCartItem] = useUpdateCartItemMutation()
   const [deleteCartItem] = useDeleteCartItemMutation()
   const [createOrder] = useCreateOrderMutation()
+
+  // Get cart items and total from CartDto structure
+  const cartItems = cartData?.items || []
+  const cartTotal = cartData?.grandTotal || 0
 
   const handleUpdateQuantity = async (itemId: number, quantity: number) => {
     try {
@@ -107,14 +92,23 @@ export const Cart: React.FC = () => {
     }
   }
 
-  const handleClearCart = async () => {
-    if (window.confirm("Are you sure you want to clear your cart?")) {
-      try {
-        await clearCart().unwrap()
-      } catch (error) {
-        console.error("Failed to clear cart:", error)
-      }
+  const handleClearCartClick = () => {
+    setShowClearConfirm(true)
+  }
+
+  const handleClearCartConfirm = async () => {
+    setShowClearConfirm(false)
+    try {
+      await clearCart().unwrap()
+      showSuccess("notifications.cartCleared")
+    } catch (error) {
+      console.error("Failed to clear cart:", error)
+      showError("notifications.cartClearFailed")
     }
+  }
+
+  const handleClearCartCancel = () => {
+    setShowClearConfirm(false)
   }
 
   const handleCheckout = async () => {
@@ -134,10 +128,10 @@ export const Cart: React.FC = () => {
       }).unwrap()
 
       await clearCart().unwrap()
-      alert("Order placed successfully!")
+      showSuccess("notifications.orderPlaced")
     } catch (error) {
       console.error("Failed to create order:", error)
-      alert("Failed to place order. Please try again.")
+      showError("notifications.orderFailed")
     } finally {
       setIsCheckingOut(false)
     }
@@ -169,26 +163,36 @@ export const Cart: React.FC = () => {
     )
   }
 
-  // Calculate totals (simplified - in real app you'd fetch inventory details)
-  const subtotal = cartItems.length * 25 // Placeholder calculation
+  // Use the actual cart total from backend or calculate simple totals
   const shipping = 5.99
-  const tax = subtotal * 0.08
-  const total = subtotal + shipping + tax
+  const tax = cartTotal * 0.08
+  const total = cartTotal + shipping + tax
 
   return (
     <div className="cart-page">
       <div className="cart-header">
         <h1>Shopping Cart ({cartItems.length} items)</h1>
-        <button className="clear-cart-button" onClick={handleClearCart} disabled={cartItems.length === 0}>
+        <button className="clear-cart-button" onClick={handleClearCartClick} disabled={cartItems.length === 0}>
           Clear Cart
         </button>
       </div>
+
+      <ConfirmDialog
+        isOpen={showClearConfirm}
+        title={t("confirmDialog.clearCart.title")}
+        message={t("confirmDialog.clearCart.message")}
+        confirmText={t("common.clear")}
+        cancelText={t("common.cancel")}
+        onConfirm={handleClearCartConfirm}
+        onCancel={handleClearCartCancel}
+        type="warning"
+      />
 
       <div className="cart-content">
         <div className="cart-items">
           {cartItems.map((item) => (
             <CartItemComponent
-              key={item.id}
+              key={item.cartItemId}
               item={item}
               onUpdateQuantity={handleUpdateQuantity}
               onRemove={handleRemoveItem}
@@ -201,7 +205,7 @@ export const Cart: React.FC = () => {
           <div className="summary-details">
             <div className="summary-row">
               <span>Subtotal:</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>${cartTotal.toFixed(2)}</span>
             </div>
             <div className="summary-row">
               <span>Shipping:</span>

@@ -25,7 +25,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, requiredRole, re
       return
     }
 
-    if (user && requiredRole && !user.roles.includes(requiredRole)) {
+    if (user && requiredRole && user.role !== requiredRole) {
       navigate("/")
       return
     }
@@ -46,7 +46,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, requiredRole, re
     )
   }
 
-  if (!user || (requiredRole && !user.roles.includes(requiredRole))) {
+  if (!user || (requiredRole && user.role !== requiredRole)) {
     return null
   }
 

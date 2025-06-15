@@ -6,6 +6,7 @@ import {
   useGetReleaseByIdQuery,
   useGetReleaseListingsQuery,
 } from '../../redux/catalog/api';
+import { useNotification } from '../../hooks/useNotification';
 import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
 import './ProductPage.scss';
 
@@ -28,6 +29,7 @@ const ProductPage: React.FC = () => {
   } = useGetReleaseListingsQuery({ id: releaseId }, { skip });
 
   const [quantity, setQuantity] = useState(1);
+  const { showSuccess } = useNotification();
 
   const product = useMemo(() => {
     if (!releaseData?.release) {
@@ -185,7 +187,7 @@ const ProductPage: React.FC = () => {
               className="add-to-cart-button"
               disabled={!product.inStock}
               onClick={() =>
-                alert(`Added ${quantity} x ${product.title} to cart`)
+                showSuccess("notifications.itemAddedWithDetails", { quantity, title: product.title })
               }
             >
               {product.inStock

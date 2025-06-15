@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useConfirmEmailMutation } from '../../redux/auth/api';
 import './ApprovalPage.scss';
 
 type ConfirmationState = 'loading' | 'success' | 'error' | 'invalid';
@@ -9,12 +10,20 @@ export const ApprovalPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [confirmEmail] = useConfirmEmailMutation();
   const [state, setState] = useState<ConfirmationState>('loading');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
-    const confirmEmail = async () => {
+    const handleConfirmEmail = async () => {
       const token = searchParams.get('token');
+      const email = searchParams.get('email');
+      
+      // If there's no token but there's an email, user just registered
+      if (!token && email) {
+        setState('success');
+        return;
+      }
       
       if (!token) {
         setState('invalid');
@@ -22,57 +31,35 @@ export const ApprovalPage: React.FC = () => {
       }
 
       try {
-        const response = await fetch('/api/auth/confirm', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ token }),
-        });
-
-        if (response.ok) {
-          setState('success');
-        } else {
-          const errorData = await response.json();
-          setErrorMessage(errorData.message || t('approval.error.confirmationFailed'));
-          setState('error');
-        }
-      } catch (error) {
+        await confirmEmail(token).unwrap();
+        setState('success');
+      } catch (error: any) {
         console.error('Email confirmation error:', error);
-        setErrorMessage(t('approval.error.networkError'));
+        setErrorMessage(error.data?.message || t('approval.error.confirmationFailed'));
         setState('error');
       }
     };
 
-    confirmEmail();
-  }, [searchParams, t]);
+    handleConfirmEmail();
+  }, [searchParams, t, confirmEmail]);
 
   const handleGoToMainPage = () => {
     navigate('/');
   };
 
-  const handleRetry = () => {
+  const handleRetry = async () => {
     setState('loading');
-    // Re-trigger the confirmation
     const token = searchParams.get('token');
+    
     if (token) {
-      fetch('/api/auth/confirm', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),
-      })
-        .then(response => {
-          if (response.ok) {
-            setState('success');
-          } else {
-            setState('error');
-          }
-        })
-        .catch(() => {
-          setState('error');
-        });
+      try {
+        await confirmEmail(token).unwrap();
+        setState('success');
+      } catch (error: any) {
+        console.error('Email confirmation retry error:', error);
+        setErrorMessage(error.data?.message || t('approval.error.confirmationFailed'));
+        setState('error');
+      }
     }
   };
 
@@ -173,13 +160,19 @@ export const ApprovalPage: React.FC = () => {
         );
 
       case 'success':
+        const email = searchParams.get('email');
+        const token = searchParams.get('token');
+        
         return (
           <>
             <h1 className="approval-title">
-              {t('approval.success.title')}
+              {token ? t('approval.success.title') : t('approval.registration.title')}
             </h1>
             <p className="approval-message">
-              {t('approval.success.message')}
+              {token 
+                ? t('approval.success.message') 
+                : t('approval.registration.message', { email: email || 'your email' })
+              }
             </p>
             <button 
               className="approval-button"
