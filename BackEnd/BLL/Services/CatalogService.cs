@@ -39,8 +39,7 @@ namespace Application.Services.Implementation
         {
             IQueryable<RecordRelease> releasesQuery = _releaseRepo.Query()
                 .Include(r => r.Artist)
-                .Include(r => r.Genre)
-                .Include(r => r.ImageUrl); 
+                .Include(r => r.Genre);
 
             if (!string.IsNullOrWhiteSpace(query.Keyword))
                 releasesQuery = releasesQuery.Where(r => EF.Functions.ILike(r.Title, $"%{query.Keyword}%"));

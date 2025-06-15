@@ -5,6 +5,7 @@ using System.Text;
 using Web.Api.Extensions;
 using DAL.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -47,6 +48,14 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+var imagesPath = Path.Combine(app.Environment.ContentRootPath, "images");
+Directory.CreateDirectory(imagesPath);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(imagesPath),
+    RequestPath = "/images"
+});
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

@@ -17,10 +17,11 @@ namespace BLL.AutoMapper
                 .ForMember(d => d.Genre, m => m.Ignore());
 
             CreateMap<RecordRelease, ReleaseDto>()
-                .ForMember(d => d.Artist,
-                           opt => opt.MapFrom(s => s.Artist.Name))
-                .ForMember(d => d.Genre,
-                           opt => opt.MapFrom(s => s.Genre.Name));
+                .ForMember(d => d.Artist, m => m.MapFrom(s => s.Artist.Name))
+                .ForMember(d => d.Genre, m => m.MapFrom(s => s.Genre.Name));
+
+            CreateMap<ReleaseCreateDto, RecordRelease>();
+
         }
     }
 }

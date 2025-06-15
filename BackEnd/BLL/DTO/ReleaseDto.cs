@@ -7,5 +7,6 @@ namespace Application.DTOs
         public int Year { get; init; }
         public string Artist { get; init; } = default!;
         public string Genre { get; init; } = default!;
+        public string? ImageUrl { get; init; } = default!;
     }
 }

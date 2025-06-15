@@ -2,6 +2,7 @@
 using BLL.DTO;
 using BLL.DTOs;
 using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace BLL.Interfaces
 {
@@ -30,6 +31,9 @@ namespace BLL.Interfaces
         Task<IReadOnlyList<ReleaseDto>> GetAllReleasesAsync(CancellationToken ct = default);
         Task UpdateReleaseAsync(int releaseId, ReleaseUpdateDto updateDto, CancellationToken ct = default);
         Task DeleteReleaseAsync(int releaseId, CancellationToken ct = default);
-        Task<ReleaseDto> CreateReleaseAsync(ReleaseDto createDto, CancellationToken ct = default);
+        Task<ReleaseDto> CreateReleaseAsync(ReleaseCreateDto dto, CancellationToken ct = default);
+        Task UpdateReleaseImageAsync(int releaseId, IFormFile file, CancellationToken ct = default);
+
+
     }
 }

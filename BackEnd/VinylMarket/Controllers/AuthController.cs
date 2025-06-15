@@ -16,10 +16,12 @@ namespace VinylMarket.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAccountService _account;
+        private readonly IWishlistService _wishlistService;
 
-        public AuthController(IAccountService account)
+        public AuthController(IAccountService account, IWishlistService wishlistService)
         {
             _account = account;
+            _wishlistService = wishlistService;
         }
         
         [HttpPost("register")]
@@ -54,6 +56,45 @@ namespace VinylMarket.Controllers
 
             return Ok(user);
         }
+
+        [HttpGet("wishlist")]
+        public async Task<IActionResult> GetMyWishlist(CancellationToken ct)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (userId is 0)
+            {
+                throw new UnauthorizedAccessException("No sub claim");
+            }
+
+            var list = await _wishlistService.GetWishlistAsync(userId, ct);
+            return Ok(list);
+        }
+
+        [HttpPost("wishlist/{releaseId:int}")]
+        public async Task<IActionResult> Add(int releaseId, CancellationToken ct)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (userId is 0)
+            {
+                throw new UnauthorizedAccessException("No sub claim");
+            }
+
+            await _wishlistService.AddAsync(userId, releaseId, ct);
+            return NoContent();
+        }
+
+        [HttpDelete("wishlist/{releaseId:int}")]
+        public async Task<IActionResult> Remove(int releaseId, CancellationToken ct)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (userId is 0)
+            {
+                throw new UnauthorizedAccessException("No sub claim");
+            }
+            await _wishlistService.RemoveAsync(userId, releaseId, ct);
+            return NoContent();
+        }
+
 
         [HttpPost("editProfile")]
         public async Task<IActionResult> EditProfile(

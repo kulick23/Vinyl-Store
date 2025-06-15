@@ -30,5 +30,17 @@ namespace DAL.Repositories
         public async Task<Customer?> GetByEmailAsync(string email, CancellationToken ct = default) =>
             await _dbSet.FirstOrDefaultAsync(c => c.Email == email, ct);
 
+        public async Task RemoveFromWishlistAsync(int userId, int releaseId, CancellationToken ct = default)
+        {
+            var customer = await _dbSet
+               .Include(c => c.Releases)
+              .FirstOrDefaultAsync(c => c.Id == userId, ct)
+               ?? throw new KeyNotFoundException($"No Customer with Id {userId}");
+
+            var rel = customer.Releases.FirstOrDefault(r => r.Id == releaseId);
+            if (rel is null) return;
+            customer.Releases.Remove(rel);
+            await _context.SaveChangesAsync(ct);
+        }
     }
 }

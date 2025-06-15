@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using BLL.AutoMapper;
 using Common.Options;
 using NotificationsService.Providers;
+using VinylMarket.Infrastructure;
 
 namespace VinylRecordShop.Configurations
 {
@@ -36,6 +37,9 @@ namespace VinylRecordShop.Configurations
             services.AddScoped<IInventoryService, InventoryService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ISellerProfileService, SellerProfileService>();
+            services.AddScoped<IWishlistService, WishlistService>();
+            services.AddScoped<IAdminService, AdminService>();
+
 
             // DAL repositories
             services.AddScoped<IAccountRepository, AccountRepository>();
@@ -59,6 +63,8 @@ namespace VinylRecordShop.Configurations
             services.AddScoped<IPasswordHasher<Customer>, PasswordHasher<Customer>>();
             services.Configure<EmailOptions>(cfg.GetSection(EmailOptions.Section));
             services.AddTransient<IEmailProvider, EmailProvider>();
+
+            builder.Services.AddSingleton<IPathProvider, PathProvider>();
 
             builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));

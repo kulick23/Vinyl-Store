@@ -8,5 +8,6 @@ namespace DAL.Interfaces
     {
         Task<Customer?> GetByEmailAsync(string email, CancellationToken ct);
         Task AddToWishlistAsync(int userId, RecordRelease release, CancellationToken ct);
+        Task RemoveFromWishlistAsync(int userId, int releaseId, CancellationToken ct = default);
     }
 }

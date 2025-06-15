@@ -3,13 +3,14 @@ using AutoMapper;
 using BLL.DTO;
 using BLL.DTOs;
 using BLL.Interfaces;
+using DAL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VinylMarket.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [Route("api/admin")]
     public class AdminController : ControllerBase
     {
@@ -88,11 +89,14 @@ namespace VinylMarket.Controllers
         }
 
         [HttpPost("releases")]
-        public async Task<IActionResult> CreateRelease([FromBody] ReleaseDto dto, CancellationToken ct = default)
+        public async Task<IActionResult> Create(
+        [FromBody] ReleaseCreateDto dto,
+        CancellationToken ct)
         {
             var created = await _admin.CreateReleaseAsync(dto, ct);
-            return Ok(created);
+            return CreatedAtAction(nameof(GetRelease), new { id = created.Id }, created);
         }
+
 
         [HttpPut("releases/{id:int}")]
         public async Task<IActionResult> UpdateRelease(int id,
@@ -108,6 +112,28 @@ namespace VinylMarket.Controllers
         {
             await _admin.DeleteReleaseAsync(id, ct);
             return NoContent();
+        }
+
+        [HttpPut("releases/{id:int}/image")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadImage(
+        int id,
+        [FromForm] ImageUploadForm form,   // ← один [FromForm]-объект
+        CancellationToken ct)
+        {
+            await _admin.UpdateReleaseImageAsync(id, form.Image, ct);
+            return NoContent();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("releases/{id:int}", Name = "GetRelease")]
+        public async Task<IActionResult> GetRelease(
+    int id,
+    [FromServices] IRecordReleaseRepository repo,
+    CancellationToken ct)
+        {
+            var rel = await repo.GetByIdAsync(id, ct);
+            return rel is null ? NotFound() : Ok(rel);
         }
 
         [HttpGet("sellers")]
