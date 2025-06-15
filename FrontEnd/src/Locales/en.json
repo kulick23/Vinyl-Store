@@ -211,5 +211,27 @@
       "agreeToTerms": "You must agree to the terms and conditions",
       "registrationFailed": "Registration failed. Please try again."
     }
+  },
+  "approval": {
+    "loading": {
+      "title": "Confirming Your Email",
+      "message": "Please wait while we verify your email address..."
+    },
+    "success": {
+      "title": "Your Email Confirmed",
+      "message": "Thank you for confirming your email address. Your account is now fully activated and you can start exploring our vinyl collection."
+    },
+    "error": {
+      "title": "Confirmation Failed",
+      "message": "We couldn't confirm your email address. The link may have expired or already been used.",
+      "confirmationFailed": "Email confirmation failed. Please try again.",
+      "networkError": "Network error occurred. Please check your connection and try again.",
+      "retry": "Try Again"
+    },
+    "invalid": {
+      "title": "Invalid Link",
+      "message": "This confirmation link is invalid or missing required information. Please check your email for the correct link."
+    },
+    "goToMainPage": "Go to Main Page"
   }
 }

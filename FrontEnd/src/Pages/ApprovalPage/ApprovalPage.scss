@@ -1,0 +1,219 @@
+@use '../../Styles/breakpoints.scss' as bp;
+
+.approval-page {
+  min-height: calc(100vh - 160px); // Account for header and footer
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--pading);
+  background-color: var(--background-color);
+}
+
+.approval-container {
+  width: 100%;
+  max-width: 600px;
+  padding: 60px 40px;
+  background-color: var(--background-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(var(--orange-color-rgb), 0.1);
+  text-align: center;
+  border: 1px solid rgba(var(--orange-color-rgb), 0.1);
+
+  @include bp.phone {
+    padding: 40px 20px;
+    margin: 0 10px;
+  }
+}
+
+.approval-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+
+  @include bp.phone {
+    gap: 20px;
+  }
+}
+
+.approval-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scaleIn 0.6s ease-out;
+
+  svg {
+    filter: var(--icon-filter);
+    
+    @include bp.phone {
+      width: 60px;
+      height: 60px;
+    }
+  }
+
+  &.loading {
+    .loading-spinner {
+      animation: spin 1.5s linear infinite;
+      transform-origin: center;
+    }
+  }
+
+  &.success {
+    svg {
+      animation: scaleIn 0.6s ease-out;
+    }
+  }
+
+  &.error {
+    svg {
+      filter: none; // Don't apply theme filter to error icon
+      animation: shake 0.5s ease-out;
+    }
+  }
+}
+
+.approval-title {
+  color: var(--title-color);
+  font-family: 'Inter';
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+
+  &.error {
+    color: #e74c3c;
+  }
+
+  @include bp.phone {
+    font-size: 24px;
+  }
+}
+
+.approval-message {
+  color: var(--text-color);
+  font-family: 'Inter';
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 400px;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+
+  @include bp.phone {
+    font-size: 16px;
+  }
+}
+
+.approval-button {
+  background-color: var(--orange-color);
+  color: white;
+  border: 1px solid var(--orange-color);
+  padding: 16px 32px;
+  border-radius: 7px;
+  font-family: 'Inter';
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+  min-width: 200px;
+
+  &:hover {
+    background-color: var(--orange-hover);
+    border-color: var(--orange-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var(--orange-color-rgb), 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.secondary {
+    background-color: transparent;
+    color: var(--title-color);
+    border-color: var(--title-color);
+
+    &:hover {
+      background-color: var(--title-color);
+      color: var(--background-color);
+    }
+  }
+
+  &.retry {
+    background-color: #3498db;
+    border-color: #3498db;
+
+    &:hover {
+      background-color: #2980b9;
+      border-color: #2980b9;
+    }
+  }
+
+  @include bp.phone {
+    padding: 14px 24px;
+    font-size: 14px;
+    min-width: 180px;
+  }
+}
+
+.approval-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+
+  @include bp.phone {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+// Animations
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+} 
