@@ -1,5 +1,12 @@
+@use '../../Styles/breakpoints.scss' as bp;
+
 .homepage {
   display: flex;
   flex-direction: column;
   gap: var(--component-gap);
+  min-height: 100vh;
+
+  @include bp.phone {
+    gap: calc(var(--component-gap) * 0.6);
+  }
 }

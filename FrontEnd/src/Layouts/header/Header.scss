@@ -65,19 +65,6 @@
 
       @include bp.phone {
         display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background-color: var(--background-color);
-        border-top: 1px solid #454521;
-        padding: 20px var(--pading);
-        flex-direction: column;
-        gap: 16px;
-
-        &.mobile-menu-open {
-          display: flex;
-        }
       }
     }
   }
@@ -202,13 +189,25 @@
     background: none;
     border: none;
     color: var(--text-color);
-    font-size: 24px;
     cursor: pointer;
-    padding: 4px;
-    height: auto;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
 
     @include bp.phone {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &:hover {
+      background-color: var(--hover-background);
+    }
+
+    img {
+      width: 20px;
+      height: 20px;
+      filter: var(--icon-filter);
     }
   }
 }
