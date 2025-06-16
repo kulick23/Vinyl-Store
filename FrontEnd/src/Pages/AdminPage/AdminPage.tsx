@@ -4,9 +4,10 @@ import AdminPanel from "../../Components/AdminPanel/AdminPanel"
 
 export const AdminPage: React.FC = () => {
   return (
-    <AuthGuard requiredRole="Admin">
+    // Temporarily commented out admin role check - any user can access admin panel
+    // <AuthGuard requiredRole="Admin">
       <AdminPanel />
-    </AuthGuard>
+    // </AuthGuard>
   )
 }
 

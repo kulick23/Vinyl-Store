@@ -13,3 +13,19 @@ export interface CartItemPayload {
   inventoryItemId: number
   quantity: number
 }
+
+/** Товар в корзине с подробностями (возвращается с сервера) */
+export interface CartItemDto {
+  cartItemId: number
+  inventoryItemId: number
+  releaseTitle: string
+  unitPrice: number
+  quantity: number
+  lineTotal: number
+}
+
+/** Ответ от сервера с корзиной */
+export interface CartDto {
+  items: CartItemDto[]
+  grandTotal: number
+}

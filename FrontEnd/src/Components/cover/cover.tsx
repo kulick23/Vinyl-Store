@@ -3,6 +3,7 @@ import './cover.scss';
 import coverImg from '../../Assets/img/cover.png';
 import coverAboutImg from '../../Assets/img/cover-about.png';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface CoverProps {
   variant?: 'home' | 'about';
@@ -10,6 +11,15 @@ interface CoverProps {
 
 export const Cover: React.FC<CoverProps> = ({ variant = 'home' }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleShopNow = () => {
+    navigate('/shop');
+  };
+
+  const handleSignIn = () => {
+    navigate('/login');
+  };
 
   const titleKey = variant === 'about' ? 'cover.aboutTitle' : 'cover.title';
   const subtitleKey =
@@ -27,8 +37,8 @@ export const Cover: React.FC<CoverProps> = ({ variant = 'home' }) => {
         />
         {variant === 'home' && (
           <div className="cover__container--buttons">
-            <button>{t('buttons.shopNow')}</button>
-            <button className="button-white">{t('buttons.signIn')}</button>
+            <button onClick={handleShopNow}>{t('buttons.shopNow')}</button>
+            <button className="button-white" onClick={handleSignIn}>{t('buttons.signIn')}</button>
           </div>
         )}
       </div>

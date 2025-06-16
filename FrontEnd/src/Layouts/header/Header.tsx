@@ -25,9 +25,12 @@ export const Header: React.FC = () => {
   const { data: user } = useGetCurrentUserQuery(undefined, {
     skip: !token,
   })
-  const { data: cartItems = [] } = useGetCartQuery(undefined, {
+  const { data: cartData } = useGetCartQuery(undefined, {
     skip: !token,
   })
+
+  // Get cart items from CartDto structure
+  const cartItems = cartData?.items || []
 
   const changeLanguage = (lng: "en" | "ru") => {
     i18n.changeLanguage(lng)
@@ -93,6 +96,7 @@ export const Header: React.FC = () => {
           </NavLink>
         </div>
       </div>
+
       <div className="header__widgets">
         <div className="header__widgets--lang">
           <button className="empty-button" onClick={() => changeLanguage("en")}>
@@ -108,26 +112,10 @@ export const Header: React.FC = () => {
         </button>
 
         {user && (
-          <Link to="/cart" className="button-img" style={{ position: "relative" }}>
+          <Link to="/cart" className="button-img cart-icon" style={{ position: "relative" }}>
             <img src={cart || "/placeholder.svg"} alt="cart" />
             {cartItems.length > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-8px",
-                  right: "-8px",
-                  backgroundColor: "var(--orange-color)",
-                  color: "white",
-                  borderRadius: "50%",
-                  width: "20px",
-                  height: "20px",
-                  fontSize: "12px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: "bold",
-                }}
-              >
+              <span className="cart-badge">
                 {cartItems.length}
               </span>
             )}

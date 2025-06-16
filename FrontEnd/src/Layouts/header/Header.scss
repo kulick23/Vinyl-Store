@@ -91,6 +91,39 @@
       gap: 12px;
     }
 
+    .cart-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      
+      .cart-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: var(--orange-color);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-family: 'Inter', sans-serif;
+        z-index: 1;
+
+        @include bp.phone {
+          width: 18px;
+          height: 18px;
+          font-size: 11px;
+          top: -6px;
+          right: -6px;
+        }
+      }
+    }
+
     &--lang {
       display: flex;
       gap: 3px;

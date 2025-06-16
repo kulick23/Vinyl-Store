@@ -24,10 +24,29 @@ export const authApi = createApi({
         headers: { 'Content-Type': 'application/json' }
       })
     }),
-    /** GET /me - Get current user profile */
+    /** GET /myAccount - Get current user profile */
     getCurrentUser: builder.query<User, void>({
-      query: () => ({ url: 'me', method: 'GET' }),
+      query: () => ({ url: 'myAccount', method: 'GET' }),
       providesTags: ['User']
+    }),
+    /** POST /confirm - Confirm email address */
+    confirmEmail: builder.mutation<string, string>({
+      query: token => ({
+        url: 'confirm',
+        method: 'POST',
+        body: JSON.stringify(token),
+        headers: { 'Content-Type': 'application/json' },
+        responseHandler: async (response) => {
+          // Handle text response instead of JSON
+          const text = await response.text()
+          return text
+        }
+      })
+    }),
+    /** POST /editProfile - Edit user profile */
+    editProfile: builder.mutation<User, Partial<User>>({
+      query: data => ({ url: 'editProfile', method: 'POST', body: data }),
+      invalidatesTags: ['User']
     })
   })
 })
@@ -36,5 +55,7 @@ export const {
   useRegisterMutation,
   useLoginMutation,
   useRefreshMutation,
-  useGetCurrentUserQuery
+  useGetCurrentUserQuery,
+  useConfirmEmailMutation,
+  useEditProfileMutation
 } = authApi

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import './collections.scss';
 
 import jazzImg from '../../Assets/img/jazz.png';
@@ -15,6 +16,11 @@ interface CollectionItem {
 
 export const Collections: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleViewAll = () => {
+    navigate('/shop');
+  };
 
   const items: CollectionItem[] = [
     {
@@ -54,7 +60,7 @@ export const Collections: React.FC = () => {
         ))}
       </div>
 
-      <button className="collections__button">
+      <button className="collections__button" onClick={handleViewAll}>
         {t('collections.viewAll')}
       </button>
     </section>

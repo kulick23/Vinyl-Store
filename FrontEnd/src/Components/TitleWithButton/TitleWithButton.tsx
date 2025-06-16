@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import './TitleWithButton.scss';
 
 export interface TitleWithButtonProps {
@@ -10,6 +11,12 @@ const TitleWithButton: React.FC<TitleWithButtonProps> = ({
   variant = 'about',
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleButtonClick = () => {
+    navigate('/shop');
+  };
+
   const titleKey =
     variant === 'contact'
       ? 'titleWithButton.contactTitle'
@@ -24,7 +31,7 @@ const TitleWithButton: React.FC<TitleWithButtonProps> = ({
       <h2 className="TitleWithButton__title">{t(titleKey)}</h2>
       <p className="TitleWithButton__description">{t(descKey)}</p>
       {variant === 'about' && (
-        <button className="TitleWithButton__button">
+        <button className="TitleWithButton__button" onClick={handleButtonClick}>
           {t('titleWithButton.button')}
         </button>
       )}

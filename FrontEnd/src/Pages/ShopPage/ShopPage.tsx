@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import { useGetReleasesQuery } from "../../redux/catalog/api"
 import { useAddCartItemMutation } from "../../redux/cart/api"
 import { useGetCurrentUserQuery } from "../../redux/auth/api"
+import { useNotification } from "../../hooks/useNotification"
 import TitleWithButton from "../../Components/TitleWithButton/TitleWithButton"
 import ShopFilters from "../../Components/ShopFilters/ShopFilters"
 import VinylSpinner from "../../Components/VinylSpinner/VinylSpinner"
@@ -45,9 +46,11 @@ export const ShopPage: React.FC = () => {
     setSearchQuery("")
   }
 
+  const { showSuccess, showError, showWarning } = useNotification()
+
   const handleAddToCart = async (recordId: number) => {
     if (!user) {
-      alert("Please log in to add items to cart")
+      showWarning("notifications.loginRequired")
       return
     }
 
@@ -55,14 +58,13 @@ export const ShopPage: React.FC = () => {
       // For demo purposes, we'll use the record ID as inventory item ID
       // In a real app,
       await addToCart({
-        userId: user.id,
         inventoryItemId: recordId,
         quantity: 1,
       })
-      alert("Item added to cart!")
+      showSuccess("notifications.itemAdded")
     } catch (error) {
       console.error("Failed to add item to cart:", error)
-      alert("Failed to add item to cart.")
+      showError("notifications.itemAddFailed")
     }
   }
 

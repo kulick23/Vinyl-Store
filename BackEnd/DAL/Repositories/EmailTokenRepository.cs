@@ -19,13 +19,13 @@ public sealed class EmailTokenRepository(AppDbContext ctx)
         _dbSet.Include(t => t.Customer)
               .FirstOrDefaultAsync(t =>
                      t.TokenHash == hash
-                 && !t.IsConfirmed == null
+                 && t.ConfirmedAt == null
                  && t.ExpiresAt > DateTime.UtcNow, ct);
 
     public async Task ConfirmAsync(string hash, CancellationToken ct = default)
     {
         var entity = await _dbSet.FirstOrDefaultAsync(
-            t => t.TokenHash == hash && !t.IsConfirmed, ct);
+            t => t.TokenHash == hash && t.ConfirmedAt == null, ct);
 
         if (entity is not null)
             entity.ConfirmedAt = DateTime.UtcNow;

@@ -217,6 +217,10 @@
       "title": "Confirming Your Email",
       "message": "Please wait while we verify your email address..."
     },
+    "registration": {
+      "title": "Registration Successful!",
+      "message": "Thank you for signing up! We've sent a confirmation email to {{email}}. Please check your inbox and click the confirmation link to activate your account."
+    },
     "success": {
       "title": "Your Email Confirmed",
       "message": "Thank you for confirming your email address. Your account is now fully activated and you can start exploring our vinyl collection."
@@ -225,6 +229,9 @@
       "title": "Confirmation Failed",
       "message": "We couldn't confirm your email address. The link may have expired or already been used.",
       "confirmationFailed": "Email confirmation failed. Please try again.",
+      "serverError": "Server error occurred. Please try again later.",
+      "invalidToken": "Invalid or expired confirmation token.",
+      "tokenNotFound": "Confirmation token not found.",
       "networkError": "Network error occurred. Please check your connection and try again.",
       "retry": "Try Again"
     },
@@ -233,5 +240,268 @@
       "message": "This confirmation link is invalid or missing required information. Please check your email for the correct link."
     },
     "goToMainPage": "Go to Main Page"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "clear": "Clear"
+  },
+  "confirmDialog": {
+    "clearCart": {
+      "title": "Clear Cart",
+      "message": "Are you sure you want to clear your cart? This action cannot be undone."
+    },
+    "deleteItem": {
+      "title": "Delete Item",
+      "message": "Are you sure you want to delete this item? This action cannot be undone."
+    }
+  },
+  "notifications": {
+    "loginRequired": "Please log in to add items to cart",
+    "itemAdded": "Item added to cart!",
+    "itemAddedWithDetails": "Added {{quantity}} x {{title}} to cart!",
+    "itemAddFailed": "Failed to add item to cart.",
+    "orderPlaced": "Order placed successfully!",
+    "orderFailed": "Failed to place order. Please try again.",
+    "googleLoginDemo": "Google login would be implemented here",
+    "cartCleared": "Cart cleared successfully",
+    "cartClearFailed": "Failed to clear cart",
+    "itemRemoved": "Item removed from cart",
+    "itemRemoveFailed": "Failed to remove item from cart",
+    "quantityUpdated": "Quantity updated",
+    "quantityUpdateFailed": "Failed to update quantity"
+  },
+  "profile": {
+    "pageTitle": "My Profile",
+    "navigation": "Navigation",
+    "overview": "Overview",
+    "orders": "My Orders",
+    "cart": "My Cart",
+    "settings": "Settings",
+    "accountOverview": "Account Overview",
+    "accountInformation": "Account Information",
+    "personalInformation": "Personal Information",
+    "accountStatus": "Account Status",
+    "totalOrders": "Total Orders",
+    "itemsInCart": "Items in Cart",
+    "activeRoles": "Active Roles",
+    "memberSince": "Member since",
+    "lastLogin": "Last login",
+    "emailConfirmed": "Confirmed",
+    "emailNotConfirmed": "Not confirmed",
+    "phone": "Phone",
+    "notProvided": "Not provided",
+    "email": "Email",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "roles": "Roles",
+    "adminPanel": "Admin Panel",
+    "sellerDashboard": "Seller Dashboard",
+    "logout": "Logout",
+    "noOrders": "You haven't placed any orders yet.",
+    "startShopping": "Start shopping",
+    "cartEmpty": "Your cart is empty.",
+    "orderNumber": "Order #{{number}}",
+    "items": "Items",
+    "shipping": "Shipping",
+    "payment": "Payment",
+    "itemId": "Item ID",
+    "quantity": "Quantity",
+    "settingsComingSoon": "Settings functionality coming soon...",
+    "editProfile": "Edit Profile",
+    "changePassword": "Change Password",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "theme": "Theme",
+    "lightTheme": "Switch to Light Theme",
+    "darkTheme": "Switch to Dark Theme",
+    "language": "Language",
+    "saveChanges": "Save Changes",
+    "accountActions": "Account Actions",
+    "releaseTitle": "Release",
+    "unitPrice": "Unit Price",
+    "lineTotal": "Line Total"
+  },
+  "admin": {
+    "panel": {
+      "title": "Admin Panel",
+      "subtitle": "Manage your vinyl store",
+      "welcome": "Welcome, {{name}}!",
+      "loading": "Loading admin panel...",
+      "accessDenied": "Access denied. Admin privileges required.",
+      "navigation": "Navigation"
+    },
+    "overview": {
+      "title": "Admin Overview",
+      "artists": "Artists",
+      "genres": "Genres",
+      "releases": "Releases",
+      "sellers": "Sellers",
+      "users": "Users",
+      "recentActivity": "Recent Activity",
+      "welcomeMessage": "Welcome to the admin panel. Use the sidebar to navigate between different sections."
+    },
+    "users": {
+      "title": "Manage Users",
+      "loading": "Loading users...",
+      "loadError": "Failed to load users. Please try again.",
+      "noUsers": "No users found.",
+      "updateSuccess": "User updated successfully!",
+      "updateError": "Failed to update user. Please try again.",
+      "deleteSuccess": "User deleted successfully!",
+      "deleteError": "Failed to delete user. Please try again.",
+      "deleteConfirmTitle": "Delete User",
+      "deleteConfirmMessage": "Are you sure you want to delete this user? This action cannot be undone.",
+      "form": {
+        "email": "Email",
+        "emailPlaceholder": "Enter email",
+        "firstName": "First Name",
+        "firstNamePlaceholder": "Enter first name",
+        "lastName": "Last Name",
+        "lastNamePlaceholder": "Enter last name",
+        "phone": "Phone",
+        "phonePlaceholder": "Enter phone number",
+        "emailConfirmed": "Email Confirmed",
+        "updateButton": "Update User",
+        "cancelButton": "Cancel"
+      },
+      "table": {
+        "id": "ID",
+        "email": "Email",
+        "name": "Name",
+        "phone": "Phone",
+        "emailConfirmed": "Email Confirmed",
+        "lastLogin": "Last Login",
+        "actions": "Actions",
+        "editButton": "Edit",
+        "deleteButton": "Delete",
+        "notAvailable": "N/A"
+      }
+    },
+    "artists": {
+      "title": "Manage Artists",
+      "loading": "Loading artists...",
+      "loadError": "Failed to load artists. Please try again.",
+      "noArtists": "No artists found.",
+      "createSuccess": "Artist created successfully!",
+      "updateSuccess": "Artist updated successfully!",
+      "deleteSuccess": "Artist deleted successfully!",
+      "saveError": "Failed to save artist. Please try again.",
+      "deleteError": "Failed to delete artist. Please try again.",
+      "deleteConfirmTitle": "Delete Artist",
+      "deleteConfirmMessage": "Are you sure you want to delete this artist? This action cannot be undone.",
+      "form": {
+        "name": "Artist Name",
+        "namePlaceholder": "Enter artist name",
+        "createButton": "Create Artist",
+        "updateButton": "Update Artist",
+        "cancelButton": "Cancel"
+      },
+      "table": {
+        "id": "ID",
+        "name": "Name",
+        "actions": "Actions",
+        "editButton": "Edit",
+        "deleteButton": "Delete"
+      }
+    },
+    "genres": {
+      "title": "Manage Genres",
+      "loading": "Loading genres...",
+      "loadError": "Failed to load genres. Please try again.",
+      "noGenres": "No genres found.",
+      "createSuccess": "Genre created successfully!",
+      "updateSuccess": "Genre updated successfully!",
+      "deleteSuccess": "Genre deleted successfully!",
+      "saveError": "Failed to save genre. Please try again.",
+      "deleteError": "Failed to delete genre. Please try again.",
+      "deleteConfirmTitle": "Delete Genre",
+      "deleteConfirmMessage": "Are you sure you want to delete this genre? This action cannot be undone.",
+      "form": {
+        "name": "Genre Name",
+        "namePlaceholder": "Enter genre name",
+        "createButton": "Create Genre",
+        "updateButton": "Update Genre",
+        "cancelButton": "Cancel"
+      },
+      "table": {
+        "id": "ID",
+        "name": "Name",
+        "actions": "Actions",
+        "editButton": "Edit",
+        "deleteButton": "Delete"
+      }
+    },
+    "releases": {
+      "title": "Manage Releases",
+      "loading": "Loading releases...",
+      "loadError": "Failed to load releases. Please try again.",
+      "noReleases": "No releases found.",
+      "createSuccess": "Release created successfully!",
+      "updateSuccess": "Release updated successfully!",
+      "deleteSuccess": "Release deleted successfully!",
+      "saveError": "Failed to save release. Please try again.",
+      "deleteError": "Failed to delete release. Please try again.",
+      "deleteConfirmTitle": "Delete Release",
+      "deleteConfirmMessage": "Are you sure you want to delete this release? This action cannot be undone.",
+      "form": {
+        "title": "Title",
+        "titlePlaceholder": "Enter release title",
+        "artist": "Artist",
+        "artistPlaceholder": "Select artist",
+        "genre": "Genre",
+        "genrePlaceholder": "Select genre",
+        "year": "Year",
+        "yearPlaceholder": "Enter release year",
+        "imageUrl": "Image URL",
+        "imageUrlPlaceholder": "Enter image URL",
+        "createButton": "Create Release",
+        "updateButton": "Update Release",
+        "cancelButton": "Cancel"
+      },
+      "table": {
+        "id": "ID",
+        "title": "Title",
+        "artist": "Artist",
+        "genre": "Genre",
+        "year": "Year",
+        "actions": "Actions",
+        "editButton": "Edit",
+        "deleteButton": "Delete"
+      }
+    },
+    "sellers": {
+      "title": "Manage Sellers",
+      "loading": "Loading sellers...",
+      "loadError": "Failed to load sellers. Please try again.",
+      "noSellers": "No sellers found.",
+      "updateSuccess": "Seller updated successfully!",
+      "deleteSuccess": "Seller deleted successfully!",
+      "updateError": "Failed to update seller. Please try again.",
+      "deleteError": "Failed to delete seller. Please try again.",
+      "deleteConfirmTitle": "Delete Seller",
+      "deleteConfirmMessage": "Are you sure you want to delete this seller? This action cannot be undone.",
+      "form": {
+        "name": "Seller Name",
+        "namePlaceholder": "Enter seller name",
+        "email": "Email",
+        "emailPlaceholder": "Enter email",
+        "phone": "Phone",
+        "phonePlaceholder": "Enter phone number",
+        "updateButton": "Update Seller",
+        "cancelButton": "Cancel"
+      },
+      "table": {
+        "id": "ID",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "actions": "Actions",
+        "editButton": "Edit",
+        "deleteButton": "Delete",
+        "notAvailable": "N/A"
+      }
+    }
   }
 }

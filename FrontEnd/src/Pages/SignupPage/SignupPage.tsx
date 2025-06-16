@@ -4,8 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRegisterMutation } from '../../redux/auth/api';
 import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
-import { useDispatch } from 'react-redux';
-import { setCredentials } from '../../redux/auth/authSlice';
 import './SignupPage.scss';
 
 interface SignupFormData {
@@ -30,7 +28,6 @@ interface FormErrors {
 export const SignupPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [register, { isLoading }] = useRegisterMutation();
 
   const [formData, setFormData] = useState<SignupFormData>({
@@ -104,20 +101,15 @@ export const SignupPage: React.FC = () => {
     setErrors({});
 
     try {
-      const result = await register({
+      await register({
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
       }).unwrap();
-      // пишем в redux + localStorage
-      dispatch(
-        setCredentials({
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken,
-        })
-      );
-      navigate('/');
+      
+      // Redirect to approval page after successful registration
+      navigate('/approval?email=' + encodeURIComponent(formData.email));
     } catch (error: any) {
       console.error('Registration error:', error);
       setErrors({

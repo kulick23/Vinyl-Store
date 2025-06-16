@@ -1,0 +1,10 @@
+@use '../../Styles/breakpoints.scss' as bp;
+
+.profile-page {
+  min-height: calc(100vh - 200px);
+  padding-top: 80px;
+
+  @include bp.phone {
+    padding-top: 60px;
+  }
+} 
