@@ -3,12 +3,15 @@
 @use './links.scss';
 @use './buttons.scss';
 @use './inputs.scss';
+@use './mobile.scss';
 
 :root {
   --title-color: #0e0e07;
   --text-color: #454521;
+  --text-color-secondary: #666649;
   --orange-color: #e5592e;
   --orange-color-rgb: 229, 89, 46;
+  --orange-hover-color: #cc4f29;
   --orange-hover: #cc4f29;
   --pading: 45px;
   --component-gap: 140px;
@@ -17,6 +20,8 @@
   --icon-filter: none;
   --white-button-text: #0e0e07;
   --white-button-hover: #adc388;
+  --border-color: rgba(69, 69, 33, 0.1);
+  --hover-background: rgba(69, 69, 33, 0.05);
 
   @include bp.phone {
     --pading: 20px;
@@ -27,8 +32,10 @@
 [data-theme='dark'] {
   --title-color: #ffffff;
   --text-color: #cccccc;
+  --text-color-secondary: #999999;
   --orange-color: #e5592e;
   --orange-color-rgb: 229, 89, 46;
+  --orange-hover-color: #cc4f29;
   --orange-hover: #cc4f29;
   --pading: 45px;
   --component-gap: 140px;
@@ -37,6 +44,8 @@
   --icon-filter: invert(1) brightness(1.5);
   --white-button-text: white;
   --white-button-hover: #45552b;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --hover-background: rgba(255, 255, 255, 0.05);
 
   @include bp.phone {
     --pading: 20px;

@@ -47,6 +47,11 @@ export const Cover: React.FC<CoverProps> = ({ variant = 'home' }) => {
         src={imgSrc}
         alt={variant === 'about' ? 'About cover' : 'Home cover'}
         className={variant === 'about' ? 'cover__Aboutimg' : 'cover__img'}
+        loading="eager"
+        sizes={variant === 'about' 
+          ? "(max-width: 1212px) 90vw, 600px"
+          : "(max-width: 1212px) 80vw, 500px"
+        }
       />
     </section>
   );

@@ -1,5 +1,7 @@
+@use '../../Styles/breakpoints.scss' as bp;
+
 .cover {
-  height: 756px;
+  min-height: 756px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7,28 +9,100 @@
   padding: 0px var(--pading);
   background-color: var(--cover-color);
 
+  @include bp.phone {
+    min-height: 600px;
+    flex-direction: column;
+    gap: 40px;
+    padding: 40px var(--pading);
+    text-align: center;
+  }
+
   &__container {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    flex: 1;
+    max-width: 600px;
+
+    @include bp.phone {
+      max-width: 100%;
+      order: 2;
+    }
+
+    h1 {
+      @include bp.phone {
+        font-size: clamp(28px, 6vw, 48px);
+        line-height: 1.2;
+      }
+    }
+
+    p {
+      @include bp.phone {
+        font-size: 16px;
+        line-height: 1.5;
+      }
+    }
 
     &--buttons {
       display: flex;
       gap: 16px;
+
+      @include bp.phone {
+        flex-direction: column;
+        gap: 12px;
+        
+        button {
+          padding: 14px 24px;
+          font-size: 16px;
+        }
+      }
     }
   }
 
   &__img {
-    height: 500px;
-    width: 500px;
+    // Responsive image with max constraints
+    width: min(500px, 40vw);
+    height: min(500px, 40vw);
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
     box-shadow: 0 0 20px rgba(229, 89, 46, 0.5);
-    transition: box-shadow 0.3s ease;
+    transition: all 0.3s ease;
     border-radius: 10px;
+    flex-shrink: 0;
+
+    @include bp.phone {
+      width: min(350px, 80vw);
+      height: min(350px, 80vw);
+      order: 1;
+      margin-bottom: 20px;
+    }
+
+    // Hover effect for better interaction
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(229, 89, 46, 0.7);
+    }
   }
 
   &__Aboutimg {
-    height: 100%;
-    width: auto;
-    // object-fit: contain;
+    width: min(600px, 45vw);
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(229, 89, 46, 0.5);
+    transition: all 0.3s ease;
+
+    @include bp.phone {
+      width: min(400px, 90vw);
+      order: 1;
+      margin-bottom: 20px;
+    }
+
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(229, 89, 46, 0.7);
+    }
   }
 }

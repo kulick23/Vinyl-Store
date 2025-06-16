@@ -4,7 +4,9 @@
     "shop": "Shop",
     "about": "About",
     "contact": "Contact",
-    "wishlist": "Wishlist"
+    "wishlist": "Wishlist",
+    "menu": "Menu",
+    "closeMenu": "Close Menu"
   },
   "cover": {
     "title": "Discover the Magic of Vinyl",
