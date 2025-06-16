@@ -10,7 +10,7 @@ import logo from "../../Assets/icons/logo.svg"
 import cart from "../../Assets/icons/cart.svg"
 import dark from "../../Assets/icons/dark.svg"
 import light from "../../Assets/icons/light.svg"
-import search from "../../Assets/icons/search.svg"
+import heart from "../../Assets/icons/heart.svg"
 import "./Header.scss"
 
 export const Header: React.FC = () => {
@@ -107,9 +107,11 @@ export const Header: React.FC = () => {
             RU
           </button>
         </div>
-        <button className="button-img">
-          <img src={search || "/placeholder.svg"} alt="search" />
-        </button>
+        {user && (
+          <Link to="/wishlist" className="button-img">
+            <img src={heart || "/placeholder.svg"} alt="wishlist" />
+          </Link>
+        )}
 
         {user && (
           <Link to="/cart" className="button-img cart-icon" style={{ position: "relative" }}>

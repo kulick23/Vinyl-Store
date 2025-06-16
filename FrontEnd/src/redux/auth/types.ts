@@ -29,3 +29,12 @@ export interface User {
 }
 
 export type UserRole = "Admin" | "Seller" | "Customer" | "User"
+
+export interface WishlistItem {
+  id: number
+  title: string
+  artist: string
+  imageUrl?: string
+  year: number
+  genre: string
+}

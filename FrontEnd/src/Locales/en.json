@@ -3,7 +3,8 @@
     "home": "Home",
     "shop": "Shop",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "wishlist": "Wishlist"
   },
   "cover": {
     "title": "Discover the Magic of Vinyl",
@@ -322,6 +323,30 @@
     "releaseTitle": "Release",
     "unitPrice": "Unit Price",
     "lineTotal": "Line Total"
+  },
+  "wishlist": {
+    "title": "My Wishlist",
+    "subtitle": "Your favorite vinyl records",
+    "empty": {
+      "title": "Your wishlist is empty",
+      "message": "Start browsing our collection and add vinyl records you love to your wishlist!",
+      "shopButton": "Browse Collection"
+    },
+    "item": {
+      "addToCart": "Add to Cart",
+      "removeFromWishlist": "Remove",
+      "year": "Year",
+      "genre": "Genre"
+    },
+    "clearAll": "Clear All",
+    "clearAllConfirm": "Are you sure you want to remove all items from your wishlist?",
+    "loading": "Loading your wishlist...",
+    "addSuccess": "Added to wishlist!",
+    "removeSuccess": "Removed from wishlist!",
+    "clearSuccess": "Wishlist cleared successfully!",
+    "addError": "Failed to add to wishlist",
+    "removeError": "Failed to remove from wishlist",
+    "clearError": "Failed to clear wishlist. Please try again."
   },
   "admin": {
     "panel": {

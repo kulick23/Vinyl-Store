@@ -1,11 +1,11 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { createBaseQuery } from '../base'
-import type { RegisterRequest, LoginRequest, AuthResponse, User } from './types'
+import type { RegisterRequest, LoginRequest, AuthResponse, User, WishlistItem } from './types'
 
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: createBaseQuery({ baseUrl: '/api/auth' }),
-  tagTypes: ['Auth', 'User'],
+  tagTypes: ['Auth', 'User', 'Wishlist'],
   endpoints: builder => ({
     /** POST /register */
     register: builder.mutation<AuthResponse, RegisterRequest>({
@@ -47,6 +47,47 @@ export const authApi = createApi({
     editProfile: builder.mutation<User, Partial<User>>({
       query: data => ({ url: 'editProfile', method: 'POST', body: data }),
       invalidatesTags: ['User']
+    }),
+    /** GET /wishlist - Get user's wishlist */
+    getWishlist: builder.query<WishlistItem[], void>({
+      query: () => ({ url: 'wishlist', method: 'GET' }),
+      providesTags: ['Wishlist']
+    }),
+    /** POST /wishlist/{releaseId} - Add item to wishlist */
+    addToWishlist: builder.mutation<void, number>({
+      query: releaseId => ({ url: `wishlist/${releaseId}`, method: 'POST' }),
+      invalidatesTags: ['Wishlist']
+    }),
+    /** DELETE /wishlist/{releaseId} - Remove item from wishlist */
+    removeFromWishlist: builder.mutation<void, number>({
+      query: releaseId => ({ url: `wishlist/${releaseId}`, method: 'DELETE' }),
+      invalidatesTags: ['Wishlist']
+    }),
+    /** Clear entire wishlist by removing all items */
+    clearWishlist: builder.mutation<void, void>({
+      queryFn: async (arg, { getState, dispatch }, extraOptions, baseQuery) => {
+        // Get current wishlist items
+        const wishlistResult = await baseQuery({ url: 'wishlist', method: 'GET' })
+        if (wishlistResult.error) {
+          return { error: wishlistResult.error }
+        }
+        
+        const wishlistItems = wishlistResult.data as WishlistItem[]
+        
+        // Remove each item individually
+        for (const item of wishlistItems) {
+          const removeResult = await baseQuery({ 
+            url: `wishlist/${item.id}`, 
+            method: 'DELETE' 
+          })
+          if (removeResult.error) {
+            return { error: removeResult.error }
+          }
+        }
+        
+        return { data: undefined }
+      },
+      invalidatesTags: ['Wishlist']
     })
   })
 })
@@ -57,5 +98,9 @@ export const {
   useRefreshMutation,
   useGetCurrentUserQuery,
   useConfirmEmailMutation,
-  useEditProfileMutation
+  useEditProfileMutation,
+  useGetWishlistQuery,
+  useAddToWishlistMutation,
+  useRemoveFromWishlistMutation,
+  useClearWishlistMutation
 } = authApi
