@@ -334,7 +334,7 @@
     },
     "item": {
       "addToCart": "Add to Cart",
-      "removeFromWishlist": "Remove from Wishlist",
+      "removeFromWishlist": "Remove",
       "year": "Year",
       "genre": "Genre"
     },

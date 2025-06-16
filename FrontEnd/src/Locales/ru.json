@@ -334,7 +334,7 @@
     },
     "item": {
       "addToCart": "В корзину",
-      "removeFromWishlist": "Удалить из избранного",
+      "removeFromWishlist": "Удалить",
       "year": "Год",
       "genre": "Жанр"
     },
