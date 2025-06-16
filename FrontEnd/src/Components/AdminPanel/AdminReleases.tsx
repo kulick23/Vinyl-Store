@@ -55,8 +55,8 @@ const AdminReleases: React.FC = () => {
           data: {
             title: formData.title,
             year: formData.year,
-            artistId: 1, // TODO: Implement proper artist selection
-            genreId: 1, // TODO: Implement proper genre selection
+            artistId: formData.artistId, // Use selected artist ID
+            genreId: formData.genreId, // Use selected genre ID
             listings: []
           }
         }).unwrap()
