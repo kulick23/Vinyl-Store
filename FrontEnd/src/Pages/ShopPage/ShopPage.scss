@@ -187,23 +187,29 @@
       font-weight: bold;
     }
 
-    .favorite-button {
+    .wishlist-button-container {
       position: absolute;
       top: 10px;
       right: 10px;
-      background: none;
-      border: none;
-      color: var(--text-color);
-      font-size: 20px;
-      cursor: pointer;
-      opacity: 0.7;
-      transition: opacity 0.3s;
-      width: auto;
-      height: auto;
-      padding: 4px;
+      z-index: 2;
 
-      &:hover {
-        opacity: 1;
+      .shop-wishlist-button {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(var(--orange-color-rgb), 0.3);
+        
+        &:hover:not(:disabled) {
+          background: rgba(255, 255, 255, 1);
+          backdrop-filter: blur(6px);
+        }
+
+        &.wishlist-button--active {
+          background: rgba(255, 255, 255, 0.95);
+          
+          &:hover {
+            background: rgba(255, 255, 255, 1);
+          }
+        }
       }
     }
   }
@@ -345,6 +351,96 @@
 
     &:hover {
       background-color: var(--orange-hover);
+    }
+  }
+}
+
+// Dark theme adjustments for shop page
+[data-theme="dark"] {
+  .record-card {
+    .record-image {
+      .wishlist-button-container {
+        .shop-wishlist-button {
+          background: rgba(14, 14, 6, 0.9);
+          border-color: rgba(var(--orange-color-rgb), 0.4);
+          
+          &:hover:not(:disabled) {
+            background: rgba(14, 14, 6, 1);
+            backdrop-filter: blur(8px);
+          }
+
+          &.wishlist-button--active {
+            background: rgba(14, 14, 6, 0.95);
+            
+            &:hover {
+              background: rgba(14, 14, 6, 1);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.product-card {
+  &__wishlist-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    
+    .wishlist-button {
+      padding: 0.5rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      
+      &--icon {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        
+        &:hover:not(:disabled) {
+          background: rgba(255, 255, 255, 0.25);
+          backdrop-filter: blur(15px);
+          -webkit-backdrop-filter: blur(15px);
+        }
+
+        &.wishlist-button--active {
+          background: rgba(255, 107, 107, 0.4);
+          border-color: #ff6b6b;
+          
+          &:hover {
+            background: rgba(255, 107, 107, 0.5);
+          }
+        }
+        
+        .wishlist-button__icon {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+
+  // Dark theme adjustments
+  [data-theme="dark"] & {
+    &__wishlist-button {
+      .wishlist-button--icon {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.15);
+        
+        &:hover:not(:disabled) {
+          background: rgba(0, 0, 0, 0.4);
+          border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        &.wishlist-button--active {
+          background: rgba(255, 107, 107, 0.3);
+          
+          &:hover {
+            background: rgba(255, 107, 107, 0.4);
+          }
+        }
+      }
     }
   }
 }

@@ -7,9 +7,9 @@ import { useGetReleasesQuery } from "../../redux/catalog/api"
 import { useAddCartItemMutation } from "../../redux/cart/api"
 import { useGetCurrentUserQuery } from "../../redux/auth/api"
 import { useNotification } from "../../hooks/useNotification"
-import TitleWithButton from "../../Components/TitleWithButton/TitleWithButton"
 import ShopFilters from "../../Components/ShopFilters/ShopFilters"
 import VinylSpinner from "../../Components/VinylSpinner/VinylSpinner"
+import { WishlistButton } from "../../Components/WishlistButton"
 import { Link } from "react-router-dom"
 import type { FilterOptions } from "../../redux/catalog/types"
 import "./ShopPage.scss"
@@ -118,9 +118,13 @@ export const ShopPage: React.FC = () => {
                   }}
                 />
                 {record.isOnSale && <div className="sale-badge">{t("shop.sale")}</div>}
-                <button className="favorite-button" onClick={(e) => e.preventDefault()}>
-                  ❤
-                </button>
+                <div className="wishlist-button-container" onClick={(e) => e.preventDefault()}>
+                  <WishlistButton 
+                    releaseId={record.id} 
+                    variant="icon" 
+                    className="shop-wishlist-button"
+                  />
+                </div>
               </div>
               <div className="record-info">
                 <h3>{record.title}</h3>
@@ -154,7 +158,6 @@ export const ShopPage: React.FC = () => {
 
   return (
     <section className="shoppage">
-      <TitleWithButton />
       <div className="shop-container">
         <div className="shop-header">
           <h1>{t("shop.title")}</h1>

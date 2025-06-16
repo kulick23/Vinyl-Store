@@ -10,6 +10,7 @@ import LoginPage from "../Pages/LoginPage/LoginPage"
 import SignupPage from "../Pages/SignupPage/SignupPage"
 import ProfilePage from "../Pages/ProfilePage/ProfilePage"
 import CartPage from "../Pages/CartPage/CartPage"
+import WishlistPage from "../Pages/WishlistPage/WishlistPage"
 import AdminPage from "../Pages/AdminPage/AdminPage"
 import SellerPage from "../Pages/SellerPage/SellerPage"
 import ApprovalPage from "../Pages/ApprovalPage/ApprovalPage"
@@ -27,6 +28,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/cart" element={<CartPage />} />
+      <Route path="/wishlist" element={<WishlistPage />} />
       <Route path="/admin/*" element={<AdminPage />} />
       <Route path="/seller/*" element={<SellerPage />} />
       <Route path="/approval" element={<ApprovalPage />} />

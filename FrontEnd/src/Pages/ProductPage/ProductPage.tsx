@@ -8,6 +8,7 @@ import {
 } from '../../redux/catalog/api';
 import { useNotification } from '../../hooks/useNotification';
 import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
+import { WishlistButton } from '../../Components/WishlistButton';
 import './ProductPage.scss';
 
 const ProductPage: React.FC = () => {
@@ -194,6 +195,11 @@ const ProductPage: React.FC = () => {
                 ? t('product.addToCart')
                 : t('product.outOfStock')}
             </button>
+            <WishlistButton 
+              releaseId={releaseId} 
+              variant="button" 
+              className="product-wishlist-button"
+            />
           </div>
 
           <div className="product-details">
