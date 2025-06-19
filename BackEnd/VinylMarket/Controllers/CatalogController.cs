@@ -28,31 +28,27 @@ namespace VinylMarket.Controllers
             return Ok(artists);
         }
 
-        [HttpGet("releases")]   
+        [HttpGet("releases")]
         public async Task<IActionResult> SearchReleases(
-            [FromQuery] string? keyword,
-            [FromQuery] int? artistId,
-            [FromQuery] int? genreId,
-            [FromQuery] int? yearFrom,
-            [FromQuery] int? yearTo,
-            [FromQuery] decimal? priceMin,
-            [FromQuery] decimal? priceMax,
-            [FromQuery] RecordCondition condition,
-            [FromQuery] bool includePrice = false,
-            CancellationToken ct = default)
+    [FromQuery] string? keyword,
+    [FromQuery] int? artistId,
+    [FromQuery] int? genreId,
+    [FromQuery] int? yearFrom,
+    [FromQuery] int? yearTo,
+    [FromQuery] decimal? priceMin,
+    [FromQuery] decimal? priceMax,
+    [FromQuery] RecordCondition condition,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 20,
+    CancellationToken ct = default)
         {
             var query = new SearchQueryDto(
-        keyword,
-        artistId,
-        genreId,
-        yearFrom,
-        yearTo,
-        priceMin,
-        priceMax,
-        MinCondition: null);
+                keyword, artistId, genreId,
+                yearFrom, yearTo, priceMin, priceMax,
+                MinCondition: null);
 
-            var releases = await _catalog.SearchReleasesAsync(query, ct);
-            return Ok(releases);
+            var result = await _catalog.SearchReleasesAsync(query, page, pageSize, ct);
+            return Ok(result);
         }
 
         [HttpGet("releases/{id:int}")]

@@ -33,35 +33,48 @@ namespace Application.Services.Implementation
             _mapper = mapper;
         }
 
-        public async Task<IReadOnlyList<ReleaseDto>> SearchReleasesAsync(
+        public async Task<PagedResultDto<ReleaseDto>> SearchReleasesAsync(
     SearchQueryDto query,
+    int page = 1,
+    int pageSize = 20,
     CancellationToken ct = default)
         {
-            IQueryable<RecordRelease> releasesQuery = _releaseRepo.Query()
+            if (page <= 0) page = 1;
+            if (pageSize <= 0) pageSize = 20;
+
+            IQueryable<RecordRelease> q = _releaseRepo.Query()
                 .Include(r => r.Artist)
                 .Include(r => r.Genre);
-
             if (!string.IsNullOrWhiteSpace(query.Keyword))
-                releasesQuery = releasesQuery.Where(r => EF.Functions.ILike(r.Title, $"%{query.Keyword}%"));
+                q = q.Where(r => EF.Functions.ILike(r.Title, $"%{query.Keyword}%"));
 
-            if (query.ArtistId.HasValue)
-                releasesQuery = releasesQuery.Where(r => r.ArtistId == query.ArtistId.Value);
+            if (query.ArtistId is not null)
+                q = q.Where(r => r.ArtistId == query.ArtistId);
 
-            if (query.GenreId.HasValue)
-                releasesQuery = releasesQuery.Where(r => r.GenreId == query.GenreId.Value);
+            if (query.GenreId is not null)
+                q = q.Where(r => r.GenreId == query.GenreId);
 
-            if (query.YearFrom.HasValue)
-                releasesQuery = releasesQuery.Where(r => r.Year >= query.YearFrom.Value);
+            if (query.YearFrom is not null)
+                q = q.Where(r => r.Year >= query.YearFrom);
 
-            if (query.YearTo.HasValue)
-                releasesQuery = releasesQuery.Where(r => r.Year <= query.YearTo.Value);
+            if (query.YearTo is not null)
+                q = q.Where(r => r.Year <= query.YearTo);
 
-            var list = await releasesQuery
-                .AsNoTracking()
-                .Take(100)
-                .ToListAsync(ct);
+            int total = await q.CountAsync(ct);
+            var pageItems = await q.AsNoTracking()
+                                   .Skip((page - 1) * pageSize)
+                                   .Take(pageSize)
+                                   .ToListAsync(ct);
 
-            return _mapper.Map<IReadOnlyList<ReleaseDto>>(list);
+            var dto = _mapper.Map<IReadOnlyList<ReleaseDto>>(pageItems);
+
+            return new PagedResultDto<ReleaseDto>
+            {
+                Items = dto,
+                Total = total,
+                Page = page,
+                PageSize = pageSize
+            };
         }
 
 
