@@ -11,5 +11,6 @@ namespace Domain.Entities
 
         public Customer Customer { get; set; }
         public ICollection<InventoryItem> Listings { get; set; } = [];
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }

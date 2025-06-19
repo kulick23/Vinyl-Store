@@ -39,10 +39,12 @@ namespace VinylRecordShop.Configurations
             services.AddScoped<ISellerProfileService, SellerProfileService>();
             services.AddScoped<IWishlistService, WishlistService>();
             services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<IReviewService, ReviewService>();
 
 
             // DAL repositories
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<ICartItemRepository, CartItemRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();

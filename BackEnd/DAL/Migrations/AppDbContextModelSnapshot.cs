@@ -390,6 +390,40 @@ namespace DAL.Migrations
                     b.ToTable("RefreshToken");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte>("Rating")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("SellerId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("SellerId");
+
+                    b.ToTable("Review");
+                });
+
             modelBuilder.Entity("Domain.Entities.SellerProfile", b =>
                 {
                     b.Property<int>("Id")
@@ -567,6 +601,25 @@ namespace DAL.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Review", b =>
+                {
+                    b.HasOne("Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.SellerProfile", "Seller")
+                        .WithMany("Reviews")
+                        .HasForeignKey("SellerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Seller");
+                });
+
             modelBuilder.Entity("Domain.Entities.SellerProfile", b =>
                 {
                     b.HasOne("Domain.Entities.Customer", "Customer")
@@ -613,6 +666,8 @@ namespace DAL.Migrations
             modelBuilder.Entity("Domain.Entities.SellerProfile", b =>
                 {
                     b.Navigation("Listings");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }
