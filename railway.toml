@@ -1,0 +1,7 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "./BackEnd/Dockerfile"
+
+[deploy]
+startCommand = "./BackEnd"
+restartPolicyType = "always"
