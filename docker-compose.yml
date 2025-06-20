@@ -3,7 +3,7 @@ version: "3.9"
 services:
   api:
     build:
-      context: /BackEnd         # подняться до корня проекта
+      context: ./BackEnd         # подняться до корня проекта
       dockerfile: Dockerfile
     ports:
       - "8080:80"
