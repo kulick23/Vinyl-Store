@@ -1,11 +1,7 @@
-version: '3.9'
-
 services:
   api:
     build:
-      context: .
-      dockerfile: VinylMarket/Dockerfile
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
+      context: ../  # подняться выше, чтобы видеть все папки
+      dockerfile: back/VinylMarket/Dockerfile
     ports:
       - "8080:80"
