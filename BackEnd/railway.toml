@@ -1,7 +1,7 @@
 [build]
-builder = "dockerfile"
-dockerfilePath = "./BackEnd/Dockerfile"
+builder = "nixpacks"
+
 
 [deploy]
-startCommand = "./BackEnd"
+startCommand = "dotnet VinylMarket.dll"
 restartPolicyType = "always"
