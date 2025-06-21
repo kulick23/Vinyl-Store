@@ -135,8 +135,15 @@ namespace BLL.Services
                    await _genreRepo.Query().AsNoTracking().ToListAsync(ct));
 
         public async Task<IReadOnlyList<ReleaseDto>> GetAllReleasesAsync(CancellationToken ct = default)
-            => _mapper.Map<IReadOnlyList<ReleaseDto>>(
-                   await _releaseRepo.Query().AsNoTracking().ToListAsync(ct));
+        {
+            var list = await _releaseRepo.Query()
+                        .Include(r => r.Artist)
+                        .Include(r => r.Genre)
+                        .AsNoTracking()
+                        .ToListAsync(ct);
+
+            return _mapper.Map<IReadOnlyList<ReleaseDto>>(list);
+        }
 
         public async Task<IReadOnlyList<SellerProfileDto>> GetAllSellersAsync(CancellationToken ct = default)
             => _mapper.Map<IReadOnlyList<SellerProfileDto>>(
