@@ -67,9 +67,11 @@ namespace VinylRecordShop.Configurations
             services.AddTransient<IEmailProvider, EmailProvider>();
 
             builder.Services.AddSingleton<IPathProvider, PathProvider>();
+            
 
+            //DB
             builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("Railway")));
 
             return builder;
         }
