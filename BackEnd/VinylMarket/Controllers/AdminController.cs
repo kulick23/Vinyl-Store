@@ -118,7 +118,7 @@ namespace VinylMarket.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadImage(
         int id,
-        [FromForm] ImageUploadForm form,   // ← один [FromForm]-объект
+        [FromForm] ImageUploadForm form,
         CancellationToken ct)
         {
             await _admin.UpdateReleaseImageAsync(id, form.Image, ct);

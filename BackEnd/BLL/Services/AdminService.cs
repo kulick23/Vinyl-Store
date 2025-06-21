@@ -213,19 +213,34 @@ namespace BLL.Services
 
         /* ========== DELETE ========== */
 
-        public Task DeleteArtistAsync(int id, CancellationToken ct = default)
-            => _artistRepo.RemoveAsync(id);
+        public async Task DeleteArtistAsync(int id, CancellationToken ct = default)
+        {
+            await _artistRepo.RemoveAsync(id);
+            await _uow.SaveChangesAsync();
+        }
 
-        public Task DeleteGenreAsync(int id, CancellationToken ct = default)
-            => _genreRepo.RemoveAsync(id);
+        public async Task DeleteGenreAsync(int id, CancellationToken ct = default)
+        { 
+            await _genreRepo.RemoveAsync(id);
+            await _uow.SaveChangesAsync();
+        }
 
-        public Task DeleteReleaseAsync(int id, CancellationToken ct = default)
-            => _releaseRepo.RemoveAsync(id);
+        public async Task DeleteReleaseAsync(int id, CancellationToken ct = default)
+        {
+            await _releaseRepo.RemoveAsync(id);
+            await _uow.SaveChangesAsync();
+        }
 
-        public Task DeleteSellerAsync(int id, CancellationToken ct = default)
-            => _sellerRepo.RemoveAsync(id);
+        public async Task DeleteSellerAsync(int id, CancellationToken ct = default)
+        {
+            await _sellerRepo.RemoveAsync(id);
+            await _uow.SaveChangesAsync();
+        }
 
-        public Task DeleteUserAsync(int id, CancellationToken ct = default)
-            => _customerRepo.RemoveAsync(id);
+        public async Task DeleteUserAsync(int id, CancellationToken ct = default)
+        {
+            await _customerRepo.RemoveAsync(id);
+            await _uow.SaveChangesAsync();
+        }
     }
 }
