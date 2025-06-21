@@ -8,8 +8,8 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
-        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Default")
-                               ?? "Host=localhost;Port=5432;Database=VinylMarket;Username=postgres;Password=123";
+        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Railway")
+                               ?? "Host=switchback.proxy.rlwy.net;Port=35085;Database=railway;Username=postgres;password=aYAkemLEtHtMucPYbVagzYQVMBLnBBOk;ssl Mode=Require;Trust Server Certificate=true;";
 
         optionsBuilder.UseNpgsql(connectionString);
 
