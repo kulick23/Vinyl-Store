@@ -6,7 +6,7 @@ namespace Application.Services
 {
     public interface ISellerProfileService
     {
-        Task<SellerProfileDto?> GetProfileAsync(int sellerId, CancellationToken ct = default);
+        Task<SellerPageDto?> GetProfileAsync(int sellerId, CancellationToken ct = default);
         Task UpdateProfileAsync(int sellerId, SellerProfileUpdateDto dto, CancellationToken ct = default);
     }
 }
