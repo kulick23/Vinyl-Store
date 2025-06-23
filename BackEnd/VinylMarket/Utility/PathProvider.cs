@@ -12,5 +12,5 @@ public sealed class PathProvider : IPathProvider
         Directory.CreateDirectory(ImagesRoot);
     }
 
-    public string ImagesRoot { get; }
+    public string ImagesRoot { get; } 
 }

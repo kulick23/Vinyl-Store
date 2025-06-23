@@ -9,6 +9,10 @@ namespace BLL.AutoMapper
         public SellerProfileProfile()
         {
             CreateMap<SellerProfile, SellerProfileDto>();
+            CreateMap<SellerProfile, SellerPageDto>();
+            CreateMap<SellerProfileUpdateDto, SellerProfile>();
+            CreateMap<SellerProfile, SellerProfileUpdateDto>();
+            CreateMap<SellerProfileCreateDto, SellerProfile>();
         }
     }
 }
