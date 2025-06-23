@@ -1,7 +1,9 @@
 ﻿using Application.DTOs;
 using Application.Services;
 using AutoMapper;
+using AutoMapper.Configuration;
 using DAL.Interfaces;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
@@ -57,6 +59,24 @@ namespace BLL.Services
             entity.Description = dto.Description;
 
             await _uow.SaveChangesAsync(ct);
+        }
+
+        public async Task<SellerProfileDto> CreateProfileAsync(
+            int customerId,
+            SellerProfileCreateDto dto,
+            CancellationToken ct = default)
+        {
+            if (await _repo.Query().AnyAsync(s => s.CustomerId == customerId, ct))
+                throw new InvalidOperationException("Profile already exists");
+
+            var entity = _mapper.Map<SellerProfile>(dto);
+            entity.CustomerId = customerId;
+            entity.Rating = 0;
+
+            await _repo.AddAsync(entity, ct);
+            await _uow.SaveChangesAsync(ct);
+
+            return _mapper.Map<SellerProfileDto>(entity);
         }
     }
 }

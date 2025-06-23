@@ -8,5 +8,6 @@ namespace Application.Services
     {
         Task<SellerPageDto?> GetProfileAsync(int sellerId, CancellationToken ct = default);
         Task UpdateProfileAsync(int sellerId, SellerProfileUpdateDto dto, CancellationToken ct = default);
+        Task<SellerProfileDto> CreateProfileAsync(int customerId, SellerProfileCreateDto dto, CancellationToken ct = default);
     }
 }
