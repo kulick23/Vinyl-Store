@@ -46,7 +46,5 @@ namespace Web.Api.Controllers
                     new { id = profile.CustomerId });
         }
 
-
-
     }
 }
