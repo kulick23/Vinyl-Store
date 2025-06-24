@@ -1,5 +1,5 @@
-﻿using Application.DTOs;
-using Application.Services;
+﻿using BLL.DTO;
+using BLL.Services;
 using AutoMapper;
 using AutoMapper.Configuration;
 using DAL.Interfaces;

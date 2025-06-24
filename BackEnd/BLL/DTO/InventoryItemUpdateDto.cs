@@ -1,6 +1,6 @@
 using Domain.Entities;
 
-namespace Application.DTOs
+namespace BLL.DTO
 {
     public record InventoryItemUpdateDto(
         decimal? Price,

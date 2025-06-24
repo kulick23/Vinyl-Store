@@ -2,9 +2,9 @@
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.DTOs;
-using Application.Services;
-using BLL.DTOs;
+using BLL.DTO;
+using BLL.Services;
+using BLL.DTO;
 using BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

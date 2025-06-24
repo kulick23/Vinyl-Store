@@ -1,10 +1,10 @@
-﻿using Application.DTOs;
+﻿using BLL.DTO;
 using AutoMapper;
 using DAL.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Services.Implementation
+namespace BLL.Services.Implementation
 {
     public class InventoryService : IInventoryService
     {

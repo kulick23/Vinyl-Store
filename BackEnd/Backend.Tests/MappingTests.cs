@@ -1,8 +1,6 @@
-﻿using Application.DTOs;
+﻿using BLL.DTO;
 using AutoMapper;
 using BLL.AutoMapper;
-using BLL.DTO;
-using BLL.DTOs;
 using Domain.Entities;
 using System;
 using System.Linq;

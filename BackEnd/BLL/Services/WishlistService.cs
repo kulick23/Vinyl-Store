@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+﻿using BLL.DTO;
 using AutoMapper;
 using BLL.Interfaces;
 using DAL.Interfaces;

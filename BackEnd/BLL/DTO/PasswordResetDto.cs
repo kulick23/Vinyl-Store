@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Application.DTOs
+namespace BLL.DTO
 {
     public record PasswordResetDto(
         Guid Token,

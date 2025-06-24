@@ -1,6 +1,6 @@
-﻿using Application.DTOs;
+﻿using BLL.DTO;
 using BLL.DTO;
-using BLL.DTOs;
+using BLL.DTO;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 

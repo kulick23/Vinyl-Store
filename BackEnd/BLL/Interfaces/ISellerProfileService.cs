@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Application.DTOs;
+using BLL.DTO;
 
-namespace Application.Services
+namespace BLL.Services
 {
     public interface ISellerProfileService
     {

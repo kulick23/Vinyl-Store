@@ -1,5 +1,5 @@
-﻿using Application.Services.Implementation;
-using Application.Services;
+﻿using BLL.Services.Implementation;
+using BLL.Services;
 using BLL.Interfaces;
 using BLL.Services;
 using DAL;

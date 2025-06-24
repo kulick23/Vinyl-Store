@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using BLL.DTOs;
+using BLL.DTO;
 
 namespace BLL.Interfaces
 {

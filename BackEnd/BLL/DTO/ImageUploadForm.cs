@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.DTOs;
+namespace BLL.DTO;
 
 public class ImageUploadForm
 {

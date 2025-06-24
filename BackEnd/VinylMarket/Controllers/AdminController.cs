@@ -1,7 +1,7 @@
-﻿using Application.DTOs;
+﻿using BLL.DTO;
 using AutoMapper;
 using BLL.DTO;
-using BLL.DTOs;
+using BLL.DTO;
 using BLL.Interfaces;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Authorization;

@@ -2,15 +2,15 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.DTOs;
-using Application.Services;
+using BLL.DTO;
+using BLL.Services;
 using AutoMapper;
 using BLL.DTO;
 using DAL.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Services.Implementation
+namespace BLL.Services.Implementation
 {
     public class CatalogService : ICatalogService
     {

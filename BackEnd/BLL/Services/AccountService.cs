@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.DTOs;
+using BLL.DTO;
 using DAL.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using BLL.DTOs;
+using BLL.DTO;
 using BLL.Interfaces;
 using System.Security.Cryptography;
 using System.Text;

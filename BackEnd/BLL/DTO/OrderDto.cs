@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Application.DTOs
+namespace BLL.DTO
 {
     public record OrderDto(
         int OrderId,

@@ -1,4 +1,4 @@
-﻿namespace BLL.DTOs
+﻿namespace BLL.DTO
 {
     public record class CustomerDto
     {

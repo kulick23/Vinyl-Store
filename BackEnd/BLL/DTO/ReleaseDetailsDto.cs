@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Application.DTOs
+namespace BLL.DTO
 {
     public record ReleaseDetailsDto(
         ReleaseDto Release,

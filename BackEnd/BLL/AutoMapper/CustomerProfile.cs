@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BLL.DTOs;
+using BLL.DTO;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;

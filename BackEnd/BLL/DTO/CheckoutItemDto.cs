@@ -1,4 +1,4 @@
-namespace Application.DTOs
+namespace BLL.DTO
 {
     public record CheckoutItemDto(
         int InventoryItemId,
