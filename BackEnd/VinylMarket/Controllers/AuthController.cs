@@ -6,6 +6,7 @@ using Application.DTOs;
 using Application.Services;
 using BLL.DTOs;
 using BLL.Interfaces;
+using DAL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -107,6 +108,27 @@ namespace VinylMarket.Controllers
 
             var updated = await _account.UpdateProfileAsync(userId, dto, ct);
             return Ok(updated);
+        }
+
+        [Authorize]
+        [HttpPut("account/avatar")]
+        public async Task<IActionResult> UploadAvatar(
+    IFormFile file,
+    [FromServices] IImageStore store,
+    [FromServices] IAccountRepository accRepo,
+    [FromServices] IUnitOfWork unitOfWork,
+    CancellationToken ct = default)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var user = await accRepo.GetByIdAsync(userId, ct) ?? throw new KeyNotFoundException();
+
+            if (!string.IsNullOrEmpty(user.AvatarPath))
+                await store.DeleteAsync(user.AvatarPath);
+
+            user.AvatarPath = await store.SaveImageAsync(file, "avatars", 256, ct);
+            await unitOfWork.SaveChangesAsync(ct);
+
+            return Ok(new { user.AvatarPath });
         }
 
         [HttpPost("refresh")]

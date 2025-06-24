@@ -14,6 +14,8 @@ namespace Domain.Entities
         public string LastName { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
 
+        public string? AvatarPath { get; set; }
+
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? LastLoginAt { get; set; }

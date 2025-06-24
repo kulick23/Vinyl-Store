@@ -66,6 +66,7 @@ namespace VinylRecordShop.Configurations
             services.Configure<EmailOptions>(cfg.GetSection(EmailOptions.Section));
             services.AddTransient<IEmailProvider, EmailProvider>();
 
+            services.AddScoped<IImageStore, ImageStore>();
             builder.Services.AddSingleton<IPathProvider, PathProvider>();
             
 

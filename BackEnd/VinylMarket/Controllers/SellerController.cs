@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.DTOs;
 using Application.Services;
+using DAL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,6 +45,30 @@ namespace Web.Api.Controllers
             return RedirectToAction(
                     nameof(GetPublicSellerProfile),
                     new { id = profile.CustomerId });
+        }
+
+
+        [HttpPut("avatar")]
+        public async Task<IActionResult> UploadSellerAvatar(
+    IFormFile file,
+    [FromServices] IImageStore store,
+    [FromServices] ISellerProfileRepository repo,
+    [FromServices] IUnitOfWork unitOfWork,
+    CancellationToken ct = default)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var profile = repo.Query()
+                    .FirstOrDefault(s => s.CustomerId == userId)
+                         ?? throw new InvalidOperationException("Become seller first");
+
+            if (!string.IsNullOrEmpty(profile.AvatarPath))
+                await store.DeleteAsync(profile.AvatarPath);
+
+            profile.AvatarPath = await store.SaveImageAsync(file, "avatars", 256, ct);
+            await unitOfWork.SaveChangesAsync(ct);
+
+            return Ok(new { profile.AvatarPath });
         }
 
     }

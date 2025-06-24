@@ -10,6 +10,8 @@ namespace Domain.Entities
         public int GenreId { get; set; }
         public string? ImageUrl { get; set; }
 
+        public string? ImagePath { get; set; }
+
         public Artist Artist { get; set; } = null!;
         public Genre Genre { get; set; } = null!;
         public ICollection<InventoryItem> Listings { get; set; } = [];
