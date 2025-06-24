@@ -1,104 +1,109 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using DAL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
-namespace VinylMarket.Controllers
+namespace VinylMarket.Controllers;
+
+[Authorize]
+[ApiController]
+[Route("api/inventory")]
+public sealed class InventoryController : ControllerBase
 {
-    [ApiController]
-    [Authorize(Roles = "Seller")]
-    [Route("api/inventory")]
-    public class InventoryController : Controller
+    private readonly IInventoryService _inventory;
+    private readonly ISellerProfileRepository _sellers;
+
+    public InventoryController(
+        IInventoryService inventory,
+        ISellerProfileRepository sellers)
     {
-        private readonly IInventoryService _inventory;
+        _inventory = inventory;
+        _sellers = sellers;
+    }
+    private async Task<int> GetSellerProfileIdAsync(CancellationToken ct)
+    {
+        int customerId = int.Parse(
+            User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? throw new InvalidOperationException("JWT has no sub"));
 
-        public InventoryController(IInventoryService inventoryService)
-        {
-            _inventory = inventoryService;
-        }
-        private int GetSellerId()
-        {
-            var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
-                      ?? throw new InvalidOperationException("User ID not found in token");
-            return int.Parse(sub);
-        }
+        var profile = await _sellers.Query()
+                          .FirstOrDefaultAsync(s => s.CustomerId == customerId, ct);
 
-        [HttpGet]
-        [Authorize(Roles = "Seller")]
-        public async Task<IActionResult> GetAllListings(CancellationToken ct = default)
-        {
-            var sellerId = GetSellerId();
+        return profile?.Id
+               ?? throw new InvalidOperationException(
+                      "You must create a seller profile first.");
+    }
 
-            var listings = await _inventory.GetSellerListingsAsync(sellerId, ct);
-            return Ok(listings);
-        }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetListingDetails(
-            int id,
-            CancellationToken ct = default)
-        {
-            var listing = await _inventory.GetListingAsync(id, ct);
-            if (listing is null)
-                return NotFound();
-            return Ok(listing);
-        }
+    [HttpGet]
+    public async Task<IActionResult> GetAllListings(CancellationToken ct = default)
+    {
+        int sellerId = await GetSellerProfileIdAsync(ct);
+        var list = await _inventory.GetSellerListingsAsync(sellerId, ct);
+        return Ok(list);
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateListing(
-            [FromBody] InventoryItemCreateDto dto,
-            CancellationToken ct = default)
-        {
-            var sellerId = GetSellerId();
-            var created = await _inventory.CreateListingAsync(sellerId, dto, ct);
-                
-            return CreatedAtAction(
-                nameof(GetListingDetails),
-                new { id = created.Id },
-                created
-            );
-        }
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetListingDetails(int id, CancellationToken ct = default)
+    {
+        var dto = await _inventory.GetListingAsync(id, ct);
+        return dto is null ? NotFound() : Ok(dto);
+    }
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> ArchiveListing(
-            int id,
-            CancellationToken ct = default)
-        {
-            var sellerId = GetSellerId();
-            await _inventory.ArchiveListingAsync(sellerId, id, ct);
 
-            return NoContent();
-        }
+    [HttpPost]
+    public async Task<IActionResult> CreateListing(
+        [FromBody] InventoryItemCreateDto dto,
+        CancellationToken ct = default)
+    {
+        int sellerId = await GetSellerProfileIdAsync(ct);
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateListingFull(
-            int id,
-            [FromBody] InventoryItemCreateDto dto,
-            CancellationToken ct = default)
-        {
-            var sellerId = GetSellerId();
+        var created = await _inventory.CreateListingAsync(sellerId, dto, ct);
 
-            var updateDto = new InventoryItemUpdateDto(
-                dto.Price,
-                dto.Quantity,
-                dto.Condition,
-                dto.Notes,
-                null
-            );
-            await _inventory.UpdateListingAsync(sellerId, id, updateDto, ct);
-            return NoContent();
-        }
+        return CreatedAtAction(nameof(GetListingDetails),
+                               new { id = created.Id },
+                               created);
+    }
 
-        [HttpPatch("{id:int}")]
-        public async Task<IActionResult> UpdateListingPartial(
-            int id,
-            [FromBody] InventoryItemUpdateDto dto,
-            CancellationToken ct = default)
-        {
-            var sellerId = GetSellerId();
-            await _inventory.UpdateListingAsync(sellerId, id, dto, ct);
-            return NoContent();
-        }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateListingFull(
+        int id,
+        [FromBody] InventoryItemCreateDto dto,
+        CancellationToken ct = default)
+    {
+        int sellerId = await GetSellerProfileIdAsync(ct);
+
+        var upd = new InventoryItemUpdateDto(
+                      dto.Price,
+                      dto.Quantity,
+                      dto.Condition,
+                      dto.Notes,
+                      null);
+
+        await _inventory.UpdateListingAsync(sellerId, id, upd, ct);
+        return NoContent();
+    }
+
+    [HttpPatch("{id:int}")]
+    public async Task<IActionResult> UpdateListingPartial(
+        int id,
+        [FromBody] InventoryItemUpdateDto dto,
+        CancellationToken ct = default)
+    {
+        int sellerId = await GetSellerProfileIdAsync(ct);
+        await _inventory.UpdateListingAsync(sellerId, id, dto, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> ArchiveListing(int id, CancellationToken ct = default)
+    {
+        int sellerId = await GetSellerProfileIdAsync(ct);
+        await _inventory.ArchiveListingAsync(sellerId, id, ct);
+        return NoContent();
     }
 }
