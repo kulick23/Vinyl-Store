@@ -75,10 +75,11 @@ export const ShopPage: React.FC = () => {
     }
 
     if (error) {
-      return <div>Error loading records</div>
+      console.error("Error loading records:", error)
+      return <div>Error loading records: {JSON.stringify(error)}</div>
     }
 
-    if (records.length === 0) {
+    if (!records || records.length === 0) {
       return <div>No records found</div>
     }
 

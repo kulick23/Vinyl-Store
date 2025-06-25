@@ -114,9 +114,21 @@
     &--lang {
       display: flex;
       gap: 3px;
+      min-width: 60px;
+      justify-content: center;
 
       @include bp.phone {
         display: none;
+      }
+
+      button {
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+        
+        &:hover {
+          background-color: var(--hover-background);
+        }
       }
     }
 
@@ -124,7 +136,7 @@
       width: 16px;
       height: 16px;
       filter: var(--icon-filter);
-      transition: filter 0.3s;
+      transition: filter 0.3s ease;
     }
 
     &--theme {
@@ -135,6 +147,12 @@
       height: 36px;
       position: relative;
       cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: var(--hover-background);
+      }
 
       @include bp.phone {
         width: 32px;
@@ -148,8 +166,8 @@
         top: 40%;
         left: 40%;
         transition:
-          transform 0.2s,
-          z-index 0.2s;
+          transform 0.2s ease,
+          z-index 0.2s ease;
 
         @include bp.phone {
           width: 14px;
@@ -171,8 +189,16 @@
   &__link {
     color: var(--text-color);
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.2s ease;
     font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    min-width: fit-content;
+
+    &:hover {
+      background-color: var(--hover-background);
+    }
 
     @include bp.phone {
       font-size: 18px;
@@ -181,6 +207,7 @@
 
     &--active {
       color: var(--orange-color);
+      background-color: var(--hover-background);
     }
   }
 

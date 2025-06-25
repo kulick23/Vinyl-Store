@@ -382,6 +382,36 @@
                 color: white;
               }
             }
+
+            .email-status-container {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              flex-wrap: wrap;
+
+              .resend-confirmation-btn {
+                background: linear-gradient(135deg, var(--orange-color) 0%, var(--orange-hover) 100%);
+                color: white;
+                border: none;
+                padding: 6px 14px;
+                border-radius: 15px;
+                font-size: 11px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+
+                &:hover {
+                  transform: translateY(-1px);
+                  box-shadow: 0 4px 12px rgba(229, 89, 46, 0.3);
+                }
+
+                &:active {
+                  transform: translateY(0);
+                }
+              }
+            }
           }
 
           .roles-container {

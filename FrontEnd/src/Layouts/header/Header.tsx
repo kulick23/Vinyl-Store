@@ -56,8 +56,14 @@ export const Header: React.FC = () => {
   // Initialize theme and language from localStorage
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
+    const savedLanguage = localStorage.getItem('language')
+    
     if (savedTheme) {
       setIsDarkTheme(savedTheme === 'dark')
+    }
+    
+    if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'ru')) {
+      i18n.changeLanguage(savedLanguage)
     }
   }, [])
 

@@ -9,6 +9,7 @@ import type {
   Artist,
   Listing,
   ReleaseResponse,
+  ReleasesResponse,
   FilterOptions,
 } from './types';
 
@@ -48,6 +49,7 @@ export const catalogApi = createApi({
 
     getReleases: builder.query<VinylRecord[], FilterOptions>({
       query: (params) => ({ url: 'releases', params }),
+      transformResponse: (response: ReleasesResponse) => response.items,
       providesTags: ['Releases'],
     }),
 

@@ -11,6 +11,7 @@ import {
   useDeleteCartItemMutation,
 } from "../../redux/cart/api"
 import { useGetInventoryByIdQuery } from "../../redux/inventory/api"
+import { useGetReleaseByIdQuery } from "../../redux/catalog/api"
 import { useCreateOrderMutation } from "../../redux/orders/api"
 import { useNotification } from "../../hooks/useNotification"
 import { ConfirmDialog } from "../ConfirmDialog"
@@ -23,7 +24,12 @@ const CartItemComponent: React.FC<{
   onUpdateQuantity: (itemId: number, quantity: number) => void
   onRemove: (itemId: number) => void
 }> = ({ item, onUpdateQuantity, onRemove }) => {
-  const { data: inventoryItem } = useGetInventoryByIdQuery(item.inventoryItemId)
+  const { data: inventoryItem, error: inventoryError } = useGetInventoryByIdQuery(item.inventoryItemId, {
+    skip: !item.inventoryItemId
+  })
+  const { data: releaseData, error: releaseError } = useGetReleaseByIdQuery(inventoryItem?.releaseId || 0, {
+    skip: !inventoryItem?.releaseId
+  })
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity > 0) {
@@ -31,12 +37,60 @@ const CartItemComponent: React.FC<{
     }
   }
 
+  // Get the product image from release data with fallbacks
+  const productImage = releaseData?.release?.imageUrl || "/placeholder.svg?height=120&width=120"
+  const productTitle = item.releaseTitle || releaseData?.release?.title || "Product"
+  const artistName = releaseData?.release?.artist || "Unknown Artist"
+
+  // Show a simplified version if we can't load full details due to auth issues
+  if (inventoryError || releaseError) {
+    return (
+      <div className="cart-item">
+        <img 
+          src="/placeholder.svg?height=120&width=120" 
+          alt={productTitle}
+          className="item-image"
+        />
+        <div className="item-details">
+          <h3 className="item-title">{productTitle}</h3>
+          <p className="item-artist">{artistName}</p>
+          <p className="item-price">${item.unitPrice}</p>
+          <div className="item-controls">
+            <div className="quantity-controls">
+              <button onClick={() => handleQuantityChange(item.quantity - 1)} disabled={item.quantity <= 1}>
+                −
+              </button>
+              <input
+                type="number"
+                value={item.quantity}
+                min={1}
+                onChange={(e) => handleQuantityChange(Number(e.target.value))}
+              />
+              <button onClick={() => handleQuantityChange(item.quantity + 1)}>+</button>
+            </div>
+            <button className="remove-button" onClick={() => onRemove(item.cartItemId)}>
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="cart-item">
-      <img src="/placeholder.svg?height=120&width=120" alt="Vinyl Record" className="item-image" />
+      <img 
+        src={productImage} 
+        alt={productTitle}
+        className="item-image"
+        onError={(e) => {
+          const target = e.target as HTMLImageElement;
+          target.src = "/placeholder.svg?height=120&width=120";
+        }}
+      />
       <div className="item-details">
-        <h3 className="item-title">{item.releaseTitle}</h3>
-        <p className="item-artist">Inventory Item ID: {item.inventoryItemId}</p>
+        <h3 className="item-title">{productTitle}</h3>
+        <p className="item-artist">{artistName}</p>
         <p className="item-price">${item.unitPrice}</p>
         <div className="item-controls">
           <div className="quantity-controls">

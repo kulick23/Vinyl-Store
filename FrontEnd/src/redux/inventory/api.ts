@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import { createBaseQuery } from '../base'
 import type {
   InventoryItem,
   CreateInventoryPayload,
@@ -8,9 +9,8 @@ import type {
 
 export const inventoryApi = createApi({
   reducerPath: 'inventoryApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: '/api/inventory',
-    credentials: 'include'
+  baseQuery: createBaseQuery({
+    baseUrl: '/api/inventory'
   }),
   tagTypes: ['Inventory'],
   endpoints: builder => ({
