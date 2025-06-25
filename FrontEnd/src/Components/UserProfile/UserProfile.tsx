@@ -194,7 +194,7 @@ export const UserProfile: React.FC = () => {
                     <span className="info-label">Email Status:</span>
                     <div className="email-status-container">
                       <span className={`info-value status-badge ${user.isEmailConfirmed ? 'confirmed' : 'pending'}`}>
-                        {user.isEmailConfirmed ? '✓ ' + t('profile.emailConfirmed') : '⚠ ' + t('profile.emailNotConfirmed')}
+                        {user.isEmailConfirmed ? '✅ ' + t('profile.emailConfirmed') : '❌ ' + t('profile.emailNotConfirmed')}
                       </span>
                       {!user.isEmailConfirmed && (
                         <button 

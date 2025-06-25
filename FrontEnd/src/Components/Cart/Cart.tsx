@@ -206,11 +206,10 @@ export const Cart: React.FC = () => {
     return (
       <div className="cart-page">
         <div className="empty-cart">
-          <div className="empty-cart-icon">🛒</div>
-          <h1 className="empty-cart-title">Your cart is empty</h1>
-          <p className="empty-cart-text">Looks like you haven't added any vinyl records to your cart yet.</p>
-          <Link to="/shop" className="shop-button">
-            Start Shopping
+          <h2>{t("cart.emptyTitle")}</h2>
+          <p>{t("cart.emptyMessage")}</p>
+          <Link to="/shop" className="continue-shopping-link">
+            {t("cart.shopNow")}
           </Link>
         </div>
       </div>
@@ -225,9 +224,9 @@ export const Cart: React.FC = () => {
   return (
     <div className="cart-page">
       <div className="cart-header">
-        <h1>Shopping Cart ({cartItems.length} items)</h1>
+        <h1>{t("cart.title")} ({cartItems.length} {t("cart.itemsInCart")})</h1>
         <button className="clear-cart-button" onClick={handleClearCartClick} disabled={cartItems.length === 0}>
-          Clear Cart
+          {t("cart.clear")}
         </button>
       </div>
 
@@ -279,7 +278,7 @@ export const Cart: React.FC = () => {
             onClick={handleCheckout}
             disabled={isCheckingOut || cartItems.length === 0}
           >
-            {isCheckingOut ? "Processing..." : "Proceed to Checkout"}
+            {isCheckingOut ? t("cart.checkingOut") : t("cart.checkout")}
           </button>
         </div>
       </div>

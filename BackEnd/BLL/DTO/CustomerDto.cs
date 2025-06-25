@@ -8,5 +8,7 @@
         public string LastName { get; init; } = default!;
         public string? Phone { get; init; }
         public bool IsEmailConfirmed { get; init; }
+        public DateTime CreatedAt { get; init; }
+        public DateTime? LastLoginAt { get; init; }
     }
 }

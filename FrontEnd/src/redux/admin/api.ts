@@ -122,6 +122,21 @@ export const adminApi = createApi({
       }),
       invalidatesTags: ['AdminReleases']
     }),
+    uploadReleaseImage: builder.mutation<void, { releaseId: number; imageFile: File }>({
+      query: ({ releaseId, imageFile }) => {
+        const formData = new FormData()
+        formData.append('Image', imageFile)
+        return {
+          url: `releases/${releaseId}/image`,
+          method: 'PUT',
+          body: formData,
+        }
+      },
+      invalidatesTags: (res, err, { releaseId }) => [
+        { type: 'AdminRelease', id: releaseId },
+        'AdminReleases'
+      ]
+    }),
 
     // SELLERS
     getAdminSellers: builder.query<AdminSeller[], void>({
@@ -206,6 +221,7 @@ export const {
   useCreateAdminReleaseMutation,
   useUpdateAdminReleaseMutation,
   useDeleteAdminReleaseMutation,
+  useUploadReleaseImageMutation,
 
   useGetAdminSellersQuery,
   useCreateAdminSellerMutation,

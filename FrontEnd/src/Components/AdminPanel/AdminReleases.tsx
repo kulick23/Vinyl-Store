@@ -8,6 +8,7 @@ import {
   useCreateAdminReleaseMutation,
   useUpdateAdminReleaseMutation,
   useDeleteAdminReleaseMutation,
+  useUploadReleaseImageMutation,
 } from "../../redux/admin/api"
 import { useGetAdminArtistsQuery, useGetAdminGenresQuery } from "../../redux/admin/api"
 import type { AdminRelease } from "../../redux/admin/types"
@@ -24,6 +25,8 @@ const AdminReleases: React.FC = () => {
     year: new Date().getFullYear(),
     artistId: 0,
     genreId: 0,
+    imageFile: null as File | null,
+    imageUrl: "",
   })
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [releaseToDelete, setReleaseToDelete] = useState<number | null>(null)
@@ -34,13 +37,20 @@ const AdminReleases: React.FC = () => {
   const [createRelease] = useCreateAdminReleaseMutation()
   const [updateRelease] = useUpdateAdminReleaseMutation()
   const [deleteRelease] = useDeleteAdminReleaseMutation()
+  const [uploadImage] = useUploadReleaseImageMutation()
   const { showSuccess, showError } = useNotification()
+
+  const resetForm = () => {
+    setFormData({ title: "", year: new Date().getFullYear(), artistId: 0, genreId: 0, imageFile: null, imageUrl: "" })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.title.trim() || !formData.artistId || !formData.genreId) return
 
     try {
+      let releaseId: number
+      
       if (editingRelease) {
         await updateRelease({
           id: editingRelease.id,
@@ -51,19 +61,33 @@ const AdminReleases: React.FC = () => {
             genreId: formData.genreId,
           }
         }).unwrap()
+        releaseId = editingRelease.id
         setEditingRelease(null)
         showSuccess(t('admin.releases.updateSuccess'))
       } else {
-        await createRelease({
+        const result = await createRelease({
           title: formData.title,
           year: formData.year,
           artistId: formData.artistId,
           genreId: formData.genreId,
         }).unwrap()
+        releaseId = result.id
         setIsCreating(false)
         showSuccess(t('admin.releases.createSuccess'))
       }
-      setFormData({ title: "", year: new Date().getFullYear(), artistId: 0, genreId: 0 })
+      
+      // Upload image if provided
+      if (formData.imageFile) {
+        try {
+          await uploadImage({ releaseId, imageFile: formData.imageFile }).unwrap()
+          showSuccess(t('admin.releases.imageUploadSuccess'))
+        } catch (imageError) {
+          console.error("Failed to upload image:", imageError)
+          showError(t('admin.releases.imageUploadError'))
+        }
+      }
+      
+      resetForm()
     } catch (error) {
       console.error("Failed to save release:", error)
       showError(t('admin.releases.saveError'))
@@ -81,6 +105,8 @@ const AdminReleases: React.FC = () => {
       year: release.year,
       artistId: artist?.id || 0,
       genreId: genre?.id || 0,
+      imageFile: null,
+      imageUrl: release.imageUrl,
     })
     setIsCreating(false)
   }
@@ -112,7 +138,7 @@ const AdminReleases: React.FC = () => {
   const handleCancel = () => {
     setIsCreating(false)
     setEditingRelease(null)
-    setFormData({ title: "", year: new Date().getFullYear(), artistId: 0, genreId: 0 })
+    resetForm()
   }
 
   if (isLoading) {
@@ -208,6 +234,24 @@ const AdminReleases: React.FC = () => {
                 <option key={genre.id} value={genre.id}>{genre.name}</option>
               ))}
             </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="releaseImage">{t('admin.releases.form.image')}</label>
+            <input
+              type="file"
+              id="releaseImage"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                setFormData({ ...formData, imageFile: file || null })
+              }}
+            />
+            {formData.imageUrl && (
+              <div className="current-image">
+                <p>Current image:</p>
+                <img src={formData.imageUrl} alt="Release cover" style={{ maxWidth: "200px", maxHeight: "200px" }} />
+              </div>
+            )}
           </div>
           <div className="form-actions">
             <button type="submit" className="primary">

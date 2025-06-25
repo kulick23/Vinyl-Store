@@ -212,7 +212,7 @@ const AdminUsers: React.FC = () => {
               </td>
               <td>{user.phone || t('admin.users.table.notAvailable')}</td>
               <td>{user.isEmailConfirmed ? "✅" : "❌"}</td>
-              <td>{new Date(user.lastLoginAt).toLocaleDateString()}</td>
+              <td>{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : t('admin.users.table.notAvailable')}</td>
               <td>
                 <div className="action-buttons">
                   <button onClick={() => handleEdit(user)} className="edit" disabled={editingUser !== null}>

@@ -471,6 +471,8 @@
       "createSuccess": "Релиз успешно создан!",
       "updateSuccess": "Релиз успешно обновлен!",
       "deleteSuccess": "Релиз успешно удален!",
+      "imageUploadSuccess": "Изображение успешно загружено!",
+      "imageUploadError": "Не удалось загрузить изображение. Попробуйте еще раз.",
       "saveError": "Не удалось сохранить релиз. Попробуйте еще раз.",
       "deleteError": "Не удалось удалить релиз. Попробуйте еще раз.",
       "deleteConfirmTitle": "Удалить релиз",
@@ -484,6 +486,7 @@
         "genrePlaceholder": "Выберите жанр",
         "year": "Год",
         "yearPlaceholder": "Введите год релиза",
+        "image": "Изображение",
         "imageUrl": "URL изображения",
         "imageUrlPlaceholder": "Введите URL изображения",
         "createButton": "Создать релиз",
@@ -533,5 +536,32 @@
         "notAvailable": "Н/Д"
       }
     }
+  },
+  "cart": {
+    "title": "Корзина",
+    "emptyTitle": "Ваша корзина пуста",
+    "emptyMessage": "Добавьте товары в корзину, чтобы они появились здесь.",
+    "shopNow": "Перейти к покупкам",
+    "itemsInCart": "товаров в корзине",
+    "clear": "Очистить корзину",
+    "clearAll": "Очистить все",
+    "checkout": "Оформить заказ",
+    "checkingOut": "Оформление заказа...",
+    "quantity": "Количество",
+    "price": "Цена",
+    "total": "Итого",
+    "remove": "Удалить",
+    "updateQuantity": "Обновить количество",
+    "itemTotal": "Итого за товар",
+    "subtotal": "Промежуточный итог",
+    "shipping": "Доставка",
+    "tax": "Налог",
+    "grandTotal": "Общая сумма",
+    "proceedToCheckout": "Перейти к оплате",
+    "continueShopping": "Продолжить покупки",
+    "itemUnavailable": "Товар недоступен",
+    "loadingItem": "Загрузка товара...",
+    "errorLoadingItem": "Ошибка загрузки товара",
+    "outOfStock": "Нет в наличии"
   }
 }

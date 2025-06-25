@@ -471,6 +471,8 @@
       "createSuccess": "Release created successfully!",
       "updateSuccess": "Release updated successfully!",
       "deleteSuccess": "Release deleted successfully!",
+      "imageUploadSuccess": "Image uploaded successfully!",
+      "imageUploadError": "Failed to upload image. Please try again.",
       "saveError": "Failed to save release. Please try again.",
       "deleteError": "Failed to delete release. Please try again.",
       "deleteConfirmTitle": "Delete Release",
@@ -484,6 +486,7 @@
         "genrePlaceholder": "Select genre",
         "year": "Year",
         "yearPlaceholder": "Enter release year",
+        "image": "Image",
         "imageUrl": "Image URL",
         "imageUrlPlaceholder": "Enter image URL",
         "createButton": "Create Release",
@@ -533,5 +536,32 @@
         "notAvailable": "N/A"
       }
     }
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "emptyTitle": "Your cart is empty",
+    "emptyMessage": "Add items to your cart to see them here.",
+    "shopNow": "Start Shopping",
+    "itemsInCart": "items in cart",
+    "clear": "Clear Cart",
+    "clearAll": "Clear All",
+    "checkout": "Checkout",
+    "checkingOut": "Checking out...",
+    "quantity": "Quantity",
+    "price": "Price",
+    "total": "Total",
+    "remove": "Remove",
+    "updateQuantity": "Update Quantity",
+    "itemTotal": "Item Total",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "tax": "Tax",
+    "grandTotal": "Grand Total",
+    "proceedToCheckout": "Proceed to Checkout",
+    "continueShopping": "Continue Shopping",
+    "itemUnavailable": "Item unavailable",
+    "loadingItem": "Loading item...",
+    "errorLoadingItem": "Error loading item",
+    "outOfStock": "Out of stock"
   }
 }
