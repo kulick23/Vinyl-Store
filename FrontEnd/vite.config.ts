@@ -9,9 +9,9 @@ export default defineConfig({
     hmr: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://ibm-team-project-production.up.railway.app',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       }
     }
   },
