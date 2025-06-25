@@ -76,36 +76,27 @@ export const UserProfile: React.FC = () => {
 
   const handleSaveProfile = async () => {
     try {
-      // Only send fields that are actually changed and valid
-      const updateData: Record<string, string> = {}
-      
-      if (formData.firstName.trim() && formData.firstName !== user?.firstName) {
-        updateData.firstName = formData.firstName.trim()
+      // Prepare the complete profile data as expected by backend (CustomerUpdateDto)
+      const updateData: Record<string, string> = {
+        email: user?.email || "", // Backend requires email
+        firstName: formData.firstName.trim() || user?.firstName || "",
+        lastName: formData.lastName.trim() || user?.lastName || "",
+        phone: formData.phone.trim() || user?.phone || ""
       }
       
-      if (formData.lastName.trim() && formData.lastName !== user?.lastName) {
-        updateData.lastName = formData.lastName.trim()
-      }
-      
-      if (formData.phone.trim() && formData.phone !== user?.phone) {
-        updateData.phone = formData.phone.trim()
-      }
-      
-      // Don't send empty object
-      if (Object.keys(updateData).length === 0) {
-        showError("No changes to save.")
-        setIsEditing(false)
-        return
-      }
-
-      // Validate data before sending
-      if (updateData.firstName && updateData.firstName.length < 1) {
-        showError("First name cannot be empty.")
+      // Validate required fields
+      if (!updateData.email) {
+        showError("Email is required.")
         return
       }
       
-      if (updateData.lastName && updateData.lastName.length < 1) {
-        showError("Last name cannot be empty.")
+      if (!updateData.firstName) {
+        showError("First name is required.")
+        return
+      }
+      
+      if (!updateData.lastName) {
+        showError("Last name is required.")
         return
       }
 

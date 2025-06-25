@@ -22,8 +22,8 @@ const AdminReleases: React.FC = () => {
   const [formData, setFormData] = useState({
     title: "",
     year: new Date().getFullYear(),
-    artist: "",
-    genre: "",
+    artistId: 0,
+    genreId: 0,
   })
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [releaseToDelete, setReleaseToDelete] = useState<number | null>(null)
@@ -38,36 +38,32 @@ const AdminReleases: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.title.trim() || !formData.artist.trim() || !formData.genre.trim()) return
+    if (!formData.title.trim() || !formData.artistId || !formData.genreId) return
 
     try {
-      const releaseData = {
-        id: editingRelease?.id || 0,
-        title: formData.title,
-        year: formData.year,
-        artist: formData.artist,
-        genre: formData.genre,
-      }
-
       if (editingRelease) {
         await updateRelease({
           id: editingRelease.id,
           data: {
             title: formData.title,
             year: formData.year,
-            artistId: formData.artistId, // Use selected artist ID
-            genreId: formData.genreId, // Use selected genre ID
-            listings: []
+            artistId: formData.artistId,
+            genreId: formData.genreId,
           }
         }).unwrap()
         setEditingRelease(null)
         showSuccess(t('admin.releases.updateSuccess'))
       } else {
-        await createRelease(releaseData).unwrap()
+        await createRelease({
+          title: formData.title,
+          year: formData.year,
+          artistId: formData.artistId,
+          genreId: formData.genreId,
+        }).unwrap()
         setIsCreating(false)
         showSuccess(t('admin.releases.createSuccess'))
       }
-      setFormData({ title: "", year: new Date().getFullYear(), artist: "", genre: "" })
+      setFormData({ title: "", year: new Date().getFullYear(), artistId: 0, genreId: 0 })
     } catch (error) {
       console.error("Failed to save release:", error)
       showError(t('admin.releases.saveError'))
@@ -76,11 +72,15 @@ const AdminReleases: React.FC = () => {
 
   const handleEdit = (release: AdminRelease) => {
     setEditingRelease(release)
+    // Find the artist and genre IDs from the name strings
+    const artist = artists.find(a => a.name === release.artist)
+    const genre = genres.find(g => g.name === release.genre)
+    
     setFormData({
       title: release.title,
       year: release.year,
-      artist: release.artist,
-      genre: release.genre,
+      artistId: artist?.id || 0,
+      genreId: genre?.id || 0,
     })
     setIsCreating(false)
   }
@@ -112,7 +112,7 @@ const AdminReleases: React.FC = () => {
   const handleCancel = () => {
     setIsCreating(false)
     setEditingRelease(null)
-    setFormData({ title: "", year: new Date().getFullYear(), artist: "", genre: "" })
+    setFormData({ title: "", year: new Date().getFullYear(), artistId: 0, genreId: 0 })
   }
 
   if (isLoading) {
@@ -183,25 +183,31 @@ const AdminReleases: React.FC = () => {
           </div>
           <div className="form-group">
             <label htmlFor="releaseArtist">{t('admin.releases.form.artist')}</label>
-            <input
-              type="text"
+            <select
               id="releaseArtist"
-              value={formData.artist}
-              onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-              placeholder={t('admin.releases.form.artistPlaceholder')}
+              value={formData.artistId || ""}
+              onChange={(e) => setFormData({ ...formData, artistId: Number(e.target.value) })}
               required
-            />
+            >
+              <option value="">{t('admin.releases.form.artistPlaceholder')}</option>
+              {artists.map((artist) => (
+                <option key={artist.id} value={artist.id}>{artist.name}</option>
+              ))}
+            </select>
           </div>
           <div className="form-group">
             <label htmlFor="releaseGenre">{t('admin.releases.form.genre')}</label>
-            <input
-              type="text"
+            <select
               id="releaseGenre"
-              value={formData.genre}
-              onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
-              placeholder={t('admin.releases.form.genrePlaceholder')}
+              value={formData.genreId || ""}
+              onChange={(e) => setFormData({ ...formData, genreId: Number(e.target.value) })}
               required
-            />
+            >
+              <option value="">{t('admin.releases.form.genrePlaceholder')}</option>
+              {genres.map((genre) => (
+                <option key={genre.id} value={genre.id}>{genre.name}</option>
+              ))}
+            </select>
           </div>
           <div className="form-actions">
             <button type="submit" className="primary">
