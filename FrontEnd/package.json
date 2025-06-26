@@ -37,6 +37,7 @@
     "@rollup/plugin-url": "^8.0.2",
     "@svgr/rollup": "^8.1.0",
     "@types/aos": "^3.0.7",
+    "@types/node": "^24.0.4",
     "@types/react-select": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^8.22.0",
     "@typescript-eslint/parser": "^8.22.0",

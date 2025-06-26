@@ -3,6 +3,10 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    // В проде будет подставлено из process.env.VITE_API_URL
+    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL)
+  },
   server: {
     port: 3000,
     open: true, // Открывает браузер автоматически
