@@ -55,5 +55,8 @@
     "sass": "^1.85.1",
     "vite": "^6.0.11",
     "vite-tsconfig-paths": "^4.2.0"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
