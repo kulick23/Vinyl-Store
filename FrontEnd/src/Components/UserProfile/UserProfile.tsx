@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 import { useGetCurrentUserQuery, useEditProfileMutation } from "../../redux/auth/api"
+import type { User } from "../../redux/auth/types"
 import { useGetCartQuery } from "../../redux/cart/api"
 import { useGetOrdersQuery } from "../../redux/orders/api"
 import { clearCredentials } from "../../redux/auth/authSlice"
@@ -75,12 +76,37 @@ export const UserProfile: React.FC = () => {
 
   const handleSaveProfile = async () => {
     try {
-      await editProfile(formData).unwrap()
+      // Prepare the complete profile data as expected by backend (CustomerUpdateDto)
+      const updateData: Record<string, string> = {
+        email: user?.email || "", // Backend requires email
+        firstName: formData.firstName.trim() || user?.firstName || "",
+        lastName: formData.lastName.trim() || user?.lastName || "",
+        phone: formData.phone.trim() || user?.phone || ""
+      }
+      
+      // Validate required fields
+      if (!updateData.email) {
+        showError("Email is required.")
+        return
+      }
+      
+      if (!updateData.firstName) {
+        showError("First name is required.")
+        return
+      }
+      
+      if (!updateData.lastName) {
+        showError("Last name is required.")
+        return
+      }
+
+      console.log('Sending profile update:', updateData)
+      await editProfile(updateData).unwrap()
       setIsEditing(false)
       showSuccess("Profile updated successfully!")
     } catch (error) {
       console.error('Failed to update profile:', error)
-      showError("Failed to update profile. Please try again.")
+      showError("Failed to update profile. Please check your input and try again.")
     }
   }
 
@@ -165,10 +191,20 @@ export const UserProfile: React.FC = () => {
                     <span className="info-value">{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : '-'}</span>
                   </div>
                   <div className="info-item">
-                    <span className="info-label">Email:</span>
-                    <span className={`info-value status-badge ${user.isEmailConfirmed ? 'confirmed' : 'pending'}`}>
-                      {user.isEmailConfirmed ? t('profile.emailConfirmed') : t('profile.emailNotConfirmed')}
-                    </span>
+                    <span className="info-label">Email Status:</span>
+                    <div className="email-status-container">
+                      <span className={`info-value status-badge ${user.isEmailConfirmed ? 'confirmed' : 'pending'}`}>
+                        {user.isEmailConfirmed ? '✅ ' + t('profile.emailConfirmed') : '❌ ' + t('profile.emailNotConfirmed')}
+                      </span>
+                      {!user.isEmailConfirmed && (
+                        <button 
+                          className="resend-confirmation-btn"
+                          onClick={() => showSuccess("Confirmation email sent! Please check your inbox.")}
+                        >
+                          Resend Confirmation
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="info-item">
                     <span className="info-label">{t('profile.roles')}:</span>

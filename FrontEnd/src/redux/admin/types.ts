@@ -17,6 +17,7 @@ export interface AdminRelease {
   year: number
   artist: string
   genre: string
+  imageUrl?: string
 }
 
 /** Пэйロード для создания/обновления релиза */

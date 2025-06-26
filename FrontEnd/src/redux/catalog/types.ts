@@ -38,6 +38,11 @@ export interface ReleaseResponse {
   listings: Listing[];
 }
 
+// Add type for paginated response from backend
+export interface ReleasesResponse {
+  items: VinylRecord[];
+}
+
 export interface FilterOptions {
   keyword?: string;
   artistId?: number;

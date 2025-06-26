@@ -9,6 +9,8 @@ namespace Domain.Entities
         public string Description { get; set; } = string.Empty;
         public decimal Rating { get; set; }
 
+        public string? AvatarPath { get; set; }
+
         public Customer Customer { get; set; }
         public ICollection<InventoryItem> Listings { get; set; } = [];
         public ICollection<Review> Reviews { get; set; } = new List<Review>();

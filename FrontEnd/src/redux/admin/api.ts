@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import { createBaseQuery } from '../base'
 import type {
   AdminArtist,
   AdminGenre,
@@ -10,9 +11,8 @@ import type {
 
 export const adminApi = createApi({
   reducerPath: 'adminApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: '/api/admin',
-    credentials: 'include'
+  baseQuery: createBaseQuery({
+    baseUrl: '/api/admin'
   }),
   tagTypes: [
     'AdminArtists',
@@ -96,33 +96,46 @@ export const adminApi = createApi({
       query: () => 'releases',
       providesTags: ['AdminReleases']
     }),
-    createAdminRelease: builder.mutation<AdminRelease, AdminRelease>({
-      query: rel => ({
+    createAdminRelease: builder.mutation<AdminRelease, { title: string; year: number; artistId: number; genreId: number }>({
+      query: release => ({
         url: 'releases',
         method: 'POST',
-        body: rel
+        body: release
       }),
       invalidatesTags: ['AdminReleases']
     }),
-    updateAdminRelease: builder.mutation<AdminRelease, { id: number; data: AdminReleasePayload }>(
-      {
-        query: ({ id, data }) => ({
-          url: `releases/${id}`,
-          method: 'PUT',
-          body: data
-        }),
-        invalidatesTags: (res, err, { id }) => [
-          { type: 'AdminRelease', id },
-          'AdminReleases'
-        ]
-      }
-    ),
+    updateAdminRelease: builder.mutation<AdminRelease, { id: number; data: { title?: string; year?: number; artistId?: number; genreId?: number } }>({
+      query: ({ id, data }) => ({
+        url: `releases/${id}`,
+        method: 'PUT',
+        body: data
+      }),
+      invalidatesTags: (res, err, { id }) => [
+        { type: 'AdminRelease', id },
+        'AdminReleases'
+      ]
+    }),
     deleteAdminRelease: builder.mutation<void, number>({
       query: id => ({
         url: `releases/${id}`,
         method: 'DELETE'
       }),
       invalidatesTags: ['AdminReleases']
+    }),
+    uploadReleaseImage: builder.mutation<void, { releaseId: number; imageFile: File }>({
+      query: ({ releaseId, imageFile }) => {
+        const formData = new FormData()
+        formData.append('Image', imageFile)
+        return {
+          url: `releases/${releaseId}/image`,
+          method: 'PUT',
+          body: formData,
+        }
+      },
+      invalidatesTags: (res, err, { releaseId }) => [
+        { type: 'AdminRelease', id: releaseId },
+        'AdminReleases'
+      ]
     }),
 
     // SELLERS
@@ -208,6 +221,7 @@ export const {
   useCreateAdminReleaseMutation,
   useUpdateAdminReleaseMutation,
   useDeleteAdminReleaseMutation,
+  useUploadReleaseImageMutation,
 
   useGetAdminSellersQuery,
   useCreateAdminSellerMutation,

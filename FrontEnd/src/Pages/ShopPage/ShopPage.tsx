@@ -35,7 +35,8 @@ export const ShopPage: React.FC = () => {
     [filters, searchQuery],
   )
 
-  const { data: records = [], error, isLoading } = useGetReleasesQuery(queryParams)
+  const { data: rawRecords, error, isLoading } = useGetReleasesQuery(queryParams)
+  const records = Array.isArray(rawRecords) ? rawRecords : []
 
   const handleFiltersChange = (newFilters: FilterOptions) => {
     setFilters({ ...newFilters, includePrice: true })
@@ -70,32 +71,16 @@ export const ShopPage: React.FC = () => {
 
   const renderContent = () => {
     if (isLoading) {
-      return (
-        <div className="loading-spinner">
-          <VinylSpinner size="large" />
-          <p>{t("shop.loading")}</p>
-        </div>
-      )
+      return <VinylSpinner size="large" />
     }
 
     if (error) {
-      return (
-        <div className="error-message">
-          <p>{t("shop.errors.title")}</p>
-          <p>{(error as any).data?.message ?? t("shop.errors.fetchError")}</p>
-          <button className="retry-button" onClick={() => window.location.reload()}>
-            {t("shop.errors.retry")}
-          </button>
-        </div>
-      )
+      console.error("Error loading records:", error)
+      return <div>Error loading records: {JSON.stringify(error)}</div>
     }
 
-    if (records.length === 0) {
-      return (
-        <div className="empty-state">
-          <p>{searchQuery || Object.keys(filters).length > 1 ? t("shop.noResults") : t("shop.noRecords")}</p>
-        </div>
-      )
+    if (!records || records.length === 0) {
+      return <div>No records found</div>
     }
 
     return (

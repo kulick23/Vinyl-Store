@@ -6,6 +6,8 @@ import {
   useGetReleaseByIdQuery,
   useGetReleaseListingsQuery,
 } from '../../redux/catalog/api';
+import { useAddCartItemMutation } from '../../redux/cart/api';
+import { useGetCurrentUserQuery } from '../../redux/auth/api';
 import { useNotification } from '../../hooks/useNotification';
 import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
 import { WishlistButton } from '../../Components/WishlistButton';
@@ -29,8 +31,14 @@ const ProductPage: React.FC = () => {
     isError: listingsError,
   } = useGetReleaseListingsQuery({ id: releaseId }, { skip });
 
+  const { data: user } = useGetCurrentUserQuery(undefined, {
+    skip: !localStorage.getItem("accessToken"),
+  });
+
   const [quantity, setQuantity] = useState(1);
-  const { showSuccess } = useNotification();
+  const [selectedListingId, setSelectedListingId] = useState<number | null>(null);
+  const { showSuccess, showError, showWarning } = useNotification();
+  const [addToCart, { isLoading: isAddingToCart }] = useAddCartItemMutation();
 
   const product = useMemo(() => {
     if (!releaseData?.release) {
@@ -67,6 +75,41 @@ const ProductPage: React.FC = () => {
 
   const changeQty = (n: number) =>
     setQuantity(Math.max(1, Math.min(n, product?.stockQuantity ?? 1)));
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      showWarning("notifications.loginRequired");
+      return;
+    }
+
+    if (!product?.inStock) {
+      showError("notifications.outOfStock");
+      return;
+    }
+
+    try {
+      // Use the selected listing or the first available one
+      const targetListing = selectedListingId 
+        ? listings.find(l => l.id === selectedListingId)
+        : listings.find(l => l.quantity > 0);
+
+      if (!targetListing) {
+        showError("notifications.noAvailableListings");
+        return;
+      }
+
+      await addToCart({
+        inventoryItemId: targetListing.id,
+        quantity: quantity,
+      }).unwrap();
+
+      showSuccess("notifications.itemAdded");
+      setQuantity(1); // Reset quantity after successful add
+    } catch (error) {
+      console.error("Failed to add item to cart:", error);
+      showError("notifications.itemAddFailed");
+    }
+  };
 
   const getConditionText = (condition: number) => {
     const conditions = {
@@ -186,12 +229,12 @@ const ProductPage: React.FC = () => {
           <div className="add-to-cart-section">
             <button
               className="add-to-cart-button"
-              disabled={!product.inStock}
-              onClick={() =>
-                showSuccess("notifications.itemAddedWithDetails", { quantity, title: product.title })
-              }
+              disabled={!product.inStock || isAddingToCart}
+              onClick={handleAddToCart}
             >
-              {product.inStock
+              {isAddingToCart
+                ? t('product.addingToCart')
+                : product.inStock
                 ? t('product.addToCart')
                 : t('product.outOfStock')}
             </button>

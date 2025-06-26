@@ -8,6 +8,7 @@ import {
   useCreateAdminReleaseMutation,
   useUpdateAdminReleaseMutation,
   useDeleteAdminReleaseMutation,
+  useUploadReleaseImageMutation,
 } from "../../redux/admin/api"
 import { useGetAdminArtistsQuery, useGetAdminGenresQuery } from "../../redux/admin/api"
 import type { AdminRelease } from "../../redux/admin/types"
@@ -22,8 +23,10 @@ const AdminReleases: React.FC = () => {
   const [formData, setFormData] = useState({
     title: "",
     year: new Date().getFullYear(),
-    artist: "",
-    genre: "",
+    artistId: 0,
+    genreId: 0,
+    imageFile: null as File | null,
+    imageUrl: "",
   })
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [releaseToDelete, setReleaseToDelete] = useState<number | null>(null)
@@ -34,40 +37,57 @@ const AdminReleases: React.FC = () => {
   const [createRelease] = useCreateAdminReleaseMutation()
   const [updateRelease] = useUpdateAdminReleaseMutation()
   const [deleteRelease] = useDeleteAdminReleaseMutation()
+  const [uploadImage] = useUploadReleaseImageMutation()
   const { showSuccess, showError } = useNotification()
+
+  const resetForm = () => {
+    setFormData({ title: "", year: new Date().getFullYear(), artistId: 0, genreId: 0, imageFile: null, imageUrl: "" })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.title.trim() || !formData.artist.trim() || !formData.genre.trim()) return
+    if (!formData.title.trim() || !formData.artistId || !formData.genreId) return
 
     try {
-      const releaseData = {
-        id: editingRelease?.id || 0,
-        title: formData.title,
-        year: formData.year,
-        artist: formData.artist,
-        genre: formData.genre,
-      }
-
+      let releaseId: number
+      
       if (editingRelease) {
         await updateRelease({
           id: editingRelease.id,
           data: {
             title: formData.title,
             year: formData.year,
-            artistId: formData.artistId, // Use selected artist ID
-            genreId: formData.genreId, // Use selected genre ID
-            listings: []
+            artistId: formData.artistId,
+            genreId: formData.genreId,
           }
         }).unwrap()
+        releaseId = editingRelease.id
         setEditingRelease(null)
         showSuccess(t('admin.releases.updateSuccess'))
       } else {
-        await createRelease(releaseData).unwrap()
+        const result = await createRelease({
+          title: formData.title,
+          year: formData.year,
+          artistId: formData.artistId,
+          genreId: formData.genreId,
+        }).unwrap()
+        releaseId = result.id
         setIsCreating(false)
         showSuccess(t('admin.releases.createSuccess'))
       }
-      setFormData({ title: "", year: new Date().getFullYear(), artist: "", genre: "" })
+      
+      // Upload image if provided
+      if (formData.imageFile) {
+        try {
+          await uploadImage({ releaseId, imageFile: formData.imageFile }).unwrap()
+          showSuccess(t('admin.releases.imageUploadSuccess'))
+        } catch (imageError) {
+          console.error("Failed to upload image:", imageError)
+          showError(t('admin.releases.imageUploadError'))
+        }
+      }
+      
+      resetForm()
     } catch (error) {
       console.error("Failed to save release:", error)
       showError(t('admin.releases.saveError'))
@@ -76,11 +96,17 @@ const AdminReleases: React.FC = () => {
 
   const handleEdit = (release: AdminRelease) => {
     setEditingRelease(release)
+    // Find the artist and genre IDs from the name strings
+    const artist = artists.find(a => a.name === release.artist)
+    const genre = genres.find(g => g.name === release.genre)
+    
     setFormData({
       title: release.title,
       year: release.year,
-      artist: release.artist,
-      genre: release.genre,
+      artistId: artist?.id || 0,
+      genreId: genre?.id || 0,
+      imageFile: null,
+      imageUrl: release.imageUrl,
     })
     setIsCreating(false)
   }
@@ -112,7 +138,7 @@ const AdminReleases: React.FC = () => {
   const handleCancel = () => {
     setIsCreating(false)
     setEditingRelease(null)
-    setFormData({ title: "", year: new Date().getFullYear(), artist: "", genre: "" })
+    resetForm()
   }
 
   if (isLoading) {
@@ -183,25 +209,49 @@ const AdminReleases: React.FC = () => {
           </div>
           <div className="form-group">
             <label htmlFor="releaseArtist">{t('admin.releases.form.artist')}</label>
-            <input
-              type="text"
+            <select
               id="releaseArtist"
-              value={formData.artist}
-              onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-              placeholder={t('admin.releases.form.artistPlaceholder')}
+              value={formData.artistId || ""}
+              onChange={(e) => setFormData({ ...formData, artistId: Number(e.target.value) })}
               required
-            />
+            >
+              <option value="">{t('admin.releases.form.artistPlaceholder')}</option>
+              {artists.map((artist) => (
+                <option key={artist.id} value={artist.id}>{artist.name}</option>
+              ))}
+            </select>
           </div>
           <div className="form-group">
             <label htmlFor="releaseGenre">{t('admin.releases.form.genre')}</label>
-            <input
-              type="text"
+            <select
               id="releaseGenre"
-              value={formData.genre}
-              onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
-              placeholder={t('admin.releases.form.genrePlaceholder')}
+              value={formData.genreId || ""}
+              onChange={(e) => setFormData({ ...formData, genreId: Number(e.target.value) })}
               required
+            >
+              <option value="">{t('admin.releases.form.genrePlaceholder')}</option>
+              {genres.map((genre) => (
+                <option key={genre.id} value={genre.id}>{genre.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="releaseImage">{t('admin.releases.form.image')}</label>
+            <input
+              type="file"
+              id="releaseImage"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                setFormData({ ...formData, imageFile: file || null })
+              }}
             />
+            {formData.imageUrl && (
+              <div className="current-image">
+                <p>Current image:</p>
+                <img src={formData.imageUrl} alt="Release cover" style={{ maxWidth: "200px", maxHeight: "200px" }} />
+              </div>
+            )}
           </div>
           <div className="form-actions">
             <button type="submit" className="primary">

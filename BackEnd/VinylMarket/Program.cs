@@ -26,6 +26,16 @@ builder.ConfigureServices();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerConfiguration();
 
+// Add CORS configuration
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
@@ -56,6 +66,9 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(imagesPath),
     RequestPath = "/images"
 });
+
+// Use CORS before other middleware
+app.UseCors();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
