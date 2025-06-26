@@ -9,16 +9,6 @@ import { inventoryApi } from './inventory/api';
 import { ordersApi } from './orders/api';
 import { sellerApi } from './seller/api';
 
-// ПЕРЕОПРЕДЕЛЯЕМ fetch, чтобы все запросы ‘/api/…’ шли на PROD API
-const API_URL = import.meta.env.VITE_API_URL ?? '';
-const nativeFetch = window.fetch.bind(window);
-window.fetch = (input, init) => {
-  if (typeof input === 'string' && input.startsWith('/api/')) {
-    input = API_URL + input;
-  }
-  return nativeFetch(input, init);
-};
-
 export const store = configureStore({
   reducer: {
     auth: authReducer,

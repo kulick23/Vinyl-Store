@@ -10,7 +10,7 @@ import type {
 export const inventoryApi = createApi({
   reducerPath: 'inventoryApi',
   baseQuery: createBaseQuery({
-    baseUrl: '/api/inventory'
+    baseUrl: '/inventory'
   }),
   tagTypes: ['Inventory'],
   endpoints: builder => ({

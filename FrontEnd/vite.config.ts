@@ -1,26 +1,25 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig, loadEnv } from 'vite'
+import react from '@vitejs/plugin-react'
 
-export default defineConfig({
-  plugins: [react()],
-  define: {
-    // В проде будет подставлено из process.env.VITE_API_URL
-    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL)
-  },
-  server: {
-    port: 3000,
-    open: true, // Открывает браузер автоматически
-    hmr: true,
-    proxy: {
-      '/api': {
-        target: 'https://ibm-team-project-production.up.railway.app',
-        changeOrigin: true,
-        secure: true,
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const API = env.VITE_API_URL || 'http://localhost:5000'
+
+  return {
+    plugins: [react()],
+    define: {
+      'import.meta.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL ?? '')
+    },
+    server: {
+      proxy: {
+        '/api': {
+          target: API,       // dev → проксируем на локал или на PROD, как залито в .env
+          changeOrigin: true,
+          secure: false,
+          rewrite: path => path.replace(/^\/api/, '/api')
+        }
       }
-    }
-  },
-  preview: {
-    port: 3000,
-    open: true,
+    },
+    preview: { port: 3000, open: true }
   }
-});
+})

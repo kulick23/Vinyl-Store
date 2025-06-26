@@ -1,8 +1,5 @@
-import {
-  createApi,
-  fetchBaseQuery,
-  type FetchArgs,
-} from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { createBaseQuery } from '../base';
 import type {
   VinylRecord,
   Genre,
@@ -13,28 +10,9 @@ import type {
   FilterOptions,
 } from './types';
 
-const rawBaseQuery = fetchBaseQuery({
-  baseUrl: '/api/catalog',
-  credentials: 'include',
-});
-
 export const catalogApi = createApi({
   reducerPath: 'catalogApi',
-  baseQuery: async (args: string | FetchArgs, api, extraOptions) => {
-    const {
-      url,
-      method = 'GET',
-      params,
-      body,
-    } = typeof args === 'string'
-      ? { url: args, method: 'GET', params: undefined, body: undefined }
-      : args;
-    const qs = params
-      ? '?' + new URLSearchParams(params as Record<string, any>).toString()
-      : '';
-    console.log(`📡 Request → ${method} ${url}${qs}`, body ?? '');
-    return rawBaseQuery(args, api, extraOptions);
-  },
+  baseQuery: createBaseQuery({ baseUrl: '/catalog' }),
   tagTypes: ['Genres', 'Artists', 'Releases', 'Release', 'Listings'],
   endpoints: (builder) => ({
     getGenres: builder.query<Genre[], void>({
