@@ -1,0 +1,1 @@
+﻿public record SearchItem(int Id, string Title);

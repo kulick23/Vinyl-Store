@@ -14,6 +14,7 @@ using BLL.AutoMapper;
 using Common.Options;
 using NotificationsService.Providers;
 using VinylMarket.Infrastructure;
+using System.Net.Http.Headers;
 
 namespace VinylRecordShop.Configurations
 {
@@ -59,6 +60,7 @@ namespace VinylRecordShop.Configurations
             services.AddScoped<ISellerProfileRepository, SellerProfileRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            services.AddScoped<IDiscogsImportService, DiscogsImportService>();
 
             //other
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -68,7 +70,23 @@ namespace VinylRecordShop.Configurations
 
             services.AddScoped<IImageStore, ImageStore>();
             builder.Services.AddSingleton<IPathProvider, PathProvider>();
-            
+
+            services.AddHttpClient("Discogs", client =>
+            {
+                client.BaseAddress = new Uri("https://api.discogs.com/");
+
+                // UA обязателен
+                var ua = builder.Configuration["Discogs:UserAgent"]
+                      ?? "VinylMarketDev/1.0 (+https://vinyl.local)";
+                client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", ua);
+
+                // =====  Вариант  A  – Personal Access Token  =====
+                var pat = builder.Configuration["Discogs:PersonalAccessToken"];
+                if (!string.IsNullOrWhiteSpace(pat))
+                    client.DefaultRequestHeaders.TryAddWithoutValidation(
+                        "Authorization", $"Discogs token={pat}");
+            });
+
 
             //DB
             builder.Services.AddDbContext<AppDbContext>(opt =>

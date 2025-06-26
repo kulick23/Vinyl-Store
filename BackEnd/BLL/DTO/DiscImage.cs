@@ -1,0 +1,1 @@
+﻿public record DiscImage(string Uri, string Uri150);

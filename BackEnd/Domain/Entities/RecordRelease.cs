@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Domain.Entities
 {
     public class RecordRelease : BaseEntity
     {
+        public int ExternalId { get; set; }
         public string Title { get; set; } = string.Empty;
         public int Year { get; set; }
         public int ArtistId { get; set; }

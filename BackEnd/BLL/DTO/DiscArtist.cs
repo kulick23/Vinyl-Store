@@ -1,0 +1,1 @@
+﻿public record DiscArtist(string Name);

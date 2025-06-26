@@ -336,6 +336,9 @@ namespace DAL.Migrations
                     b.Property<int>("ArtistId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ExternalId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("GenreId")
                         .HasColumnType("integer");
 
