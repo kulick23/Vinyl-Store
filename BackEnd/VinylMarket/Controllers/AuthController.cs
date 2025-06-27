@@ -152,7 +152,7 @@ namespace VinylMarket.Controllers
         {
             var ok = await _account.ConfirmEmailAsync(token, ct);
             return ok ? Ok("E-mail confirmed") : BadRequest("Invalid or expired token");
-        }
+        } 
 
         [HttpPost("google")]
         [AllowAnonymous]
