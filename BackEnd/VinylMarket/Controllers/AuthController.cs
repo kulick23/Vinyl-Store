@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BLL.DTO;
 using BLL.Services;
 using BLL.DTO;
+using Google.Apis.Auth;
 using BLL.Interfaces;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -18,13 +19,18 @@ namespace VinylMarket.Controllers
     {
         private readonly IAccountService _account;
         private readonly IWishlistService _wishlistService;
+        private readonly IConfiguration _config;
 
-        public AuthController(IAccountService account, IWishlistService wishlistService)
+        public AuthController(
+            IAccountService account,
+            IWishlistService wishlistService,
+            IConfiguration config)
         {
             _account = account;
             _wishlistService = wishlistService;
+            _config = config;
         }
-        
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(
             [FromBody] RegisterDto dto,
@@ -99,8 +105,8 @@ namespace VinylMarket.Controllers
 
         [HttpPost("editProfile")]
         public async Task<IActionResult> EditProfile(
-    [FromBody] CustomerUpdateDto dto,
-    CancellationToken ct)
+        [FromBody] CustomerUpdateDto dto,
+        CancellationToken ct)
         {
             int userId = int.Parse(
                 User.FindFirstValue(ClaimTypes.NameIdentifier)
@@ -113,11 +119,11 @@ namespace VinylMarket.Controllers
         [Authorize]
         [HttpPut("account/avatar")]
         public async Task<IActionResult> UploadAvatar(
-    IFormFile file,
-    [FromServices] IImageStore store,
-    [FromServices] IAccountRepository accRepo,
-    [FromServices] IUnitOfWork unitOfWork,
-    CancellationToken ct = default)
+        IFormFile file,
+        [FromServices] IImageStore store,
+        [FromServices] IAccountRepository accRepo,
+        [FromServices] IUnitOfWork unitOfWork,
+        CancellationToken ct = default)
         {
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var user = await accRepo.GetByIdAsync(userId, ct) ?? throw new KeyNotFoundException();
@@ -146,6 +152,57 @@ namespace VinylMarket.Controllers
         {
             var ok = await _account.ConfirmEmailAsync(token, ct);
             return ok ? Ok("E-mail confirmed") : BadRequest("Invalid or expired token");
+        }
+
+        [HttpPost("google")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLogin(
+            [FromBody] GoogleAuthDto dto,
+            CancellationToken ct)
+        {
+            var payload = await VerifyGoogleToken(dto.IdToken);
+            if (payload == null)
+                return BadRequest("Invalid Google token");
+
+            var email = payload.Email;
+            if (string.IsNullOrEmpty(email))
+                return BadRequest("Google token does not contain email");
+
+            var user = await _account.GetUserByEmailAsync(email, ct);
+
+            if (user == null)
+            {
+                user = await _account.RegisterGoogleUserAsync(
+                    email: email,
+                    firstName: payload.GivenName ?? "",
+                    lastName: payload.FamilyName ?? "",
+                    ct: ct
+                );
+            }
+            else if (!string.IsNullOrEmpty(user.PasswordHash))
+            {
+                return BadRequest("Email already registered with password");
+            }
+
+            var tokens = await _account.GenerateTokensForUserAsync(user, ct);
+            return Ok(tokens);
+        }
+
+        private async Task<GoogleJsonWebSignature.Payload?> VerifyGoogleToken(string idToken)
+        {
+            try
+            {
+                return await GoogleJsonWebSignature.ValidateAsync(
+                    idToken,
+                    new GoogleJsonWebSignature.ValidationSettings
+                    {
+                        Audience = new[] { _config["Authentication:Google:ClientId"] }
+                    });
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
