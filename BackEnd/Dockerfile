@@ -8,6 +8,7 @@ COPY backend.sln .
 COPY VinylMarket/VinylMarket.csproj VinylMarket/
 COPY DAL/DAL.csproj DAL/
 COPY BLL/BLL.csproj BLL/
+COPY Backend.Tests/Backend.Tests.csproj Backend.Tests/
 COPY Domain/Domain.csproj Domain/
 
 RUN dotnet restore backend.sln
