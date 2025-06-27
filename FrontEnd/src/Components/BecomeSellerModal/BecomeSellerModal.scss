@@ -1,0 +1,208 @@
+@use '../../Styles/breakpoints.scss' as bp;
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--background-color);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid rgba(229, 89, 46, 0.2);
+
+  @include bp.phone {
+    margin: 0 10px;
+    border-radius: 16px;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 32px 0;
+  margin-bottom: 24px;
+
+  @include bp.phone {
+    padding: 24px 24px 0;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    color: var(--title-color);
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+
+    @include bp.phone {
+      font-size: 24px;
+    }
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: var(--cover-color);
+      color: var(--orange-color);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.seller-form {
+  padding: 0 32px 32px;
+
+  @include bp.phone {
+    padding: 0 24px 24px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--title-color);
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid rgba(229, 89, 46, 0.2);
+      border-radius: 12px;
+      background: var(--background-color);
+      color: var(--title-color);
+      font-size: 16px;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      resize: vertical;
+
+      &:focus {
+        outline: none;
+        border-color: var(--orange-color);
+        box-shadow: 0 0 0 3px rgba(229, 89, 46, 0.1);
+      }
+
+      &.error {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      &::placeholder {
+        color: var(--text-color);
+        opacity: 0.6;
+      }
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      font-family: inherit;
+    }
+
+    .error-message {
+      display: block;
+      color: #ef4444;
+      font-size: 14px;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    margin-top: 32px;
+
+    @include bp.phone {
+      flex-direction: column;
+    }
+
+    .cancel-button,
+    .submit-button {
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      min-width: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      @include bp.phone {
+        width: 100%;
+      }
+    }
+
+    .cancel-button {
+      background: transparent;
+      color: var(--text-color);
+      border-color: rgba(229, 89, 46, 0.3);
+
+      &:hover:not(:disabled) {
+        background: var(--cover-color);
+        border-color: var(--orange-color);
+        transform: translateY(-2px);
+      }
+    }
+
+    .submit-button {
+      background: linear-gradient(135deg, var(--orange-color) 0%, var(--orange-hover) 100%);
+      color: white;
+      border-color: var(--orange-color);
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(229, 89, 46, 0.4);
+      }
+    }
+  }
+} 

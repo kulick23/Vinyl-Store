@@ -8,13 +8,15 @@ import { useGetCurrentUserQuery, useEditProfileMutation } from "../../redux/auth
 import type { User } from "../../redux/auth/types"
 import { useGetCartQuery } from "../../redux/cart/api"
 import { useGetOrdersQuery } from "../../redux/orders/api"
+// Seller profile API removed - endpoints don't exist in backend
 import { clearCredentials } from "../../redux/auth/authSlice"
 import { useDispatch } from "react-redux"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
 import { useNotification } from "../../hooks/useNotification"
+import BecomeSellerModal from "../BecomeSellerModal/BecomeSellerModal"
 import "./UserProfile.scss"
 
-type ProfileSection = "overview" | "orders" | "cart" | "settings"
+type ProfileSection = "overview" | "orders" | "cart" | "settings" | "sellerProfile"
 
 export const UserProfile: React.FC = () => {
   const { t, i18n } = useTranslation()
@@ -22,10 +24,16 @@ export const UserProfile: React.FC = () => {
   const dispatch = useDispatch()
   const [activeSection, setActiveSection] = useState<ProfileSection>("overview")
   const [isEditing, setIsEditing] = useState(false)
+  const [isSellerModalOpen, setIsSellerModalOpen] = useState(false)
+  const [isEditingSeller, setIsEditingSeller] = useState(false)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     phone: ""
+  })
+  const [sellerFormData, setSellerFormData] = useState({
+    displayName: "",
+    description: ""
   })
 
   const { data: user, isLoading } = useGetCurrentUserQuery()
@@ -73,6 +81,17 @@ export const UserProfile: React.FC = () => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
   }
+
+  const handleSellerInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setSellerFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleBecomeSellerSuccess = () => {
+    window.location.reload() // Refresh to update user role
+  }
+
+  // Seller profile management removed - not supported by current backend
 
   const handleSaveProfile = async () => {
     try {
@@ -157,6 +176,16 @@ export const UserProfile: React.FC = () => {
             </div>
 
             <div className="info-sections">
+              {!userRoles.includes("Seller") && (
+                <div className="info-card become-seller-card">
+                  <h3>{t('seller.becomeSeller')}</h3>
+                  <p>Start selling your vinyl records and reach music lovers worldwide.</p>
+                  <button onClick={() => setIsSellerModalOpen(true)} className="become-seller-button">
+                    {t('seller.becomeSeller')}
+                  </button>
+                </div>
+              )}
+
               <div className="info-card">
                 <h3>{t('profile.personalInformation')}</h3>
                 <div className="info-grid">
@@ -353,6 +382,19 @@ export const UserProfile: React.FC = () => {
           </div>
         )
 
+      case "sellerProfile":
+        return (
+          <div className="seller-profile-content">
+            <h2 className="section-title">{t('seller.sellerProfile')}</h2>
+            <div className="seller-redirect">
+              <p>Seller profile management is available in the Seller Dashboard.</p>
+              <Link to="/seller" className="seller-dashboard-link">
+                {t('seller.sellerDashboard')}
+              </Link>
+            </div>
+          </div>
+        )
+
       default:
         return null
     }
@@ -431,12 +473,27 @@ export const UserProfile: React.FC = () => {
                 <span className="nav-icon">⚙️</span>
                 {t('profile.settings')}
               </button>
+              {userRoles.includes("Seller") && (
+                <button
+                  className={`nav-link ${activeSection === "sellerProfile" ? "active" : ""}`}
+                  onClick={() => setActiveSection("sellerProfile")}
+                >
+                  <span className="nav-icon">🏪</span>
+                  {t('seller.sellerProfile')}
+                </button>
+              )}
             </div>
           </div>
         </div>
 
         <div className="profile-main">{renderContent()}</div>
       </div>
+
+      <BecomeSellerModal
+        isOpen={isSellerModalOpen}
+        onClose={() => setIsSellerModalOpen(false)}
+        onSuccess={handleBecomeSellerSuccess}
+      />
     </div>
   )
 }

@@ -304,6 +304,11 @@
       color: var(--orange-color);
     }
   }
+
+  // Mobile nav open state (body class)
+  body.mobile-nav-open & {
+    right: 0;
+  }
 }
 
 // Hide scrollbar but keep functionality
@@ -330,4 +335,17 @@ body.mobile-nav-open {
   .mobile-nav__backdrop--open {
     background-color: rgba(0, 0, 0, 0.7);
   }
+}
+
+.mobile-nav__seller-badge {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-left: 8px;
+  white-space: nowrap;
 } 

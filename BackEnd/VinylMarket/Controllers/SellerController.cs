@@ -42,9 +42,29 @@ namespace Web.Api.Controllers
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             var profile = await _sellerService.CreateProfileAsync(userId, dto, ct);
-            return RedirectToAction(
-                    nameof(GetPublicSellerProfile),
-                    new { id = profile.CustomerId });
+            return Ok(profile);
+        }
+
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetCurrentSellerProfile(CancellationToken ct = default)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            
+            var profile = await _sellerService.GetCurrentUserProfileAsync(userId, ct);
+            return profile is null
+                ? NotFound()
+                : Ok(profile);
+        }
+
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateSellerProfile(
+            [FromBody] SellerProfileUpdateDto dto,
+            CancellationToken ct = default)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            
+            await _sellerService.UpdateCurrentUserProfileAsync(userId, dto, ct);
+            return NoContent();
         }
 
 

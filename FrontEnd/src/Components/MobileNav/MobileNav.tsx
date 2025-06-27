@@ -74,6 +74,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({
               <Link to="/profile" className="mobile-nav__user-link" onClick={handleLinkClick}>
                 <span className="mobile-nav__user-name">
                   {user.firstName} {user.lastName}
+                  {user.role === "Seller" && (
+                    <span className="mobile-nav__seller-badge">{t('seller.sellerDashboard')}</span>
+                  )}
                 </span>
                 <span className="mobile-nav__user-email">{user.email}</span>
               </Link>

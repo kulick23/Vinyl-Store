@@ -179,8 +179,11 @@ export const Header: React.FC = () => {
 
           {/* Desktop User/Login */}
           {user ? (
-            <Link to="/profile" className="header__link">
-              {user.firstName}
+            <Link to="/profile" className="header__link header__user">
+              <span className="header__user-name">{user.firstName}</span>
+              {user.role === "Seller" && (
+                <span className="header__seller-badge">{t('seller.sellerDashboard')}</span>
+              )}
             </Link>
           ) : (
             <Link to="/login" className="header__link">

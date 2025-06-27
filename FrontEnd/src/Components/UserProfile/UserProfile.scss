@@ -532,6 +532,24 @@
               border-color: var(--orange-color);
             }
           }
+
+          .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(229, 89, 46, 0.2);
+            border-radius: 8px;
+            background: var(--background-color);
+            color: var(--title-color);
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            resize: vertical;
+            min-height: 100px;
+
+            &:focus {
+              outline: none;
+              border-color: var(--orange-color);
+            }
+          }
         }
 
         .form-actions {
@@ -623,6 +641,147 @@
             border-color: var(--orange-color);
           }
         }
+      }
+    }
+  }
+}
+
+// Become Seller Card
+.become-seller-card {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(229, 89, 46, 0.1) 0%, rgba(229, 89, 46, 0.05) 100%) !important;
+  border: 2px solid rgba(229, 89, 46, 0.2) !important;
+
+  h3 {
+    color: var(--orange-color) !important;
+    font-size: 24px !important;
+    margin-bottom: 12px !important;
+  }
+
+  p {
+    color: var(--text-color);
+    margin-bottom: 20px;
+    opacity: 0.8;
+  }
+
+  .become-seller-button {
+    background: linear-gradient(135deg, var(--orange-color) 0%, var(--orange-hover) 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(229, 89, 46, 0.4);
+    }
+  }
+}
+
+// Seller Profile Content
+.seller-profile-content {
+  .seller-sections {
+    display: grid;
+    gap: 24px;
+
+    .seller-card {
+      background: var(--cover-color);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid rgba(229, 89, 46, 0.1);
+
+      h3 {
+        margin: 0 0 20px 0;
+        color: var(--title-color);
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .seller-info {
+        .info-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 16px;
+          margin-bottom: 24px;
+
+          .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(229, 89, 46, 0.1);
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            .info-label {
+              font-weight: 600;
+              color: var(--text-color);
+              opacity: 0.8;
+            }
+
+            .info-value {
+              font-weight: 500;
+              color: var(--title-color);
+            }
+          }
+        }
+      }
+
+      .reviews-list {
+        display: grid;
+        gap: 16px;
+
+        .review-item {
+          background: var(--background-color);
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid rgba(229, 89, 46, 0.1);
+
+          .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+
+            .review-rating {
+              color: var(--orange-color);
+              font-weight: 600;
+            }
+
+            .review-author {
+              color: var(--text-color);
+              font-weight: 500;
+            }
+          }
+
+          .review-comment {
+            color: var(--title-color);
+            margin: 8px 0;
+            line-height: 1.5;
+          }
+
+          .review-date {
+            color: var(--text-color);
+            font-size: 12px;
+            opacity: 0.7;
+          }
+        }
+      }
+
+      .no-reviews {
+        text-align: center;
+        color: var(--text-color);
+        opacity: 0.7;
+        font-style: italic;
+        padding: 20px;
       }
     }
   }
