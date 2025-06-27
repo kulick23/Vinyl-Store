@@ -1,7 +1,4 @@
-"use client"
-
-import type React from "react"
-import { useState, useMemo } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useGetReleasesQuery } from "../../redux/catalog/api"
 import { useAddCartItemMutation } from "../../redux/cart/api"
@@ -11,11 +8,15 @@ import ShopFilters from "../../Components/ShopFilters/ShopFilters"
 import VinylSpinner from "../../Components/VinylSpinner/VinylSpinner"
 import { WishlistButton } from "../../Components/WishlistButton"
 import { Link } from "react-router-dom"
-import type { FilterOptions } from "../../redux/catalog/types"
+import type { FilterOptions, VinylRecord } from "../../redux/catalog/types"
+import InfiniteScroll from "react-infinite-scroll-component"
 import "./ShopPage.scss"
 
 export const ShopPage: React.FC = () => {
   const { t } = useTranslation()
+  const PAGE_SIZE = 20
+  const [page, setPage] = useState(1)
+  const [items, setItems] = useState<VinylRecord[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [filters, setFilters] = useState<FilterOptions>({
     includePrice: true,
@@ -35,8 +36,19 @@ export const ShopPage: React.FC = () => {
     [filters, searchQuery],
   )
 
-  const { data: rawRecords, error, isLoading } = useGetReleasesQuery(queryParams)
-  const records = Array.isArray(rawRecords) ? rawRecords : []
+  const { data: records, isLoading, isFetching, error } = useGetReleasesQuery({
+    page,
+    limit: PAGE_SIZE,
+  })
+
+  // сабмитим новые записи
+  useEffect(() => {
+    if (records) {
+      setItems((prev) => (page === 1 ? records : [...prev, ...records]))
+    }
+  }, [records, page])
+
+  const hasMore = records?.length === PAGE_SIZE
 
   const handleFiltersChange = (newFilters: FilterOptions) => {
     setFilters({ ...newFilters, includePrice: true })
@@ -79,65 +91,73 @@ export const ShopPage: React.FC = () => {
       return <div>Error loading records: {JSON.stringify(error)}</div>
     }
 
-    if (!records || records.length === 0) {
+    if (!items || items.length === 0) {
       return <div>No records found</div>
     }
 
     return (
-      <div className="records-grid">
-        {records.map((record) => (
-          <div key={record.id} className="record-card">
-            <Link to={`/product/${record.id}`} className="record-link">
-              <div className="record-image">
-                <img
-                  src={
-                    record.imageUrl ||
-                    "/placeholder.svg?height=250&width=250&query=vinyl record" ||
-                    "/placeholder.svg" ||
-                    "/placeholder.svg"
-                  }
-                  alt={`${record.title} by ${record.artist}`}
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = "/placeholder.svg?height=250&width=250"
-                  }}
-                />
-                {record.isOnSale && <div className="sale-badge">{t("shop.sale")}</div>}
-                <div className="wishlist-button-container" onClick={(e) => e.preventDefault()}>
-                  <WishlistButton 
-                    releaseId={record.id} 
-                    variant="icon" 
-                    className="shop-wishlist-button"
+      <InfiniteScroll
+        dataLength={items.length}
+        next={() => setPage((prev) => prev + 1)}
+        hasMore={Boolean(hasMore)}
+        loader={<VinylSpinner size="small" />}
+        endMessage={<p style={{ textAlign: "center" }}>Больше товаров нет</p>}
+      >
+        <div className="records-grid">
+          {items.map((record) => (
+            <div key={record.id} className="record-card">
+              <Link to={`/product/${record.id}`} className="record-link">
+                <div className="record-image">
+                  <img
+                    src={
+                      record.imageUrl ||
+                      "/placeholder.svg?height=250&width=250&query=vinyl record" ||
+                      "/placeholder.svg" ||
+                      "/placeholder.svg"
+                    }
+                    alt={`${record.title} by ${record.artist}`}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.src = "/placeholder.svg?height=250&width=250"
+                    }}
                   />
-                </div>
-              </div>
-              <div className="record-info">
-                <h3>{record.title}</h3>
-                <p className="artist">{record.artist}</p>
-                {record.genre && <p className="genre">{record.genre}</p>}
-                {record.year && <p className="year">{record.year}</p>}
-                {record.price && (
-                  <div className="price-container">
-                    {record.isOnSale && record.originalPrice && (
-                      <span className="original-price">${record.originalPrice}</span>
-                    )}
-                    <span className="current-price">${record.price}</span>
+                  {record.isOnSale && <div className="sale-badge">{t("shop.sale")}</div>}
+                  <div className="wishlist-button-container" onClick={(e) => e.preventDefault()}>
+                    <WishlistButton 
+                      releaseId={record.id} 
+                      variant="icon" 
+                      className="shop-wishlist-button"
+                    />
                   </div>
-                )}
-              </div>
-            </Link>
-            <button
-              className="add-to-cart"
-              onClick={(e) => {
-                e.preventDefault()
-                handleAddToCart(record.id)
-              }}
-            >
-              {t("shop.addToCart")}
-            </button>
-          </div>
-        ))}
-      </div>
+                </div>
+                <div className="record-info">
+                  <h3>{record.title}</h3>
+                  <p className="artist">{record.artist}</p>
+                  {record.genre && <p className="genre">{record.genre}</p>}
+                  {record.year && <p className="year">{record.year}</p>}
+                  {record.price && (
+                    <div className="price-container">
+                      {record.isOnSale && record.originalPrice && (
+                        <span className="original-price">${record.originalPrice}</span>
+                      )}
+                      <span className="current-price">${record.price}</span>
+                    </div>
+                  )}
+                </div>
+              </Link>
+              <button
+                className="add-to-cart"
+                onClick={(e) => {
+                  e.preventDefault()
+                  handleAddToCart(record.id)
+                }}
+              >
+                {t("shop.addToCart")}
+              </button>
+            </div>
+          ))}
+        </div>
+      </InfiniteScroll>
     )
   }
 

@@ -44,6 +44,8 @@ export interface ReleasesResponse {
 }
 
 export interface FilterOptions {
+  page?: number;
+  limit?: number;
   keyword?: string;
   artistId?: number;
   genreId?: number;
