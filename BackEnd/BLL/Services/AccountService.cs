@@ -173,7 +173,7 @@ namespace BLL.Services
                 ExpiresAt = DateTime.UtcNow.AddHours(24)
             }, ct);
 
-            var link = $"http://localhost:3000/approval?token={raw}";
+            var link = $"https://ibm-team-project-wwrs.vercel.app/approval?token={raw}";
             var body = $"""
         <p>Hello!</p>
         <p>For email confirmation press:

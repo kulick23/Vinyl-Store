@@ -1,5 +1,5 @@
 ﻿
 public interface IDiscogsImportService
 {
-    Task<int> ImportAsync(int count = 100, CancellationToken ct = default);
+    Task<(int imported, int skipped)> ImportAsync(int count = 100, CancellationToken ct = default);
 }

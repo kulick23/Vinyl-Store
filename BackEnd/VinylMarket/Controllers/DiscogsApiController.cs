@@ -17,7 +17,7 @@ public sealed class DiscogsImportController : ControllerBase
         if (count is < 1 or > 100)
             return BadRequest("count 1 – 100");
 
-        int imported = await _svc.ImportAsync(count, ct);
-        return Ok(new { imported });
+        var (imported, skipped) = await _svc.ImportAsync(count, ct);
+        return Ok(new { imported, skipped });
     }
 }

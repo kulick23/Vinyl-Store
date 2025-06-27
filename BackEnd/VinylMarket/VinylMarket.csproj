@@ -29,6 +29,7 @@
     <Folder Include="Interfaces\" />
     <Folder Include="Middleware\" />
     <Folder Include="images\" />
+    <Folder Include="wwwroot\default\" />
   </ItemGroup>
 
 </Project>
