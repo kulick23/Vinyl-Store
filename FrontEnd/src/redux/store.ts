@@ -9,7 +9,6 @@ import { inventoryApi } from './inventory/api';
 import { ordersApi } from './orders/api';
 import { sellerApi } from './seller/api';
 
-
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -20,10 +19,9 @@ export const store = configureStore({
     [inventoryApi.reducerPath]: inventoryApi.reducer,
     [ordersApi.reducerPath]: ordersApi.reducer,
     [sellerApi.reducerPath]: sellerApi.reducer,
-
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false })
+  middleware: (gDM) =>
+    gDM({ serializableCheck: false })
       .concat(authApi.middleware)
       .concat(catalogApi.middleware)
       .concat(cartApi.middleware)
@@ -31,7 +29,6 @@ export const store = configureStore({
       .concat(inventoryApi.middleware)
       .concat(ordersApi.middleware)
       .concat(sellerApi.middleware),
-
 });
 
 setupListeners(store.dispatch);

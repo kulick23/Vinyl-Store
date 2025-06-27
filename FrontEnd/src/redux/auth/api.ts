@@ -4,7 +4,7 @@ import type { RegisterRequest, LoginRequest, AuthResponse, User, WishlistItem } 
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: createBaseQuery({ baseUrl: '/api/auth' }),
+  baseQuery: createBaseQuery({ baseUrl: '/auth' }),
   tagTypes: ['Auth', 'User', 'Wishlist'],
   endpoints: builder => ({
     /** POST /register */

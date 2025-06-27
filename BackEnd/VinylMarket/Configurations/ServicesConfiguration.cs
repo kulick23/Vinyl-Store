@@ -1,7 +1,6 @@
 ﻿using BLL.Services.Implementation;
 using BLL.Services;
 using BLL.Interfaces;
-using BLL.Services;
 using DAL;
 using DAL.Interfaces;
 using DAL.Repositories;
@@ -15,6 +14,7 @@ using Common.Options;
 using NotificationsService.Providers;
 using VinylMarket.Infrastructure;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authentication.Google; // Добавлено
 
 namespace VinylRecordShop.Configurations
 {
@@ -42,7 +42,6 @@ namespace VinylRecordShop.Configurations
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IReviewService, ReviewService>();
 
-
             // DAL repositories
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
@@ -62,7 +61,6 @@ namespace VinylRecordShop.Configurations
 
             services.AddScoped<IDiscogsImportService, DiscogsImportService>();
 
-            //other
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<IPasswordHasher<Customer>, PasswordHasher<Customer>>();
             services.Configure<EmailOptions>(cfg.GetSection(EmailOptions.Section));
@@ -75,22 +73,24 @@ namespace VinylRecordShop.Configurations
             {
                 client.BaseAddress = new Uri("https://api.discogs.com/");
 
-                // UA обязателен
                 var ua = builder.Configuration["Discogs:UserAgent"]
                       ?? "VinylMarketDev/1.0 (+https://vinyl.local)";
                 client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", ua);
 
-                // =====  Вариант  A  – Personal Access Token  =====
                 var pat = builder.Configuration["Discogs:PersonalAccessToken"];
                 if (!string.IsNullOrWhiteSpace(pat))
                     client.DefaultRequestHeaders.TryAddWithoutValidation(
                         "Authorization", $"Discogs token={pat}");
             });
 
+            builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+                {
+                    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                });
 
-            //DB
             builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("Railway")));
+                opt.UseNpgsql(builder.Configuration.GetConnectionString("Railway")));
 
             return builder;
         }

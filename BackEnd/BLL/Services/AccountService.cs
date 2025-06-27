@@ -1,17 +1,17 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using BLL.DTO;
-using DAL.Interfaces;
-using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
 using BLL.DTO;
 using BLL.Interfaces;
-using System.Security.Cryptography;
-using System.Text;
+using DAL.Interfaces;
+using Domain.Entities;
+using Google.Apis.Auth;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using NotificationsService.Providers;
-using AutoMapper;
+using System;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BLL.Services
 {
@@ -49,21 +49,46 @@ namespace BLL.Services
             _mapper = mapper;
         }
 
+        public async Task<Customer?> GetUserByEmailAsync(string email, CancellationToken ct)
+        {
+            return await _accountRepo.GetByEmailAsync(email, ct);
+        }
+
+        public async Task<Customer> RegisterGoogleUserAsync(string email, string firstName, string lastName, CancellationToken ct)
+        {
+            var customer = new Customer
+            {
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName,
+                CreatedAt = DateTime.UtcNow,
+                IsEmailConfirmed = true
+            };
+
+            await _accountRepo.AddAsync(customer, ct);
+            await _uow.SaveChangesAsync(ct);
+
+            return customer;
+        }
+
+        public async Task<AuthTokensDto> GenerateTokensForUserAsync(Customer user, CancellationToken ct)
+        {
+            return await IssueTokensAsync(user, ct);
+        }
 
         public async Task<CustomerUpdateDto> GetByIdAsync(int userId, CancellationToken ct)
         {
-            var customer = await _accountRepo.GetByIdAsync(userId);
-
+            var customer = await _accountRepo.GetByIdAsync(userId, ct);
             if (customer == null)
-                throw new ArgumentNullException(nameof(customer));
+                throw new ArgumentNullException($"Customer with id {userId} not found");
 
             return _mapper.Map<CustomerUpdateDto>(customer);
         }
 
         public async Task<CustomerUpdateDto> UpdateProfileAsync(
-        int userId,
-        CustomerUpdateDto dto,
-        CancellationToken ct = default)
+            int userId,
+            CustomerUpdateDto dto,
+            CancellationToken ct = default)
         {
             var customer = await _accountRepo.GetByIdAsync(userId, ct)
                            ?? throw new KeyNotFoundException("Customer not found");
@@ -104,11 +129,13 @@ namespace BLL.Services
             return await IssueTokensAsync(customer, ct);
         }
 
-
         public async Task<AuthTokensDto> LoginAsync(LoginDto dto, CancellationToken ct = default)
         {
             var customer = await _accountRepo.GetByEmailAsync(dto.Email, ct)
                            ?? throw new InvalidOperationException("Invalid credentials.");
+
+            if (string.IsNullOrEmpty(customer.PasswordHash))
+                throw new InvalidOperationException("This account uses Google authentication.");
 
             var res = _hasher.VerifyHashedPassword(customer, customer.PasswordHash, dto.Password);
             if (res == PasswordVerificationResult.Failed)
@@ -119,7 +146,6 @@ namespace BLL.Services
 
             return await IssueTokensAsync(customer, ct);
         }
-
 
         public async Task<AuthTokensDto> RefreshAsync(string refreshToken, CancellationToken ct = default)
         {
@@ -144,7 +170,6 @@ namespace BLL.Services
             return new AuthTokensDto(access, newRefresh.Token, DateTime.UtcNow.AddMinutes(15));
         }
 
-
         public async Task LogoutAsync(string refreshToken, CancellationToken ct = default)
         {
             await _accountRepo.RevokeRefreshTokenAsync(refreshToken, ct);
@@ -156,7 +181,6 @@ namespace BLL.Services
             await _accountRepo.RevokeAllRefreshTokensAsync(customerId, ct);
             await _uow.SaveChangesAsync(ct);
         }
-
 
         public async Task SendEmailConfirmationAsync(int customerId, CancellationToken ct)
         {
@@ -185,7 +209,6 @@ namespace BLL.Services
                 "Email Confirmation — Vinyl Market", body, ct);
         }
 
-
         public async Task<bool> ConfirmEmailAsync(string rawToken, CancellationToken ct = default)
         {
             var hash = Convert.ToHexString(
@@ -201,9 +224,6 @@ namespace BLL.Services
             return true;
         }
 
-
-
-
         public async Task SendPasswordResetAsync(string email, CancellationToken ct = default)
         {
             var customer = await _accountRepo.GetByEmailAsync(email, ct);
@@ -217,8 +237,6 @@ namespace BLL.Services
             };
             await _resetRepo.AddAsync(token, ct);
             await _uow.SaveChangesAsync(ct);
-
-
         }
 
         public async Task ResetPasswordAsync(Guid tokenId, string newPassword, CancellationToken ct = default)
@@ -237,8 +255,6 @@ namespace BLL.Services
             await _accountRepo.RevokeAllRefreshTokensAsync(customer.Id, ct);
             await _uow.SaveChangesAsync(ct);
         }
-
-
 
         private async Task<AuthTokensDto> IssueTokensAsync(Customer customer, CancellationToken ct)
         {

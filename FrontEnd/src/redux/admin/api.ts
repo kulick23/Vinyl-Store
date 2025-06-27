@@ -12,7 +12,7 @@ import type {
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: createBaseQuery({
-    baseUrl: '/api/admin'
+    baseUrl: '/admin'
   }),
   tagTypes: [
     'AdminArtists',

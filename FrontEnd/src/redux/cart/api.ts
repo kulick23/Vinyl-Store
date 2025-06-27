@@ -4,7 +4,7 @@ import type { CartDto, CartItemPayload } from './types'
 
 export const cartApi = createApi({
   reducerPath: 'cartApi',
-  baseQuery: createBaseQuery({ baseUrl: '/api/Cart' }),
+  baseQuery: createBaseQuery({ baseUrl: '/Cart' }),
   tagTypes: ['Cart'],
   endpoints: builder => ({
     /**

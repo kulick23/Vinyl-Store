@@ -4,7 +4,7 @@ import type { Order, CreateOrderRequest } from './types'
 
 export const ordersApi = createApi({
   reducerPath: 'ordersApi',
-  baseQuery: createBaseQuery({ baseUrl: '/api/orders' }),
+  baseQuery: createBaseQuery({ baseUrl: '/orders' }),
   tagTypes: ['Orders', 'Order'],
   endpoints: builder => ({
     /**
