@@ -114,6 +114,18 @@ namespace VinylMarket.Controllers
             return NoContent();
         }
 
+        [HttpDelete("releases")]
+        public async Task<IActionResult> DeleteReleases(
+    [FromBody] int[] ids,
+    CancellationToken ct = default)
+        {
+            if (ids is null || ids.Length == 0)
+                return BadRequest("At least one id is required");
+
+            var (deleted, skipped) = await _admin.DeleteReleasesAsync(ids, ct);
+            return Ok(new { deleted, skipped });
+        }
+
         [HttpPut("releases/{id:int}/image")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadImage(

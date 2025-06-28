@@ -6,8 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using BLL.DTO;
 using AutoMapper;
-using BLL.DTO;
-using BLL.DTO;
 using BLL.Interfaces;
 using DAL.Interfaces;
 using Domain.Entities;
@@ -15,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting.Internal;
+using DAL;
 
 namespace BLL.Services
 {
@@ -248,6 +247,24 @@ namespace BLL.Services
         {
             await _customerRepo.RemoveAsync(id);
             await _uow.SaveChangesAsync();
+        }
+
+        public async Task<(int deleted, int skipped)>
+    DeleteReleasesAsync(IEnumerable<int> ids, CancellationToken ct = default)
+        {
+            int deleted = 0, skipped = 0;
+
+            foreach (int id in ids.Distinct())
+            {
+                var rel = await _releaseRepo.GetByIdAsync(id, ct);
+                if (rel is null) { skipped++; continue; }
+
+                _releaseRepo.Remove(rel);
+                deleted++;
+            }
+
+            await _uow.SaveChangesAsync(ct);
+            return (deleted, skipped);
         }
     }
 }

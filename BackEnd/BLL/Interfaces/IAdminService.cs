@@ -34,6 +34,8 @@ namespace BLL.Interfaces
         Task<ReleaseDto> CreateReleaseAsync(ReleaseCreateDto dto, CancellationToken ct = default);
         Task UpdateReleaseImageAsync(int releaseId, IFormFile file, CancellationToken ct = default);
 
+        Task<(int deleted, int skipped)> DeleteReleasesAsync(IEnumerable<int> ids, CancellationToken ct = default);
+
 
     }
 }
