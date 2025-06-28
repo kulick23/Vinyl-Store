@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
+using BLL.DTO;
 
-namespace BLL.DTO
+namespace BLL.DTO;
+
+public record OrderDto
 {
-    public record OrderDto(
-        int OrderId,
-        DateTime OrderDate,
-        int CustomerId,
-        int SellerId,
-        decimal Total,
-        IReadOnlyList<OrderItemDto> Items);
+    public int OrderId { get; init; }
+    public DateTime OrderDate { get; init; }
+    public decimal Total { get; init; }
+    public int CustomerId { get; init; }
+    public IReadOnlyList<OrderItemDto> Items { get; init; } = [];
 }
