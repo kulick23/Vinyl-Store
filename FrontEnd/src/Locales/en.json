@@ -327,7 +327,80 @@
     "accountActions": "Account Actions",
     "releaseTitle": "Release",
     "unitPrice": "Unit Price",
-    "lineTotal": "Line Total"
+    "lineTotal": "Line Total",
+    "becomeSeller": "Become a Seller",
+    "seller": "Seller",
+    "sellerLabel": "seller"
+  },
+  "seller": {
+    "dashboard": {
+      "title": "Seller Dashboard",
+      "subtitle": "Manage your vinyl inventory and sales",
+      "welcome": "Welcome back, {{name}}!",
+      "navigation": "Navigation",
+      "overview": "Overview",
+      "inventory": "Inventory",
+      "profile": "Seller Profile",
+      "reviews": "Reviews"
+    },
+    "overview": {
+      "title": "Seller Overview",
+      "totalItems": "Total Items",
+      "activeListings": "Active Listings",
+      "totalValue": "Total Value",
+      "pendingOrders": "Pending Orders",
+      "welcomeMessage": "Welcome to your seller dashboard! Here you can manage your inventory, track orders, and update your seller profile."
+    },
+    "profile": {
+      "title": "Seller Profile",
+      "displayName": "Shop Name",
+      "displayNamePlaceholder": "Enter your shop name",
+      "description": "Shop Description",
+      "descriptionPlaceholder": "Describe your shop and what makes it special",
+      "rating": "Rating",
+      "profilePicture": "Profile Picture",
+      "uploadPicture": "Upload Picture",
+      "saveProfile": "Save Profile",
+      "editProfile": "Edit Profile",
+      "cancelEdit": "Cancel",
+      "updateSuccess": "Profile updated successfully!",
+      "updateError": "Failed to update profile. Please try again.",
+      "createSuccess": "Seller profile created successfully!",
+      "createError": "Failed to create seller profile. Please try again."
+    },
+    "becomeSellerModal": {
+      "title": "Become a Seller",
+      "subtitle": "Start selling your vinyl records on our platform",
+      "shopNameLabel": "Shop Name",
+      "shopNamePlaceholder": "Enter your shop name",
+      "descriptionLabel": "Shop Description",
+      "descriptionPlaceholder": "Tell customers about your shop",
+      "createButton": "Create Seller Profile",
+      "cancelButton": "Cancel"
+    },
+    "inventory": {
+      "title": "My Inventory",
+      "addNewItem": "Add New Item",
+      "noItems": "No items in inventory yet",
+      "startAdding": "Start adding items to your inventory",
+      "quantity": "Quantity",
+      "price": "Price",
+      "condition": "Condition",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete this item?",
+      "deleteSuccess": "Item deleted successfully!",
+      "deleteError": "Failed to delete item"
+    },
+    "reviews": {
+      "title": "Customer Reviews",
+      "noReviews": "No reviews yet",
+      "rating": "Rating",
+      "comment": "Comment",
+      "date": "Date",
+      "customer": "Customer"
+    }
   },
   "wishlist": {
     "title": "My Wishlist",

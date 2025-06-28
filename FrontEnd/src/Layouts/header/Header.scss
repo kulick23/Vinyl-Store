@@ -209,6 +209,13 @@
       color: var(--orange-color);
       background-color: var(--hover-background);
     }
+
+    .seller-label {
+      font-size: 12px;
+      color: var(--orange-color);
+      font-weight: 500;
+      opacity: 0.8;
+    }
   }
 
   &__mobile-menu-toggle {

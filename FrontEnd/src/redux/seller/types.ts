@@ -13,3 +13,19 @@ export interface Seller {
   /** опционально: ссылка на профиль или дополнительные поля */
   sellerProfile?: string
 }
+
+/** DTO для создания профиля продавца */
+export interface SellerProfileCreateDto {
+  /** отображаемое имя магазина */
+  displayName: string
+  /** описание магазина */
+  description: string
+}
+
+/** DTO для обновления профиля продавца */
+export interface SellerProfileUpdateDto {
+  /** отображаемое имя магазина */
+  displayName: string
+  /** описание магазина */
+  description: string
+}

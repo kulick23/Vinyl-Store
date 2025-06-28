@@ -1,0 +1,281 @@
+@use '../../Styles/breakpoints.scss' as bp;
+
+.seller-profile-management {
+  .section-title {
+    margin-bottom: 24px;
+    color: var(--text-color);
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .profile-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .profile-section {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--border-color);
+
+    @include bp.phone {
+      padding: 16px;
+      border-radius: 8px;
+    }
+  }
+
+  .profile-header {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+
+    @include bp.phone {
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+  }
+
+  .profile-picture-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    min-width: 120px;
+
+    .profile-picture-placeholder {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: var(--orange-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .upload-picture-btn {
+      padding: 8px 16px;
+      background-color: transparent;
+      color: var(--orange-color);
+      border: 1px solid var(--orange-color);
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: var(--orange-color);
+        color: white;
+      }
+    }
+  }
+
+  .profile-info {
+    flex: 1;
+  }
+
+  .rating-section {
+    .rating-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    .rating-display {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .rating-value {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      .star-rating {
+        display: flex;
+        gap: 2px;
+
+        .star {
+          font-size: 18px;
+          color: #ddd;
+          transition: color 0.2s ease;
+
+          &.filled {
+            color: var(--orange-color);
+          }
+        }
+      }
+    }
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    @include bp.phone {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    h3 {
+      margin: 0;
+      color: var(--text-color);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .edit-button {
+      padding: 8px 16px;
+      background-color: var(--orange-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #e6850e;
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  .edit-form {
+    .form-group {
+      margin-bottom: 20px;
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--text-color);
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .form-input,
+      .form-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background-color: var(--input-background);
+        color: var(--text-color);
+        font-size: 14px;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+        resize: none;
+
+        &:focus {
+          outline: none;
+          border-color: var(--orange-color);
+          box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.1);
+        }
+
+        &::placeholder {
+          color: var(--text-secondary);
+        }
+      }
+
+      .form-textarea {
+        min-height: 100px;
+        font-family: inherit;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+
+      @include bp.phone {
+        flex-direction: column-reverse;
+      }
+
+      .save-button,
+      .cancel-button {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        min-width: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+
+      .save-button {
+        background-color: var(--orange-color);
+        color: white;
+
+        &:hover:not(:disabled) {
+          background-color: #e6850e;
+        }
+      }
+
+      .cancel-button {
+        background-color: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+
+        &:hover:not(:disabled) {
+          background-color: var(--hover-background);
+          color: var(--text-color);
+        }
+      }
+    }
+  }
+
+  .profile-display {
+    .info-item {
+      display: flex;
+      margin-bottom: 16px;
+      gap: 12px;
+
+      @include bp.phone {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .info-label {
+        font-weight: 500;
+        color: var(--text-color);
+        min-width: 120px;
+
+        @include bp.phone {
+          min-width: auto;
+        }
+      }
+
+      .info-value {
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+    }
+  }
+
+  .error-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+  }
+} 

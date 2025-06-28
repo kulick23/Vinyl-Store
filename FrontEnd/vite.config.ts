@@ -1,9 +1,19 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
-  const API = env.VITE_API_URL || 'http://localhost:5000'
+  const env = loadEnv(mode, fileURLToPath(new URL('.', import.meta.url)), '')
+  
+  // For development, use the hosted backend directly
+  const API = mode === 'development' 
+    ? 'https://ibm-team-project-production.up.railway.app'
+    : env.VITE_API_URL || 'http://localhost:5000'
+  
+  // Debug logging
+  console.log('Vite Config - Mode:', mode)
+  console.log('Vite Config - API URL from env:', env.VITE_API_URL)
+  console.log('Vite Config - Final API target:', API)
 
   return {
     plugins: [react()],

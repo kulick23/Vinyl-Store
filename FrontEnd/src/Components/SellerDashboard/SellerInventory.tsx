@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import {
   useGetInventoryQuery,
   useCreateInventoryItemMutation,
@@ -14,6 +15,7 @@ import type { InventoryItem, CreateInventoryPayload } from "../../redux/inventor
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
 
 const SellerInventory: React.FC = () => {
+  const { t } = useTranslation()
   const [isCreating, setIsCreating] = useState(false)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
   const [formData, setFormData] = useState({
@@ -90,7 +92,7 @@ const SellerInventory: React.FC = () => {
   }
 
   const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this inventory item?")) {
+    if (window.confirm(t("seller.inventory.deleteConfirm"))) {
       try {
         await deleteItem(id).unwrap()
       } catch (error) {
@@ -136,12 +138,12 @@ const SellerInventory: React.FC = () => {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-        <h2 className="section-title">My Inventory</h2>
+        <h2 className="section-title">{t("seller.inventory.title")}</h2>
         <button
           onClick={() => setIsCreating(true)}
           disabled={isCreating || editingItem !== null}
           style={{
-            backgroundColor: "#3b82f6",
+            backgroundColor: "var(--orange-color)",
             color: "white",
             border: "none",
             padding: "12px 24px",
@@ -151,7 +153,7 @@ const SellerInventory: React.FC = () => {
             height: "auto",
           }}
         >
-          Add Item
+          {t("seller.inventory.addNewItem")}
         </button>
       </div>
 
