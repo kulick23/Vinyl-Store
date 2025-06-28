@@ -7,9 +7,6 @@ using Domain.Entities;
 
 namespace BLL.Services;
 
-/// <summary>
-/// Импорт релизов из Discogs по кнопке администратора.
-/// </summary>
 public sealed class DiscogsImportService : IDiscogsImportService
 {
     private readonly HttpClient _http;
@@ -32,24 +29,22 @@ public sealed class DiscogsImportService : IDiscogsImportService
         _uow = uow;
     }
 
-    /* -------------------------------------------------------------------- */
 
     public async Task<(int imported, int skipped)> ImportAsync(
         int count = 100,
         CancellationToken ct = default)
     {
-        // --- 1. Запрашиваем данные у Discogs --------------------------------
+
         string url = $"database/search?per_page={count}&" +
                      "type=release&sort=year&sort_order=desc";
 
         JsonElement root = await _http.GetFromJsonAsync<JsonElement>(url, ct);
 
-        // --- 2. Преобразуем в DTO -------------------------------------------
         var list = root.GetProperty("results")
                        .EnumerateArray()
                        .Select(x =>
                        {
-                           // year может быть строкой!
+
                            int year = x.TryGetProperty("year", out var y)
                                    && y.ValueKind == JsonValueKind.Number
                                    && y.TryGetInt32(out int yy) ? yy : 0;
@@ -64,7 +59,6 @@ public sealed class DiscogsImportService : IDiscogsImportService
                                            ? a.GetString() ?? string.Empty
                                            : string.Empty;
 
-                           // Если в JSON нет artist – вырезаем из заголовка до « - »
                            if (string.IsNullOrWhiteSpace(artist))
                            {
                                var raw = x.GetProperty("title").GetString() ?? "Unknown Artist";
@@ -82,7 +76,7 @@ public sealed class DiscogsImportService : IDiscogsImportService
 
                            return new
                            {
-                               Id = x.GetProperty("id").GetInt32(),   // для проверки дублей, если нужно
+                               Id = x.GetProperty("id").GetInt32(),
                                Title = x.GetProperty("title").GetString() ?? "Untitled",
                                Year = year,
                                ImageUrl = thumb,
@@ -92,7 +86,6 @@ public sealed class DiscogsImportService : IDiscogsImportService
                        })
                        .ToList();
 
-        // --- 3. Кеш существующих артистов / жанров ---------------------------
         var genreCache = (await _genres.Query()
                                         .AsNoTracking()
                                         .ToListAsync(ct))
@@ -107,11 +100,10 @@ public sealed class DiscogsImportService : IDiscogsImportService
                           .Select(a => a.First())
                           .ToDictionary(a => a.Name, StringComparer.OrdinalIgnoreCase);
 
-        // Гарантируем наличие «Unknown»
         await EnsureSpecialEntryAsync("Unknown", genreCache, _genres, ct);
         await EnsureSpecialEntryAsync("Unknown Artist", artistCache, _artists, ct);
 
-        // --- 4. Импорт -------------------------------------------------------
+
         int imported = 0, skipped = 0;
 
         foreach (var dto in list)
@@ -147,7 +139,6 @@ public sealed class DiscogsImportService : IDiscogsImportService
         return (imported, skipped);
     }
 
-    /* ======================= helpers ===================================== */
 
     private static async Task EnsureSpecialEntryAsync<T>(
         string name,
@@ -158,7 +149,7 @@ public sealed class DiscogsImportService : IDiscogsImportService
         if (cache.ContainsKey(name)) return;
 
         var entity = new T();
-        // у Genre/Artist свойство называется Name
+
         typeof(T).GetProperty("Name")!.SetValue(entity, name);
 
         await repo.AddAsync(entity, ct);
