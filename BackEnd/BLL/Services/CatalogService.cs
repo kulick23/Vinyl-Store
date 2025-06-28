@@ -39,12 +39,13 @@ namespace BLL.Services.Implementation
     int pageSize = 20,
     CancellationToken ct = default)
         {
-            if (page <= 0) page = 1;
-            if (pageSize <= 0) pageSize = 20;
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 20;
 
             IQueryable<RecordRelease> q = _releaseRepo.Query()
                 .Include(r => r.Artist)
                 .Include(r => r.Genre);
+
             if (!string.IsNullOrWhiteSpace(query.Keyword))
                 q = q.Where(r => EF.Functions.ILike(r.Title, $"%{query.Keyword}%"));
 
@@ -60,7 +61,10 @@ namespace BLL.Services.Implementation
             if (query.YearTo is not null)
                 q = q.Where(r => r.Year <= query.YearTo);
 
+            q = q.OrderBy(r => r.Id);
+
             int total = await q.CountAsync(ct);
+
             var pageItems = await q.AsNoTracking()
                                    .Skip((page - 1) * pageSize)
                                    .Take(pageSize)

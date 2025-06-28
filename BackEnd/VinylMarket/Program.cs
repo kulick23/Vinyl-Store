@@ -67,7 +67,8 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/images"
 });
 
-// Use CORS before other middleware
+app.UsePathBase("/");
+
 app.UseCors();
 
 app.UseHttpsRedirection();

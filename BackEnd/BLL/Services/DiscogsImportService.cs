@@ -1,19 +1,22 @@
-﻿using System.Net.Http;
+﻿using System.Text.Json;
 using System.Net.Http.Json;
-using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using BLL.Interfaces;
 using DAL.Interfaces;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services;
 
+/// <summary>
+/// Импорт релизов из Discogs по кнопке администратора.
+/// </summary>
 public sealed class DiscogsImportService : IDiscogsImportService
 {
     private readonly HttpClient _http;
     private readonly IRecordReleaseRepository _releases;
-    private readonly IUnitOfWork _uow;
     private readonly IArtistRepository _artists;
     private readonly IGenreRepository _genres;
+    private readonly IUnitOfWork _uow;
 
     public DiscogsImportService(
         IHttpClientFactory factory,
@@ -29,54 +32,45 @@ public sealed class DiscogsImportService : IDiscogsImportService
         _uow = uow;
     }
 
-    private sealed record DiscogsRelDto(
-    int Id,
-    string Title,
-    int Year,
-    string ImageUrl,
-    string ArtistName,
-    string GenreName);
+    /* -------------------------------------------------------------------- */
 
     public async Task<(int imported, int skipped)> ImportAsync(
-    int count = 100,
-    CancellationToken ct = default)
+        int count = 100,
+        CancellationToken ct = default)
     {
-        string url =
-            $"database/search?per_page={count}&type=release&sort=year&sort_order=desc";
+        // --- 1. Запрашиваем данные у Discogs --------------------------------
+        string url = $"database/search?per_page={count}&" +
+                     "type=release&sort=year&sort_order=desc";
 
         JsonElement root = await _http.GetFromJsonAsync<JsonElement>(url, ct);
 
+        // --- 2. Преобразуем в DTO -------------------------------------------
         var list = root.GetProperty("results")
                        .EnumerateArray()
                        .Select(x =>
                        {
-                           int year = 0;
-                           if (x.TryGetProperty("year", out var y))
-                           {
-                               if (y.ValueKind == JsonValueKind.Number)
-                                   year = y.GetInt32();
-                               else if (y.ValueKind == JsonValueKind.String &&
-                                        int.TryParse(y.GetString(), out var yy))
-                                   year = yy;
-                           }
+                           // year может быть строкой!
+                           int year = x.TryGetProperty("year", out var y)
+                                   && y.ValueKind == JsonValueKind.Number
+                                   && y.TryGetInt32(out int yy) ? yy : 0;
 
-                           string titleRaw = x.GetProperty("title").GetString() ?? "Untitled";
+                           string thumb = x.TryGetProperty("thumb", out var t)
+                                        && t.ValueKind == JsonValueKind.String
+                                          ? t.GetString() ?? string.Empty
+                                          : string.Empty;
+
                            string artist = x.TryGetProperty("artist", out var a)
+                                         && a.ValueKind == JsonValueKind.String
                                            ? a.GetString() ?? string.Empty
                                            : string.Empty;
 
+                           // Если в JSON нет artist – вырезаем из заголовка до « - »
                            if (string.IsNullOrWhiteSpace(artist))
                            {
-                               int dash = titleRaw.IndexOf(" - ", StringComparison.Ordinal);
-                               if (dash > 0)
-                                   artist = titleRaw[..dash].Trim();
-                               else
-                                   artist = "Unknown Artist";
+                               var raw = x.GetProperty("title").GetString() ?? "Unknown Artist";
+                               int dash = raw.IndexOf(" - ", StringComparison.Ordinal);
+                               artist = dash > 0 ? raw[..dash].Trim() : "Unknown Artist";
                            }
-
-                           string title = titleRaw;
-                           int idx = titleRaw.IndexOf(" - ", StringComparison.Ordinal);
-                           if (idx > 0) title = titleRaw[(idx + 3)..].Trim();
 
                            string genre = "Unknown";
                            if (x.TryGetProperty("genre", out var g) &&
@@ -86,34 +80,49 @@ public sealed class DiscogsImportService : IDiscogsImportService
                                genre = g[0].GetString() ?? "Unknown";
                            }
 
-                           string img = "/default/stub.png";
-                           if (x.TryGetProperty("thumb", out var t))
+                           return new
                            {
-                               var s = t.GetString();
-                               if (!string.IsNullOrWhiteSpace(s)) img = s;
-                           }
-
-                           return new DiscogsRelDto(
-                               Id: x.GetProperty("id").GetInt32(),
-                               Title: title,
-                               Year: year,
-                               ImageUrl: img,
-                               ArtistName: artist,
-                               GenreName: genre);
+                               Id = x.GetProperty("id").GetInt32(),   // для проверки дублей, если нужно
+                               Title = x.GetProperty("title").GetString() ?? "Untitled",
+                               Year = year,
+                               ImageUrl = thumb,
+                               Artist = artist,
+                               Genre = genre
+                           };
                        })
                        .ToList();
 
+        // --- 3. Кеш существующих артистов / жанров ---------------------------
+        var genreCache = (await _genres.Query()
+                                        .AsNoTracking()
+                                        .ToListAsync(ct))
+                          .GroupBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                          .Select(g => g.First())
+                          .ToDictionary(g => g.Name, StringComparer.OrdinalIgnoreCase);
+
+        var artistCache = (await _artists.Query()
+                                         .AsNoTracking()
+                                         .ToListAsync(ct))
+                          .GroupBy(a => a.Name, StringComparer.OrdinalIgnoreCase)
+                          .Select(a => a.First())
+                          .ToDictionary(a => a.Name, StringComparer.OrdinalIgnoreCase);
+
+        // Гарантируем наличие «Unknown»
+        await EnsureSpecialEntryAsync("Unknown", genreCache, _genres, ct);
+        await EnsureSpecialEntryAsync("Unknown Artist", artistCache, _artists, ct);
+
+        // --- 4. Импорт -------------------------------------------------------
         int imported = 0, skipped = 0;
 
         foreach (var dto in list)
         {
-            int artistId = await GetOrCreateArtistAsync(dto.ArtistName, ct);
-            int genreId = await GetOrCreateGenreAsync(dto.GenreName, ct);
+            int artistId = await GetOrCreateArtistAsync(dto.Artist, artistCache, _artists, ct);
+            int genreId = await GetOrCreateGenreAsync(dto.Genre, genreCache, _genres, ct);
 
             bool exists = await _releases.Query()
-                .AnyAsync(r => r.Title == dto.Title &&
-                               r.ArtistId == artistId &&
-                               r.Year == dto.Year, ct);
+                             .AnyAsync(r => r.Title == dto.Title &&
+                                            r.ArtistId == artistId &&
+                                            r.Year == dto.Year, ct);
 
             if (exists) { skipped++; continue; }
 
@@ -123,60 +132,70 @@ public sealed class DiscogsImportService : IDiscogsImportService
                 Year = dto.Year,
                 ArtistId = artistId,
                 GenreId = genreId,
-                ImageUrl = dto.ImageUrl
+                ImageUrl = string.IsNullOrWhiteSpace(dto.ImageUrl)
+                         ? "/images/default/stub.png"
+                         : dto.ImageUrl
             };
 
             await _releases.AddAsync(rel, ct);
             imported++;
         }
 
-        await _uow.SaveChangesAsync(ct);
+        if (imported > 0)
+            await _uow.SaveChangesAsync(ct);
+
         return (imported, skipped);
     }
 
+    /* ======================= helpers ===================================== */
 
-    private async Task<int> GetOrCreateArtistAsync(string name, CancellationToken ct)
+    private static async Task EnsureSpecialEntryAsync<T>(
+        string name,
+        Dictionary<string, T> cache,
+        IRepository<T> repo,
+        CancellationToken ct) where T : BaseEntity, new()
     {
-        var artist = await _artists.Query()
-                       .FirstOrDefaultAsync(a => a.Name == name, ct);
+        if (cache.ContainsKey(name)) return;
 
-        if (artist != null) return artist.Id;
+        var entity = new T();
+        // у Genre/Artist свойство называется Name
+        typeof(T).GetProperty("Name")!.SetValue(entity, name);
 
-        artist = new Artist { Name = name };
-        await _artists.AddAsync(artist, ct);
-        await _uow.SaveChangesAsync(ct);
-        return artist.Id;
+        await repo.AddAsync(entity, ct);
+        cache[name] = entity;
     }
 
-    private async Task<int> GetOrCreateGenreAsync(string name, CancellationToken ct)
+    private async Task<int> GetOrCreateArtistAsync(
+        string name,
+        Dictionary<string, Artist> cache,
+        IArtistRepository repo,
+        CancellationToken ct)
     {
-        var genre = await _genres.Query()
-                      .FirstOrDefaultAsync(g => g.Name == name, ct);
+        if (cache.TryGetValue(name, out var existing))
+            return existing.Id;
 
-        if (genre != null) return genre.Id;
-
-        genre = new Genre { Name = name };
-        await _genres.AddAsync(genre, ct);
+        var entity = new Artist { Name = name };
+        await repo.AddAsync(entity, ct);
         await _uow.SaveChangesAsync(ct);
-        return genre.Id;
+
+        cache[name] = entity;
+        return entity.Id;
     }
 
-    private static string ResolveArtist(JsonElement e, string title)
+    private async Task<int> GetOrCreateGenreAsync(
+        string name,
+        Dictionary<string, Genre> cache,
+        IGenreRepository repo,
+        CancellationToken ct)
     {
-        if (e.TryGetProperty("artist", out var a) &&
-            a.ValueKind == JsonValueKind.String &&
-            !string.IsNullOrWhiteSpace(a.GetString()))
-            return a.GetString()!;
+        if (cache.TryGetValue(name, out var existing))
+            return existing.Id;
 
-        if (e.TryGetProperty("artist_credit", out var ac) &&
-            ac.ValueKind == JsonValueKind.Array &&
-            ac.GetArrayLength() > 0 &&
-            ac[0].TryGetProperty("name", out var n) &&
-            n.ValueKind == JsonValueKind.String &&
-            !string.IsNullOrWhiteSpace(n.GetString()))
-            return n.GetString()!;
+        var entity = new Genre { Name = name };
+        await repo.AddAsync(entity, ct);
+        await _uow.SaveChangesAsync(ct);
 
-        var parts = title.Split('-', 2, StringSplitOptions.TrimEntries);
-        return parts.Length > 1 ? parts[0] : "Unknown";
+        cache[name] = entity;
+        return entity.Id;
     }
 }
