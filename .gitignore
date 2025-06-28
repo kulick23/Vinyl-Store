@@ -404,3 +404,4 @@ FodyWeavers.xsd
 *.tar
 
 **/migrate
+.env
