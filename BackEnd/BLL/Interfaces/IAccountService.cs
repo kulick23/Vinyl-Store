@@ -1,6 +1,7 @@
-﻿using System.Threading;
+﻿using BLL.DTO;
+using Domain.Entities;
+using System.Threading;
 using System.Threading.Tasks;
-using BLL.DTO;
 
 namespace BLL.Interfaces
 {
@@ -15,5 +16,8 @@ namespace BLL.Interfaces
         Task<bool> ConfirmEmailAsync(string rawToken, CancellationToken ct = default);
         Task<CustomerUpdateDto> GetByIdAsync(int userId, CancellationToken ct);
         Task<CustomerUpdateDto> UpdateProfileAsync(int userId, CustomerUpdateDto dto, CancellationToken ct = default);
+        Task<Customer> GetUserByEmailAsync(string email, CancellationToken ct);
+        Task<Customer> RegisterGoogleUserAsync(string email, string firstName, string lastName, CancellationToken ct);
+        Task<AuthTokensDto> GenerateTokensForUserAsync(Customer user, CancellationToken ct);
     }
 }
