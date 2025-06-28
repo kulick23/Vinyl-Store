@@ -21,6 +21,7 @@ export const ShopPage: React.FC = () => {
   const [filters, setFilters] = useState<FilterOptions>({
     includePrice: true,
   })
+  
   const [showFilters, setShowFilters] = useState(false)
 
   const { data: user } = useGetCurrentUserQuery(undefined, {
