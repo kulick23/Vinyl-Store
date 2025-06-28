@@ -33,15 +33,27 @@ namespace VinylMarket.Controllers
             return Ok(orders);
         }
 
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmOrder(
+    [FromBody] ConfirmOrderDto dto,           // { "intentId": "pi_..." }
+    CancellationToken ct = default)
+        {
+            int customerId = GetCustomerId();
+
+            var order = await _orderService
+                .CreateOrderFromPaymentIntentAsync(customerId, dto.IntentId, ct);
+
+            return CreatedAtAction(nameof(GetOrderById),
+                                    new { id = order.OrderId }, order);
+        }
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetOrderById(int id, CancellationToken ct = default)
         {
             var customerId = GetCustomerId();
-            var order = await _orderService.GetOrderByIdAsync(id, ct);
-            if (order == null || order.CustomerId != customerId)
-                return NotFound();
 
-            return Ok(order);
+            var order = await _orderService.GetOrderForCustomerAsync(customerId, id, ct);
+            return order is null ? NotFound() : Ok(order);
         }
 
         private int GetCustomerId()

@@ -89,10 +89,14 @@ namespace VinylRecordShop.Configurations
             });
 
             builder.Services.Configure<StripeSettings>(
-      builder.Configuration.GetSection("Stripe"));
+       builder.Configuration.GetSection("Stripe"));
 
             StripeConfiguration.ApiKey =
-                builder.Configuration["Stripe:SecretKey"];     // static one-liner
+                builder.Configuration["Stripe:SecretKey"];
+            var stripeSettings = builder.Configuration
+                     .GetSection("Stripe")
+                     .Get<StripeSettings>();
+            Stripe.StripeConfiguration.ApiKey = stripeSettings.SecretKey;
 
             builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 

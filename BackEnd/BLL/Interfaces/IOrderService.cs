@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.DTOs;
 using BLL.DTO;
 
 namespace BLL.Services
@@ -13,5 +12,8 @@ namespace BLL.Services
         Task<IReadOnlyList<OrderDto>> GetOrdersForCustomerAsync(int customerId, CancellationToken ct = default);
         Task<IReadOnlyList<OrderDto>> GetOrdersForSellerAsync(int sellerId, CancellationToken ct = default);
         Task CancelOrderAsync(int orderId, int requesterId, CancellationToken ct = default);
+        Task<OrderDto?> GetOrderForCustomerAsync(int customerId, int orderId, CancellationToken ct = default);
+        Task<OrderDto> CreateOrderFromPaymentIntentAsync(
+        int customerId, string intentId, CancellationToken ct = default);
     }
 }

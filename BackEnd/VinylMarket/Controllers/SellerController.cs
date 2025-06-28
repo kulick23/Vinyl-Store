@@ -16,7 +16,6 @@ namespace Web.Api.Controllers
     {
         private readonly ISellerProfileService _sellerService;
 
-
         public SellerController(ISellerProfileService sellerService)
         {
             _sellerService = sellerService;
@@ -42,9 +41,18 @@ namespace Web.Api.Controllers
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             var profile = await _sellerService.CreateProfileAsync(userId, dto, ct);
-            return RedirectToAction(
-                    nameof(GetPublicSellerProfile),
-                    new { id = profile.CustomerId });
+            return Ok();
+        }
+
+        [HttpGet("my-profile")]
+        public async Task<IActionResult> GetMySellerProfile(CancellationToken ct = default)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var profile = await _sellerService.GetProfileByCustomerIdAsync(userId, ct);
+
+            return profile is null
+                ? BadRequest("No seller profile yet — click *Become Seller* to create one.")
+                : Ok(profile);
         }
 
 
