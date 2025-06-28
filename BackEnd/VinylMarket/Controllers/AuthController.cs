@@ -50,6 +50,28 @@ namespace VinylMarket.Controllers
             return Ok(tokens);
         }
 
+
+        [HttpPost("password/forgot")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(
+            [FromBody] PasswordResetRequestDto dto,
+            CancellationToken ct = default)
+        {
+            await _account.SendPasswordResetAsync(dto.Email, ct);
+            return Ok();
+        }
+
+
+        [HttpPost("password/reset")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(
+            [FromBody] PasswordResetConfirmDto dto,
+            CancellationToken ct = default)
+        {
+            await _account.ResetPasswordAsync(dto.Token, dto.NewPassword, ct);
+            return NoContent();
+        }
+
         [HttpGet("myAccount")]
         public async Task<IActionResult> MyAccountInfo(CancellationToken ct)
         {

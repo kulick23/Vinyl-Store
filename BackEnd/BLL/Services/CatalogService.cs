@@ -61,7 +61,11 @@ namespace BLL.Services.Implementation
             if (query.YearTo is not null)
                 q = q.Where(r => r.Year <= query.YearTo);
 
+
             q = q.OrderBy(r => r.Id);
+             
+            q = q.GroupBy(r => new { r.Title, r.ArtistId, r.Year })
+                  .Select(g => g.First());
 
             int total = await q.CountAsync(ct);
 

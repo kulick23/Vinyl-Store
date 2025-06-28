@@ -10,5 +10,7 @@
 
         public Customer? Customer { get; set; }
         public ICollection<CartItem> Items { get; set; } = new List<CartItem>();
+
+        public string? StripePaymentIntentId { get; set; }
     }
 }

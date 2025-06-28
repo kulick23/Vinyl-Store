@@ -7,5 +7,8 @@
         public Customer Customer { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
+        public string? PaymentIntentId { get; set; }
+        public decimal TotalAmount { get; set; }
+
     }
 }

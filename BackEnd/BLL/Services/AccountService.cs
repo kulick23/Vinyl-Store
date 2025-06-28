@@ -237,15 +237,33 @@ namespace BLL.Services
             };
             await _resetRepo.AddAsync(token, ct);
             await _uow.SaveChangesAsync(ct);
+
+            string frontendBase = _cfg["Frontend:BaseUrl"] ?? "http://localhost:5173";
+            string link = $"{frontendBase}/reset?token={token.Token}";
+
+            await _email.SendEmailAsync(
+                recipientEmail: email,
+                subject: "Password reset — Vinyl Market",
+                htmlBody: $"""
+        <p>Hello,</p>
+        <p>Someone (possibly you) requested a password reset for the account <b>{email}</b>.</p>
+        <p>If it was you, please click <a href="{link}">this link</a>.  
+           The link is valid for <b>1 hour</b>.</p>
+        <p>If you did not request a password reset, simply ignore this email — your password will stay unchanged.</p>
+        <hr/>
+        <p>The Vinyl Market Team</p>
+        """,
+                ct);
         }
+
 
         public async Task ResetPasswordAsync(Guid tokenId, string newPassword, CancellationToken ct = default)
         {
             var token = await _resetRepo.GetAsync(tokenId, ct)
-                        ?? throw new InvalidOperationException("Token not found.");
+                        ?? throw new InvalidOperationException("Токен не найден");
 
             if (token.Used || token.ExpiresAt < DateTime.UtcNow)
-                throw new InvalidOperationException("Token invalid.");
+                throw new InvalidOperationException("Токен истёк или уже использован");
 
             var customer = token.Customer;
             customer.PasswordHash = _hasher.HashPassword(customer, newPassword);

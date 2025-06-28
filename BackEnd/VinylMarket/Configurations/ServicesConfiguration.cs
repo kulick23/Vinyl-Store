@@ -14,7 +14,11 @@ using Common.Options;
 using NotificationsService.Providers;
 using VinylMarket.Infrastructure;
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Authentication.Google; // Добавлено
+using Microsoft.AspNetCore.Authentication.Google;
+using Stripe;
+using StripeCustomer = Stripe.Customer;
+using DbCustomer = Domain.Entities.Customer;
+using BLL.Options;
 
 namespace VinylRecordShop.Configurations
 {
@@ -32,7 +36,7 @@ namespace VinylRecordShop.Configurations
             services.AddAutoMapper(typeof(CustomerProfile).Assembly);
 
             // BLL services
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAccountService, BLL.Services.AccountService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<ICatalogService, CatalogService>();
             services.AddScoped<IInventoryService, InventoryService>();
@@ -41,6 +45,7 @@ namespace VinylRecordShop.Configurations
             services.AddScoped<IWishlistService, WishlistService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IReviewService, ReviewService>();
+            services.AddScoped<ICheckoutService, CheckoutService>();
 
             // DAL repositories
             services.AddScoped<IAccountRepository, AccountRepository>();
@@ -62,7 +67,7 @@ namespace VinylRecordShop.Configurations
             services.AddScoped<IDiscogsImportService, DiscogsImportService>();
 
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-            services.AddScoped<IPasswordHasher<Customer>, PasswordHasher<Customer>>();
+            services.AddScoped<IPasswordHasher<Domain.Entities.Customer>, PasswordHasher<Domain.Entities.Customer>>();
             services.Configure<EmailOptions>(cfg.GetSection(EmailOptions.Section));
             services.AddTransient<IEmailProvider, EmailProvider>();
 
@@ -82,6 +87,14 @@ namespace VinylRecordShop.Configurations
                     client.DefaultRequestHeaders.TryAddWithoutValidation(
                         "Authorization", $"Discogs token={pat}");
             });
+
+            builder.Services.Configure<StripeSettings>(
+      builder.Configuration.GetSection("Stripe"));
+
+            StripeConfiguration.ApiKey =
+                builder.Configuration["Stripe:SecretKey"];     // static one-liner
+
+            builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 
             builder.Services.AddAuthentication().AddGoogle(googleOptions =>
                 {

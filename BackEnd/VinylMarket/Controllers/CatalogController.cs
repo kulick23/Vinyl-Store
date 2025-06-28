@@ -43,8 +43,13 @@ namespace VinylMarket.Controllers
     CancellationToken ct = default)
         {
             var query = new SearchQueryDto(
-                keyword, artistId, genreId,
-                yearFrom, yearTo, priceMin, priceMax,
+                keyword,
+                artistId,
+                genreId,
+                yearFrom,
+                yearTo,
+                priceMin,
+                priceMax,
                 MinCondition: null);
 
             var result = await _catalog.SearchReleasesAsync(query, page, pageSize, ct);

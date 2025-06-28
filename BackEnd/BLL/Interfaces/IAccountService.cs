@@ -19,5 +19,7 @@ namespace BLL.Interfaces
         Task<Customer> GetUserByEmailAsync(string email, CancellationToken ct);
         Task<Customer> RegisterGoogleUserAsync(string email, string firstName, string lastName, CancellationToken ct);
         Task<AuthTokensDto> GenerateTokensForUserAsync(Customer user, CancellationToken ct);
+        Task SendPasswordResetAsync(string email, CancellationToken ct = default);
+        Task ResetPasswordAsync(Guid token, string newPassword, CancellationToken ct = default);
     }
 }

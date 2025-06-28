@@ -1,0 +1,1 @@
+﻿public record CheckoutResponseDto(string ClientSecret, string IntentId);
