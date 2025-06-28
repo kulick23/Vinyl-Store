@@ -48,6 +48,14 @@ export const authApi = createApi({
       query: data => ({ url: 'editProfile', method: 'POST', body: data }),
       invalidatesTags: ['User']
     }),
+    /** POST /password/forgot - Send password reset email */
+    forgotPassword: builder.mutation<void, { email: string }>({
+      query: data => ({ url: 'password/forgot', method: 'POST', body: { Email: data.email } })
+    }),
+    /** POST /password/reset - Reset password with token */
+    resetPassword: builder.mutation<void, { token: string; newPassword: string }>({
+      query: data => ({ url: 'password/reset', method: 'POST', body: { Token: data.token, NewPassword: data.newPassword } })
+    }),
     /** GET /wishlist - Get user's wishlist */
     getWishlist: builder.query<WishlistItem[], void>({
       query: () => ({ url: 'wishlist', method: 'GET' }),
@@ -99,6 +107,8 @@ export const {
   useGetCurrentUserQuery,
   useConfirmEmailMutation,
   useEditProfileMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
   useGetWishlistQuery,
   useAddToWishlistMutation,
   useRemoveFromWishlistMutation,

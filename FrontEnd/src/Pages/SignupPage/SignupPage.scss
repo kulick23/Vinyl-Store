@@ -179,6 +179,7 @@
       width: 100%;
       min-width: 0;
       box-sizing: border-box;
+      max-width: 100%; // Don't exceed container
       
       // Modern field sizing for better content fitting (with fallback)
       @supports (field-sizing: content) {
@@ -190,8 +191,6 @@
       @supports not (field-sizing: content) {
         min-width: 140px; // Ensure sufficient width for longest expected text
       }
-      
-      max-width: 100%; // Don't exceed container
 
       // Medium screens
       @media (max-width: 768px) {

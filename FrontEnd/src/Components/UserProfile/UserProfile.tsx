@@ -323,6 +323,13 @@ export const UserProfile: React.FC = () => {
               </div>
 
               <div className="settings-card">
+                <h3>{t('profile.forgotPassword')}</h3>
+                <Link to="/forgot-password" className="forgot-password-button">
+                  {t('profile.forgotPassword')}
+                </Link>
+              </div>
+
+              <div className="settings-card">
                 <h3>{t('profile.theme')}</h3>
                 <button onClick={toggleTheme} className="theme-button">
                   {document.documentElement.getAttribute('data-theme') === 'dark' 

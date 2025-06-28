@@ -317,6 +317,7 @@
     "settingsComingSoon": "Функция настроек скоро появится...",
     "editProfile": "Редактировать профиль",
     "changePassword": "Изменить пароль",
+    "forgotPassword": "Сбросить пароль",
     "notifications": "Уведомления",
     "privacy": "Приватность",
     "theme": "Тема",
@@ -328,6 +329,40 @@
     "releaseTitle": "Релиз",
     "unitPrice": "Цена за единицу",
     "lineTotal": "Итого по строке"
+  },
+  "forgotPassword": {
+    "title": "Сброс пароля",
+    "subtitle": "Введите ваш email адрес и мы отправим вам ссылку для сброса пароля.",
+    "emailLabel": "Email адрес",
+    "emailPlaceholder": "Введите ваш email адрес",
+    "sendResetLink": "Отправить ссылку",
+    "backToLogin": "Вернуться к входу",
+    "emailSent": "Письмо для сброса пароля отправлено!",
+    "emailSentMessage": "Проверьте вашу почту для получения ссылки сброса пароля. Ссылка действительна в течение 1 часа.",
+    "errors": {
+      "emailRequired": "Email обязателен",
+      "emailInvalid": "Введите корректный email адрес",
+      "sendFailed": "Не удалось отправить письмо. Попробуйте снова."
+    }
+  },
+  "resetPassword": {
+    "title": "Новый пароль",
+    "subtitle": "Введите ваш новый пароль ниже.",
+    "passwordLabel": "Новый пароль",
+    "passwordPlaceholder": "Введите новый пароль",
+    "confirmPasswordLabel": "Подтвердите новый пароль",
+    "confirmPasswordPlaceholder": "Подтвердите новый пароль",
+    "resetPassword": "Сбросить пароль",
+    "backToLogin": "Вернуться к входу",
+    "success": "Пароль успешно сброшен!",
+    "successMessage": "Ваш пароль был сброшен. Теперь вы можете войти с новым паролем.",
+    "errors": {
+      "passwordRequired": "Пароль обязателен",
+      "passwordTooShort": "Пароль должен содержать минимум 8 символов",
+      "passwordMismatch": "Пароли не совпадают",
+      "invalidToken": "Недействительный или истёкший токен сброса",
+      "resetFailed": "Не удалось сбросить пароль. Попробуйте снова."
+    }
   },
   "wishlist": {
     "title": "Мое избранное",
