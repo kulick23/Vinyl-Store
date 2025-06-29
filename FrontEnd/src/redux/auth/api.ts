@@ -96,6 +96,19 @@ export const authApi = createApi({
         return { data: undefined }
       },
       invalidatesTags: ['Wishlist']
+    }),
+    /** PUT /account/avatar - Upload user avatar */
+    uploadUserAvatar: builder.mutation<{ avatarPath: string }, File>({
+      query: (file) => {
+        const formData = new FormData()
+        formData.append('file', file)
+        return {
+          url: 'account/avatar',
+          method: 'PUT',
+          body: formData,
+        }
+      },
+      invalidatesTags: ['User']
     })
   })
 })
@@ -112,5 +125,6 @@ export const {
   useGetWishlistQuery,
   useAddToWishlistMutation,
   useRemoveFromWishlistMutation,
-  useClearWishlistMutation
+  useClearWishlistMutation,
+  useUploadUserAvatarMutation
 } = authApi

@@ -47,20 +47,6 @@ export const sellerApi = createApi({
     }),
 
     /**
-     * PUT /api/Seller/my-profile
-     * Body: SellerProfileUpdateDto
-     * Response: void
-     */
-    updateSellerProfile: builder.mutation<void, SellerProfileUpdateDto>({
-      query: (data) => ({
-        url: 'my-profile',
-        method: 'PUT',
-        body: data
-      }),
-      invalidatesTags: ['Seller']
-    }),
-
-    /**
      * PUT /api/Seller/avatar
      * Body: FormData with image file
      * Response: { avatarPath: string }
@@ -84,6 +70,5 @@ export const {
   useGetSellerByIdQuery,
   useBecomeSellerMutation,
   useGetCurrentSellerProfileQuery,
-  useUpdateSellerProfileMutation,
   useUploadSellerAvatarMutation
 } = sellerApi

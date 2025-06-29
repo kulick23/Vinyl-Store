@@ -28,7 +28,20 @@ const SellerOverview: React.FC<{ sellerProfile: any }> = ({ sellerProfile }) => 
         <div className="profile-header">
           <div className="profile-avatar">
             <div className="avatar-placeholder">
-              {sellerProfile?.displayName ? sellerProfile.displayName.charAt(0).toUpperCase() : 'S'}
+              {sellerProfile?.avatarPath ? (
+                <img 
+                  src={`${sellerProfile.avatarPath}?t=${Date.now()}`} 
+                  alt={sellerProfile.displayName}
+                  style={{ 
+                    width: "100%", 
+                    height: "100%", 
+                    objectFit: "cover", 
+                    borderRadius: "50%" 
+                  }}
+                />
+              ) : (
+                sellerProfile?.displayName ? sellerProfile.displayName.charAt(0).toUpperCase() : 'S'
+              )}
             </div>
           </div>
           <div className="profile-details">
