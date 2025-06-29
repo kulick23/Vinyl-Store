@@ -165,30 +165,10 @@ export const Cart: React.FC = () => {
     setShowClearConfirm(false)
   }
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (cartItems.length === 0) return
-
-    setIsCheckingOut(true)
-    try {
-      const orderItems = cartItems.map((item) => ({
-        inventoryItemId: item.inventoryItemId,
-        quantity: item.quantity,
-      }))
-
-      await createOrder({
-        items: orderItems,
-        shippingAddress: "123 Main St, City, State 12345", // This should come from a form
-        paymentMethod: "Credit Card", // This should come from a form
-      }).unwrap()
-
-      await clearCart().unwrap()
-      showSuccess("notifications.orderPlaced")
-    } catch (error) {
-      console.error("Failed to create order:", error)
-      showError("notifications.orderFailed")
-    } finally {
-      setIsCheckingOut(false)
-    }
+    // Navigate to checkout page instead of directly placing order
+    window.location.href = '/checkout'
   }
 
   if (isLoading) {
@@ -276,9 +256,9 @@ export const Cart: React.FC = () => {
           <button
             className="checkout-button"
             onClick={handleCheckout}
-            disabled={isCheckingOut || cartItems.length === 0}
+            disabled={cartItems.length === 0}
           >
-            {isCheckingOut ? t("cart.checkingOut") : t("cart.checkout")}
+            {t("cart.checkout")}
           </button>
         </div>
       </div>
