@@ -125,7 +125,8 @@
 }
 
 .records-section {
-  min-height: 400px;
+  overflow: visible !important;
+  height: auto;
 }
 
 .records-grid {

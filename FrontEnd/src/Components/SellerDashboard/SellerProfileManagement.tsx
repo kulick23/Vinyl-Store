@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useGetCurrentSellerProfileQuery, useUpdateSellerProfileWithId } from "../../redux/seller/api"
+import { useGetCurrentSellerProfileQuery, useUploadSellerAvatarMutation } from "../../redux/seller/api"
+
 import { useNotification } from "../../hooks/useNotification"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
 import "./SellerProfileManagement.scss"
@@ -11,57 +11,37 @@ import "./SellerProfileManagement.scss"
 export const SellerProfileManagement: React.FC = () => {
   const { t } = useTranslation()
   const { data: sellerProfile, isLoading } = useGetCurrentSellerProfileQuery()
-  const [updateProfile, { isLoading: isUpdating }] = useUpdateSellerProfileWithId()
+  const [uploadAvatar, { isLoading: isUploading }] = useUploadSellerAvatarMutation()
   const { showSuccess, showError } = useNotification()
-  
-  const [isEditing, setIsEditing] = useState(false)
-  const [formData, setFormData] = useState({
-    displayName: "",
-    description: ""
-  })
 
-  const handleEditStart = () => {
-    if (sellerProfile) {
-      setFormData({
-        displayName: sellerProfile.displayName || "",
-        description: sellerProfile.description || ""
-      })
-    }
-    setIsEditing(true)
-  }
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleSave = async () => {
-    if (!formData.displayName.trim()) {
-      showError("Shop name is required")
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showError('Please select a valid image file')
       return
     }
 
-    if (!formData.description.trim()) {
-      showError("Shop description is required")
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showError('Image must be smaller than 5MB')
       return
     }
 
     try {
-      await updateProfile({
-        displayName: formData.displayName,
-        description: formData.description
-      })
-      showSuccess(t("seller.profile.updateSuccess"))
-      setIsEditing(false)
+      const result = await uploadAvatar(file).unwrap()
+      console.log('Avatar upload result:', result)
+      showSuccess(t("seller.profile.avatarUploadSuccess"))
+      
+      // Clear the file input to allow re-uploading the same file
+      const input = event.target
+      input.value = ''
     } catch (error) {
-      console.error('Failed to update seller profile:', error)
-      showError(t("seller.profile.updateError"))
+      console.error('Failed to upload avatar:', error)
+      showError(t("seller.profile.avatarUploadError"))
     }
-  }
-
-  const handleCancel = () => {
-    setIsEditing(false)
-    setFormData({ displayName: "", description: "" })
   }
 
   if (isLoading) {
@@ -91,10 +71,35 @@ export const SellerProfileManagement: React.FC = () => {
           <div className="profile-header">
             <div className="profile-picture-section">
               <div className="profile-picture-placeholder">
-                {sellerProfile.displayName.charAt(0).toUpperCase()}
+                {sellerProfile.avatarPath ? (
+                  <img 
+                    src={`${sellerProfile.avatarPath}?t=${Date.now()}`} 
+                    alt={sellerProfile.displayName}
+                    style={{ 
+                      width: "100%", 
+                      height: "100%", 
+                      objectFit: "cover", 
+                      borderRadius: "50%" 
+                    }}
+                  />
+                ) : (
+                  sellerProfile.displayName.charAt(0).toUpperCase()
+                )}
               </div>
-              <button className="upload-picture-btn">
-                {t("seller.profile.uploadPicture")}
+              <input
+                type="file"
+                id="avatar-upload"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                style={{ display: "none" }}
+                disabled={isUploading}
+              />
+              <button 
+                className="upload-picture-btn"
+                onClick={() => document.getElementById('avatar-upload')?.click()}
+                disabled={isUploading}
+              >
+                {isUploading ? <VinylSpinner size="small" /> : t("seller.profile.uploadPicture")}
               </button>
             </div>
             <div className="profile-info">
@@ -121,76 +126,21 @@ export const SellerProfileManagement: React.FC = () => {
         <div className="profile-section">
           <div className="section-header">
             <h3>Shop Information</h3>
-            {!isEditing && (
-              <button onClick={handleEditStart} className="edit-button">
-                {t("seller.profile.editProfile")}
-              </button>
-            )}
+            <p className="info-note">
+              Contact admin to update shop information
+            </p>
           </div>
 
-          {isEditing ? (
-            <div className="edit-form">
-              <div className="form-group">
-                <label htmlFor="displayName">
-                  {t("seller.profile.displayName")}
-                </label>
-                <input
-                  type="text"
-                  id="displayName"
-                  name="displayName"
-                  value={formData.displayName}
-                  onChange={handleInputChange}
-                  placeholder={t("seller.profile.displayNamePlaceholder")}
-                  className="form-input"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="description">
-                  {t("seller.profile.description")}
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder={t("seller.profile.descriptionPlaceholder")}
-                  className="form-textarea"
-                  rows={4}
-                  required
-                />
-              </div>
-
-              <div className="form-actions">
-                <button
-                  onClick={handleSave}
-                  disabled={isUpdating}
-                  className="save-button"
-                >
-                  {isUpdating ? <VinylSpinner size="small" /> : t("seller.profile.saveProfile")}
-                </button>
-                <button
-                  onClick={handleCancel}
-                  disabled={isUpdating}
-                  className="cancel-button"
-                >
-                  {t("seller.profile.cancelEdit")}
-                </button>
-              </div>
+          <div className="profile-display">
+            <div className="info-item">
+              <span className="info-label">{t("seller.profile.displayName")}:</span>
+              <span className="info-value">{sellerProfile.displayName}</span>
             </div>
-          ) : (
-            <div className="profile-display">
-              <div className="info-item">
-                <span className="info-label">{t("seller.profile.displayName")}:</span>
-                <span className="info-value">{sellerProfile.displayName}</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">{t("seller.profile.description")}:</span>
-                <span className="info-value">{sellerProfile.description}</span>
-              </div>
+            <div className="info-item">
+              <span className="info-label">{t("seller.profile.description")}:</span>
+              <span className="info-value">{sellerProfile.description}</span>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

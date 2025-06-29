@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react"
+import InfiniteScroll from "react-infinite-scroll-component"
 import { useTranslation } from "react-i18next"
 import { useGetReleasesQuery } from "../../redux/catalog/api"
 import { useAddCartItemMutation } from "../../redux/cart/api"
@@ -9,19 +10,18 @@ import VinylSpinner from "../../Components/VinylSpinner/VinylSpinner"
 import { WishlistButton } from "../../Components/WishlistButton"
 import { Link } from "react-router-dom"
 import type { FilterOptions, VinylRecord } from "../../redux/catalog/types"
-import InfiniteScroll from "react-infinite-scroll-component"
 import "./ShopPage.scss"
 
 export const ShopPage: React.FC = () => {
   const { t } = useTranslation()
   const PAGE_SIZE = 20
+
   const [page, setPage] = useState(1)
   const [items, setItems] = useState<VinylRecord[]>([])
   const [searchQuery, setSearchQuery] = useState("")
-  const [filters, setFilters] = useState<FilterOptions>({
-    includePrice: true,
-  })
-  
+  const [filters, setFilters] = useState<FilterOptions>({ includePrice: true })
+
+  // добавить состояние для показа/скрытия фильтров
   const [showFilters, setShowFilters] = useState(false)
 
   const { data: user } = useGetCurrentUserQuery(undefined, {
@@ -29,27 +29,34 @@ export const ShopPage: React.FC = () => {
   })
   const [addToCart] = useAddCartItemMutation()
 
+  // теперь ключ запроса включает page & limit
   const queryParams = useMemo(
     () => ({
+      page,
+      limit: PAGE_SIZE,
       ...filters,
       keyword: searchQuery || undefined,
     }),
-    [filters, searchQuery],
+    [page, filters, searchQuery],
   )
 
-  const { data: records, isLoading, isFetching, error } = useGetReleasesQuery({
-    page,
-    limit: PAGE_SIZE,
-  })
+  const { data: records = [], isLoading, error } = useGetReleasesQuery(queryParams)
 
-  // сабмитим новые записи
+  // сброс при смене фильтра / поиска
   useEffect(() => {
-    if (records) {
-      setItems((prev) => (page === 1 ? records : [...prev, ...records]))
-    }
+    setPage(1)
+    setItems([])
+  }, [searchQuery, filters])
+
+  // накопление с дедупликацией
+  useEffect(() => {
+    setItems((prev) => {
+      const all = page === 1 ? records : [...prev, ...records]
+      return all.filter((v, i, a) => a.findIndex((x) => x.id === v.id) === i)
+    })
   }, [records, page])
 
-  const hasMore = records?.length === PAGE_SIZE
+  const hasMore = records.length === PAGE_SIZE
 
   const handleFiltersChange = (newFilters: FilterOptions) => {
     setFilters({ ...newFilters, includePrice: true })
@@ -102,7 +109,9 @@ export const ShopPage: React.FC = () => {
         next={() => setPage((prev) => prev + 1)}
         hasMore={Boolean(hasMore)}
         loader={<VinylSpinner size="small" />}
-        endMessage={<p style={{ textAlign: "center" }}>Больше товаров нет</p>}
+        endMessage={<p style={{ textAlign: "center" }}>{t("shop.noMore")}</p>}
+        // убираем внутренний скролл
+        scrollableTarget={undefined}
       >
         <div className="records-grid">
           {items.map((record) => (
@@ -164,7 +173,8 @@ export const ShopPage: React.FC = () => {
 
   return (
     <section className="shoppage">
-      <div className="shop-container">
+      {/* обёртка для scrollableTarget */}
+      <div className="shop-container" id="infinite-scroll">
         <div className="shop-header">
           <h1>{t("shop.title")}</h1>
           <div className="header-controls">
@@ -187,7 +197,71 @@ export const ShopPage: React.FC = () => {
           <div className={`filters-sidebar ${showFilters ? "show" : ""}`}>
             <ShopFilters filters={filters} onFiltersChange={handleFiltersChange} onClearFilters={handleClearFilters} />
           </div>
-          <div className="records-section">{renderContent()}</div>
+          <div className="records-section">
+            <InfiniteScroll
+              dataLength={items.length}
+              next={() => setPage((p) => p + 1)}
+              hasMore={hasMore}
+              loader={<VinylSpinner size="small" />}
+              endMessage={<p style={{ textAlign: "center" }}>{t("shop.noMore")}</p>}
+              style={{ overflow: "visible" }}     // <— вот это
+            >
+              <div className="records-grid">
+                {items.map((record) => (
+                  <div key={record.id} className="record-card">
+                    <Link to={`/product/${record.id}`} className="record-link">
+                      <div className="record-image">
+                        <img
+                          src={
+                            record.imageUrl ||
+                            "/placeholder.svg?height=250&width=250&query=vinyl record" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg"
+                          }
+                          alt={`${record.title} by ${record.artist}`}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src = "/placeholder.svg?height=250&width=250"
+                          }}
+                        />
+                        {record.isOnSale && <div className="sale-badge">{t("shop.sale")}</div>}
+                        <div className="wishlist-button-container" onClick={(e) => e.preventDefault()}>
+                          <WishlistButton 
+                            releaseId={record.id} 
+                            variant="icon" 
+                            className="shop-wishlist-button"
+                          />
+                        </div>
+                      </div>
+                      <div className="record-info">
+                        <h3>{record.title}</h3>
+                        <p className="artist">{record.artist}</p>
+                        {record.genre && <p className="genre">{record.genre}</p>}
+                        {record.year && <p className="year">{record.year}</p>}
+                        {record.price && (
+                          <div className="price-container">
+                            {record.isOnSale && record.originalPrice && (
+                              <span className="original-price">${record.originalPrice}</span>
+                            )}
+                            <span className="current-price">${record.price}</span>
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                    <button
+                      className="add-to-cart"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        handleAddToCart(record.id)
+                      }}
+                    >
+                      {t("shop.addToCart")}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </InfiniteScroll>
+          </div>
         </div>
       </div>
     </section>
