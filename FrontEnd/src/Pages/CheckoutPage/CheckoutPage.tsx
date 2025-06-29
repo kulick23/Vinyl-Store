@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
 import {
   Elements,
-  CardElement,
+  PaymentElement,
   useStripe,
   useElements
 } from '@stripe/react-stripe-js'
@@ -48,19 +48,24 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ clientSecret, intentId }) =
     setIsProcessing(true)
     setPaymentError(null)
 
-    const cardElement = elements.getElement(CardElement)
-    if (!cardElement) {
-      setPaymentError(t('checkout.cardElementNotFound'))
-      setIsProcessing(false)
-      return
-    }
-
     try {
-      // Confirm the payment with Stripe
-      const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-        }
+      // First, submit the elements to validate the form
+      const { error: submitError } = await elements.submit()
+      
+      if (submitError) {
+        setPaymentError(submitError.message || t('checkout.unexpectedError'))
+        setIsProcessing(false)
+        return
+      }
+
+      // Then confirm the payment
+      const { error: stripeError, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        clientSecret,
+        confirmParams: {
+          return_url: `${window.location.origin}/profile`,
+        },
+        redirect: 'if_required'
       })
 
       if (stripeError) {
@@ -71,14 +76,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ clientSecret, intentId }) =
 
       if (paymentIntent && paymentIntent.status === 'succeeded') {
         try {
-          // Confirm the order on the backend using the payment intent ID
           await confirmOrder({ intentId: paymentIntent.id }).unwrap()
-          
-          // Clear the cart
           await clearCart().unwrap()
           
           showSuccess(t('checkout.paymentSuccessful'))
-          navigate('/profile') // Navigate to profile or order confirmation page
+          navigate('/profile')
         } catch (orderError) {
           console.error('Order confirmation failed:', orderError)
           showError(t('checkout.orderConfirmationFailed'))
@@ -90,22 +92,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ clientSecret, intentId }) =
     } finally {
       setIsProcessing(false)
     }
-  }
-
-  const cardElementOptions = {
-    style: {
-      base: {
-        fontSize: '16px',
-        color: 'var(--text-color)',
-        fontFamily: 'Inter, system-ui, sans-serif',
-        '::placeholder': {
-          color: 'var(--text-color-secondary)',
-        },
-      },
-      invalid: {
-        color: '#ef4444',
-      },
-    },
   }
 
   const cartTotal = cartData?.items?.reduce((total, item) => 
@@ -162,9 +148,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ clientSecret, intentId }) =
           )}
 
           <form onSubmit={handleSubmit}>
-            <div className="card-element-container">
-              <label htmlFor="card-element">{t('checkout.creditDebitCard')}</label>
-              <CardElement id="card-element" options={cardElementOptions} />
+            <div className="payment-element-container">
+              <PaymentElement 
+                options={{
+                  layout: 'tabs'
+                }}
+              />
             </div>
 
             {paymentError && (
@@ -201,6 +190,21 @@ const CheckoutPage: React.FC = () => {
   
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [intentId, setIntentId] = useState<string | null>(null)
+  const [elementsOptions, setElementsOptions] = useState<{
+    clientSecret: string;
+    appearance: {
+      theme: 'stripe';
+      variables: {
+        colorPrimary: string;
+        colorBackground: string;
+        colorText: string;
+        colorDanger: string;
+        fontFamily: string;
+        spacingUnit: string;
+        borderRadius: string;
+      };
+    };
+  } | null>(null)
   
   const { data: cartData, isLoading: cartLoading } = useGetCartQuery()
   const [createPaymentIntent, { isLoading: creatingIntent }] = useCreatePaymentIntentMutation()
@@ -229,7 +233,42 @@ const CheckoutPage: React.FC = () => {
     }
   }, [cartData, cartLoading, createPaymentIntent, navigate, showError, t])
 
-  if (cartLoading || creatingIntent) {
+  useEffect(() => {
+    if (!clientSecret) return
+
+    const updateTheme = () => {
+      setElementsOptions({
+        clientSecret,
+        appearance: {
+          theme: 'stripe' as const,
+          variables: {
+            colorPrimary: getComputedStyle(document.documentElement).getPropertyValue('--orange-color').trim() || '#FF6B35',
+            colorBackground: getComputedStyle(document.documentElement).getPropertyValue('--background-color').trim() || '#ffffff',
+            colorText: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim() || '#30313d',
+            colorDanger: '#df1b41',
+            fontFamily: 'Inter, system-ui, sans-serif',
+            spacingUnit: '4px',
+            borderRadius: '8px'
+          }
+        }
+      })
+    }
+
+    updateTheme()
+    
+    const observer = new MutationObserver(() => {
+      updateTheme()
+    })
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class', 'data-theme']
+    })
+
+    return () => observer.disconnect()
+  }, [clientSecret])
+
+  if (cartLoading || creatingIntent || !elementsOptions) {
     return (
       <div className="checkout-page">
         <div className="loading">
@@ -257,7 +296,7 @@ const CheckoutPage: React.FC = () => {
     <div className="checkout-page">
       <div className="checkout-container">
         <h1>{t('checkout.title')}</h1>
-        <Elements stripe={stripePromise}>
+        <Elements stripe={stripePromise} options={elementsOptions}>
           <CheckoutForm clientSecret={clientSecret} intentId={intentId} />
         </Elements>
       </div>
