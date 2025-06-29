@@ -58,29 +58,47 @@ export const BecomeSellerModal: React.FC<BecomeSellerModalProps> = ({
     }
 
     try {
-      console.log('Attempting to become seller with data:', formData)
-      console.log('Token in localStorage:', localStorage.getItem('accessToken') ? 'Present' : 'Missing')
+      console.log('=== SELLER CREATION ATTEMPT ===')
+      console.log('Data being sent:', formData)
+      console.log('Backend URL:', `${import.meta.env.VITE_API_URL || 'proxy'}/api/Seller/becomeSeller`)
+      console.log('Token present:', !!localStorage.getItem('accessToken'))
+      console.log('===========================')
       
-      await becomeSeller(formData).unwrap()
+      const result = await becomeSeller(formData).unwrap()
+      console.log('Seller creation result:', result)
+      
       showSuccess(t("seller.profile.createSuccess"))
       setFormData({ displayName: "", description: "" })
       onSuccess?.()
       onClose()
     } catch (error: any) {
-      console.error('Failed to become seller:', error)
-      console.error('Error details:', {
-        status: error.status,
-        data: error.data,
-        message: error.message
-      })
+      console.error('=== SELLER CREATION ERROR ===')
+      console.error('Full error object:', error)
+      console.error('Error status:', error.status)
+      console.error('Error data:', error.data)
+      console.error('Error message:', error.message)
+      console.error('========================')
       
-      // Show more specific error messages
+      // Handle specific error cases
       if (error.status === 401) {
         showError("Authentication required. Please log in again.")
+      } else if (error.status === 400) {
+        showError("Invalid data provided. Please check your input.")
+      } else if (error.status === 409) {
+        showError("You already have a seller profile.")
       } else if (error.status === 500) {
         showError("Server error. Please try again later.")
+      } else if (error.status === 302) {
+        // Backend sends redirect - treat as success for now
+        console.log('Received redirect response - treating as success')
+        showSuccess(t("seller.profile.createSuccess"))
+        setFormData({ displayName: "", description: "" })
+        onSuccess?.()
+        onClose()
       } else if (error.data?.message) {
         showError(error.data.message)
+      } else if (error.message) {
+        showError(error.message)
       } else {
         showError(t("seller.profile.createError"))
       }
