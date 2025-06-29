@@ -129,6 +129,11 @@
         &:hover {
           background-color: var(--hover-background);
         }
+
+        &.active {
+          background-color: var(--hover-background);
+          font-weight: bold;
+        }
       }
     }
 
