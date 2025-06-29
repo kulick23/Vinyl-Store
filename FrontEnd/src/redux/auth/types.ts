@@ -26,6 +26,7 @@ export interface User {
   role?: string
   lastLoginAt: string
   createdAt: string
+  avatarPath?: string
 }
 
 export type UserRole = "Admin" | "Seller" | "Customer" | "User"

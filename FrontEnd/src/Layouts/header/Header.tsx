@@ -148,11 +148,17 @@ export const Header: React.FC = () => {
         <div className="header__widgets">
           {/* Desktop Language Switcher */}
           <div className="header__widgets--lang">
-            <button className="empty-button" onClick={() => changeLanguage("en")}>
+            <button
+              className={`empty-button ${i18n.language === 'en' ? 'active' : ''}`}
+              onClick={() => changeLanguage("en")}
+            >
               EN
             </button>
             <p>|</p>
-            <button className="empty-button" onClick={() => changeLanguage("ru")}>
+            <button
+              className={`empty-button ${i18n.language === 'ru' ? 'active' : ''}`}
+              onClick={() => changeLanguage("ru")}
+            >
               RU
             </button>
           </div>

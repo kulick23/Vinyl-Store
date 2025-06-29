@@ -22,6 +22,8 @@ export interface SellerProfileDto {
   description?: string
   /** рейтинг продавца */
   rating: number
+  /** путь к аватару */
+  avatarPath?: string
 }
 
 /** DTO для создания профиля продавца */
@@ -29,7 +31,7 @@ export interface SellerProfileCreateDto {
   /** отображаемое имя магазина */
   displayName: string
   /** описание магазина */
-  description?: string
+  description: string
 }
 
 /** DTO для обновления профиля продавца */

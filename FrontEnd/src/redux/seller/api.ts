@@ -32,34 +32,22 @@ export const sellerApi = createApi({
     }),
 
     /**
-     * GET current user's seller profile
-     * Uses the my-profile endpoint with proper error handling
+     * GET /api/Seller/my-profile
+     * Response: SellerProfileDto
      */
     getCurrentSellerProfile: builder.query<SellerProfileDto | null, void>({
-      queryFn: async (arg, api, extraOptions, baseQuery) => {
-        try {
-          const result = await baseQuery('my-profile')
-          
-          if (result.data) {
-            return { data: result.data as SellerProfileDto }
-          }
-          
-          // If error is 400 (Bad Request), user has no seller profile
-          if (result.error && (result.error as any).status === 400) {
-            return { data: null }
-          }
-          
-          // For other errors, return the error
-          return { error: result.error }
-        } catch (error) {
-          console.error('Error fetching seller profile:', error)
-          return { data: null }
+      query: () => 'my-profile',
+      providesTags: ['Seller'],
+      transformErrorResponse: (response) => {
+        if (response.status === 404) {
+          return null
         }
-      },
-      providesTags: ['Seller']
+        return response
+      }
     }),
 
     /**
+
      * Update seller profile using admin endpoint
      * Requires seller ID which we need to get first
      */
@@ -69,6 +57,21 @@ export const sellerApi = createApi({
         method: 'PUT',
         body: data
       }),
+
+     * PUT /api/Seller/avatar
+     * Body: FormData with image file
+     * Response: { avatarPath: string }
+     */
+    uploadSellerAvatar: builder.mutation<{ avatarPath: string }, File>({
+      query: (file) => {
+        const formData = new FormData()
+        formData.append('file', file)
+        return {
+          url: 'avatar',
+          method: 'PUT',
+          body: formData,
+        }
+      },
       invalidatesTags: ['Seller']
     })
   })
@@ -78,7 +81,7 @@ export const {
   useGetSellerByIdQuery,
   useBecomeSellerMutation,
   useGetCurrentSellerProfileQuery,
-  useUpdateSellerProfileMutation
+  useUploadSellerAvatarMutation
 } = sellerApi
 
 // Enhanced hook that handles getting seller ID for updates
