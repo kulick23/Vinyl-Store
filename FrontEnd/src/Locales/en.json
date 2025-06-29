@@ -535,11 +535,12 @@
         "updateButton": "Update User",
         "cancelButton": "Cancel"
       },
-      "table": {
+            "table": {
         "id": "ID",
         "email": "Email",
-        "name": "Name",
+        "name": "Name", 
         "phone": "Phone",
+        "role": "Role",
         "emailConfirmed": "Email Confirmed",
         "lastLogin": "Last Login",
         "actions": "Actions",

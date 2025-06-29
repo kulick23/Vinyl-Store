@@ -540,6 +540,7 @@
         "email": "Email",
         "name": "Имя",
         "phone": "Телефон",
+        "role": "Роль",
         "emailConfirmed": "Email подтвержден",
         "lastLogin": "Последний вход",
         "actions": "Действия",

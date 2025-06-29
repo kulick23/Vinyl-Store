@@ -133,9 +133,14 @@ export const UserProfile: React.FC = () => {
   // Helper function to get user roles as array for backward compatibility
   const getUserRoles = () => {
     if (user.role) {
+      // If user has a seller profile, show "Seller" instead of "User"
+      if (user.role === 'User' && sellerProfile) {
+        return ['Seller']
+      }
       return [user.role]
     }
-    return ['User'] // Default fallback
+    // Default fallback - check if user has seller profile
+    return sellerProfile ? ['Seller'] : ['User']
   }
 
   const userRoles = getUserRoles()
