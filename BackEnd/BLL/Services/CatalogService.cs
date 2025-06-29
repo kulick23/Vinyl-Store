@@ -106,6 +106,18 @@ namespace BLL.Services.Implementation
                 _mapper.Map<IReadOnlyList<InventoryItemDto>>(listings));
         }
 
+        public async Task<IReadOnlyList<ReleaseDto>> GetAllReleasesAsync(
+                CancellationToken ct = default)
+        {
+            var list = await _releaseRepo.Query()
+                             .Include(r => r.Artist)
+                             .Include(r => r.Genre)
+                             .AsNoTracking()
+                             .ToListAsync(ct);
+
+            return _mapper.Map<IReadOnlyList<ReleaseDto>>(list);
+        }
+
         public async Task<IReadOnlyList<InventoryItemDto>> GetListingsForReleaseAsync( int releaseId, SortOption sortBy, CancellationToken ct = default)
         {
             IQueryable<InventoryItem> query = _inventoryRepo.Query()

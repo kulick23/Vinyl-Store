@@ -21,6 +21,12 @@ namespace VinylMarket.Controllers
             var genres = await _catalog.GetGenresAsync(ct);
             return Ok(genres);
         }
+        [HttpGet("releases/all")]
+        public async Task<IActionResult> GetAllReleases(CancellationToken ct = default)
+        {
+            var releases = await _catalog.GetAllReleasesAsync(ct);
+            return Ok(releases);
+        }
         [HttpGet("artists")]
         public async Task<IActionResult> GetAllArtists(CancellationToken ct = default)
         {

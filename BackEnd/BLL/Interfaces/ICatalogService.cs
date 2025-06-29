@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BLL.DTO;
-using BLL.DTO;
+
 
 namespace BLL.Services
 {
@@ -13,7 +13,10 @@ namespace BLL.Services
         Task<IReadOnlyList<InventoryItemDto>> GetListingsForReleaseAsync(int releaseId, SortOption sortBy, CancellationToken ct = default);
         Task<IReadOnlyList<GenreDto>> GetGenresAsync(CancellationToken ct = default);
         Task<IReadOnlyList<ArtistDto>> GetArtistsAsync(CancellationToken ct = default);
+        Task<IReadOnlyList<ReleaseDto>> GetAllReleasesAsync(
+                CancellationToken ct = default);
     }
+
 
     public enum SortOption
     {
