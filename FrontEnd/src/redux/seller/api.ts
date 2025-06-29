@@ -58,6 +58,24 @@ export const sellerApi = createApi({
         body: data
       }),
       invalidatesTags: ['Seller']
+    }),
+
+    /**
+     * PUT /api/Seller/avatar
+     * Body: FormData with image file
+     * Response: { avatarPath: string }
+     */
+    uploadSellerAvatar: builder.mutation<{ avatarPath: string }, File>({
+      query: (file) => {
+        const formData = new FormData()
+        formData.append('file', file)
+        return {
+          url: 'avatar',
+          method: 'PUT',
+          body: formData,
+        }
+      },
+      invalidatesTags: ['Seller']
     })
   })
 })
@@ -66,5 +84,6 @@ export const {
   useGetSellerByIdQuery,
   useBecomeSellerMutation,
   useGetCurrentSellerProfileQuery,
-  useUpdateSellerProfileMutation
+  useUpdateSellerProfileMutation,
+  useUploadSellerAvatarMutation
 } = sellerApi
