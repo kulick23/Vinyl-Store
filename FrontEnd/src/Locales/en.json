@@ -102,6 +102,7 @@
     "loading": "Loading records...",
     "sale": "SALE",
     "addToCart": "Add to Cart",
+    "noMore": "You've reached the end of our collection!",
     "noResults": "No records found matching your search",
     "noRecords": "No records available in the store yet",
     "filter": {

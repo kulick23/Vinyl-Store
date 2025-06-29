@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { useTranslation } from "react-i18next"
-import { useGetReleasesQuery } from "../../redux/catalog/api"
+import { useGetReleasesQuery, useGetReleaseListingsQuery } from "../../redux/catalog/api"
 import { useAddCartItemMutation } from "../../redux/cart/api"
 import { useGetCurrentUserQuery } from "../../redux/auth/api"
 import { useNotification } from "../../hooks/useNotification"
@@ -76,12 +76,32 @@ export const ShopPage: React.FC = () => {
     }
 
     try {
-      // For demo purposes, we'll use the record ID as inventory item ID
-      // In a real app,
-      await addToCart({
-        inventoryItemId: recordId,
-        quantity: 1,
+      // First, fetch the listings for this release to get the inventory item ID
+      const listingsResponse = await fetch(`/api/catalog/releases/${recordId}/listings`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        },
       })
+      
+      if (!listingsResponse.ok) {
+        throw new Error('Failed to fetch listings')
+      }
+      
+      const listings = await listingsResponse.json()
+      
+      // Find an available listing (with quantity > 0)
+      const availableListing = listings.find((listing: any) => listing.quantity > 0)
+      
+      if (!availableListing) {
+        showError("notifications.noAvailableListings")
+        return
+      }
+
+      await addToCart({
+        inventoryItemId: availableListing.id,
+        quantity: 1,
+      }).unwrap()
+      
       showSuccess("notifications.itemAdded")
     } catch (error) {
       console.error("Failed to add item to cart:", error)

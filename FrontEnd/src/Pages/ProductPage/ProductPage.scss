@@ -50,22 +50,25 @@
 .product-image-section {
   position: sticky;
   top: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(229, 89, 46, 0.2);
+  transition: transform 0.3s ease;
 
   @include bp.phone {
     position: static;
   }
 
+  &:hover {
+    transform: scale(1.02);
+  }
+
   .product-image {
     width: 100%;
     aspect-ratio: 1;
-    border-radius: 12px;
     object-fit: cover;
-    box-shadow: 0 10px 30px rgba(229, 89, 46, 0.2);
-    transition: transform 0.3s ease;
-
-    &:hover {
-      transform: scale(1.02);
-    }
+    filter: blur(8px);
+    display: block;
   }
 
   .sale-badge {
