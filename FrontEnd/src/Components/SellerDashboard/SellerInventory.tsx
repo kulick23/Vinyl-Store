@@ -9,16 +9,18 @@ import {
   useCreateInventoryItemMutation,
   useUpdateInventoryItemMutation,
   useDeleteInventoryItemMutation,
-  usePatchInventoryItemMutation,
 } from "../../redux/inventory/api"
 import { useGetReleasesQuery } from "../../redux/catalog/api"
 import type { InventoryItem, CreateInventoryPayload } from "../../redux/inventory/types"
+import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
 
 const SellerInventory: React.FC = () => {
   const { t } = useTranslation()
   const [isCreating, setIsCreating] = useState(false)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null)
   const [formData, setFormData] = useState({
     releaseId: 0,
     price: 0,
@@ -32,7 +34,6 @@ const SellerInventory: React.FC = () => {
   const [createItem] = useCreateInventoryItemMutation()
   const [updateItem] = useUpdateInventoryItemMutation()
   const [deleteItem] = useDeleteInventoryItemMutation()
-  const [patchItem] = usePatchInventoryItemMutation()
 
   // Helper function to get release information by ID
   const getReleaseInfo = (releaseId: number) => {
@@ -97,26 +98,29 @@ const SellerInventory: React.FC = () => {
     setIsCreating(false)
   }
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm(t("seller.inventory.deleteConfirm"))) {
+  const handleDeleteClick = (id: number) => {
+    setItemToDelete(id)
+    setShowDeleteDialog(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (itemToDelete) {
       try {
-        await deleteItem(id).unwrap()
+        await deleteItem(itemToDelete).unwrap()
+        setShowDeleteDialog(false)
+        setItemToDelete(null)
       } catch (error) {
         console.error("Failed to delete inventory item:", error)
       }
     }
   }
 
-  const handleToggleActive = async (item: InventoryItem) => {
-    try {
-      await patchItem({
-        id: item.id,
-        data: { isActive: !item.isActive },
-      }).unwrap()
-    } catch (error) {
-      console.error("Failed to toggle item status:", error)
-    }
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false)
+    setItemToDelete(null)
   }
+
+
 
   const handleCancel = () => {
     setIsCreating(false)
@@ -271,7 +275,6 @@ const SellerInventory: React.FC = () => {
             <th>{t("seller.inventory.price")}</th>
             <th>{t("seller.inventory.quantity")}</th>
             <th>{t("seller.inventory.condition")}</th>
-            <th>{t("seller.inventory.shopStatus")}</th>
             <th>{t("seller.inventory.notes")}</th>
             <th>{t("seller.inventory.actions")}</th>
           </tr>
@@ -300,31 +303,6 @@ const SellerInventory: React.FC = () => {
               <td>${item.price.toFixed(2)}</td>
               <td>{item.quantity}</td>
               <td>{getConditionText(item.condition)}</td>
-              <td>
-                <span
-                  className={`status-badge ${item.isActive ? 'active' : 'inactive'}`}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    padding: "6px 12px",
-                    borderRadius: "20px",
-                    fontSize: "12px",
-                    fontWeight: "500",
-                    backgroundColor: item.isActive ? "#e7f5e7" : "#f5f5f5",
-                    color: item.isActive ? "#2d5a2d" : "#666",
-                    border: `1px solid ${item.isActive ? "#a3d9a3" : "#ddd"}`
-                  }}
-                >
-                  <span style={{ 
-                    fontSize: "10px",
-                    color: item.isActive ? "#22c55e" : "#ef4444" 
-                  }}>
-                    {item.isActive ? "●" : "●"}
-                  </span>
-                  {item.isActive ? t("seller.inventory.inShop") : t("seller.inventory.notInShop")}
-                </span>
-              </td>
               <td>{item.notes || t("seller.inventory.noNotes")}</td>
               <td>
                 <div className="action-buttons">
@@ -337,45 +315,7 @@ const SellerInventory: React.FC = () => {
                     ✏️ {t("seller.inventory.edit")}
                   </button>
                   <button
-                    onClick={() => handleToggleActive(item)}
-                    className={`toggle ${!item.isActive ? "inactive" : ""}`}
-                    disabled={isCreating || editingItem !== null}
-                    title={item.isActive ? t("seller.inventory.removeFromShop") : t("seller.inventory.addToShop")}
-                    style={{
-                      padding: "8px 16px",
-                      borderRadius: "6px",
-                      border: "none",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                      cursor: isCreating || editingItem !== null ? "not-allowed" : "pointer",
-                      opacity: isCreating || editingItem !== null ? 0.6 : 1,
-                      backgroundColor: item.isActive ? "#fef2f2" : "#f0f9ff",
-                      color: item.isActive ? "#dc2626" : "#2563eb",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      transition: "all 0.2s ease"
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isCreating && editingItem === null) {
-                        const button = e.currentTarget as HTMLButtonElement
-                        button.style.transform = "translateY(-1px)"
-                        button.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)"
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      const button = e.currentTarget as HTMLButtonElement
-                      button.style.transform = "translateY(0)"
-                      button.style.boxShadow = "none"
-                    }}
-                  >
-                    <span style={{ fontSize: "14px" }}>
-                      {item.isActive ? "🏪" : "➕"}
-                    </span>
-                    {item.isActive ? t("seller.inventory.removeFromShop") : t("seller.inventory.addToShop")}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() => handleDeleteClick(item.id)}
                     className="delete"
                     disabled={isCreating || editingItem !== null}
                     title={t("seller.inventory.delete")}
@@ -402,6 +342,15 @@ const SellerInventory: React.FC = () => {
           </button>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        title={t("seller.inventory.deleteConfirmTitle")}
+        message={t("seller.inventory.deleteConfirmMessage")}
+        type="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   )
 }
