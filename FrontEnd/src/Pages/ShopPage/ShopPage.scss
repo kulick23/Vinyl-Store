@@ -125,7 +125,8 @@
 }
 
 .records-section {
-  min-height: 400px;
+  overflow: visible !important;
+  height: auto;
 }
 
 .records-grid {
@@ -168,11 +169,19 @@
     aspect-ratio: 1;
     overflow: hidden;
 
-    img {
+    /* блюрим только сам <img> */
+    > img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
+      filter: blur(4px);
+      transition: filter 0.3s ease;
+    }
+
+
+    /* гарантированно убираем фильтр у кнопки */
+    .wishlist-button-container {
+      filter: none !important;
     }
 
     .sale-badge {
@@ -188,6 +197,8 @@
     }
 
     .wishlist-button-container {
+      /* отменяем «случайный» фильтр на кнопке */
+      filter: none !important;
       position: absolute;
       top: 10px;
       right: 10px;
