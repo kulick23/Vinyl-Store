@@ -144,14 +144,10 @@ export const SellerDashboard: React.FC = () => {
     )
   }
 
+  // At this point, user and sellerProfile are guaranteed to exist
+  // because SellerPage handles the checks before rendering this component
   if (!user || !sellerProfile) {
-    return (
-      <div className="seller-dashboard">
-        <div className="error-message">
-          <p>Access denied. Seller privileges required.</p>
-        </div>
-      </div>
-    )
+    return null
   }
 
   return (

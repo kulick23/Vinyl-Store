@@ -72,3 +72,48 @@ export const {
   useGetCurrentSellerProfileQuery,
   useUploadSellerAvatarMutation
 } = sellerApi
+
+// Enhanced hook that handles getting seller ID for updates
+export const useUpdateSellerProfileWithId = () => {
+  const { data: currentProfile } = useGetCurrentSellerProfileQuery()
+  const [updateProfile, result] = useUpdateSellerProfileMutation()
+
+  const updateSellerProfile = async (data: SellerProfileUpdateDto) => {
+    if (!currentProfile) {
+      throw new Error('No seller profile found')
+    }
+
+    // Get all sellers to find the seller ID
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      throw new Error('No authentication token')
+    }
+
+    try {
+      const sellersResponse = await fetch('/api/admin/sellers', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (!sellersResponse.ok) {
+        throw new Error('Failed to fetch sellers')
+      }
+
+      const sellers = await sellersResponse.json() as Array<{ id: number; customerId: number }>
+      const currentSeller = sellers.find(seller => seller.customerId === currentProfile.customerId)
+      
+      if (!currentSeller) {
+        throw new Error('Seller not found')
+      }
+
+      return await updateProfile({ sellerId: currentSeller.id, data }).unwrap()
+    } catch (error) {
+      console.error('Update seller profile error:', error)
+      throw error
+    }
+  }
+
+  return [updateSellerProfile, result] as const
+}

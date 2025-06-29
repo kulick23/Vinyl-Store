@@ -14,6 +14,7 @@ import type { User } from "../../redux/auth/types"
 import { clearCredentials } from "../../redux/auth/authSlice"
 import { useGetCartQuery } from "../../redux/cart/api"
 import { useGetOrdersQuery } from "../../redux/orders/api"
+import type { OrderDto } from "../../redux/orders/types"
 import { useGetCurrentSellerProfileQuery } from "../../redux/seller/api"
 import { useNotification } from "../../hooks/useNotification"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
@@ -275,12 +276,33 @@ export const UserProfile: React.FC = () => {
               </div>
             ) : (
               <div className="orders-grid">
-                {orders.map((order) => (
-                  <div key={order.id} className="order-card">
-                    <h4>{t('profile.orderNumber', { number: order.id })}</h4>
-                    <p><strong>{t('profile.items')}:</strong> {order.items?.length || 0}</p>
-                    <p><strong>{t('profile.shipping')}:</strong> {order.shippingAddress || '-'}</p>
-                    <p><strong>{t('profile.payment')}:</strong> {order.paymentMethod || '-'}</p>
+                {orders.map((order: OrderDto) => (
+                  <div key={order.orderId} className="order-card">
+                    <div className="order-header">
+                      <h4>{t('profile.orderNumber', { number: order.orderId })}</h4>
+                      <span className="order-total">${order.total.toFixed(2)}</span>
+                    </div>
+                    <div className="order-meta">
+                      <p><strong>{t('profile.orderDate')}:</strong> {new Date(order.orderDate).toLocaleDateString()}</p>
+                      <p><strong>{t('profile.orderItems')}:</strong> {order.items?.length || 0} item(s)</p>
+                    </div>
+                    {order.items && order.items.length > 0 && (
+                      <div className="order-items">
+                        <h5>{t('profile.items')}:</h5>
+                        {order.items.map((item, index) => (
+                          <div key={index} className="order-item">
+                            <div className="item-details">
+                              <span className="item-title">{item.title}</span>
+                              <span className="item-quantity">x{item.quantity}</span>
+                            </div>
+                            <div className="item-pricing">
+                              <span className="item-unit-price">${item.unitPrice.toFixed(2)}</span>
+                              <span className="item-subtotal">${item.subtotal.toFixed(2)}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

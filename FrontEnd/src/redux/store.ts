@@ -4,6 +4,7 @@ import { catalogApi } from './catalog/api';
 import { authApi } from './auth/api';
 import authReducer from './auth/authSlice';
 import { cartApi } from './cart/api';
+import { checkoutApi } from './checkout/api';
 import { adminApi } from './admin/api';
 import { inventoryApi } from './inventory/api';
 import { ordersApi } from './orders/api';
@@ -15,6 +16,7 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [catalogApi.reducerPath]: catalogApi.reducer,
     [cartApi.reducerPath]: cartApi.reducer,
+    [checkoutApi.reducerPath]: checkoutApi.reducer,
     [adminApi.reducerPath]: adminApi.reducer,
     [inventoryApi.reducerPath]: inventoryApi.reducer,
     [ordersApi.reducerPath]: ordersApi.reducer,
@@ -25,6 +27,7 @@ export const store = configureStore({
       .concat(authApi.middleware)
       .concat(catalogApi.middleware)
       .concat(cartApi.middleware)
+      .concat(checkoutApi.middleware)
       .concat(adminApi.middleware)
       .concat(inventoryApi.middleware)
       .concat(ordersApi.middleware)
