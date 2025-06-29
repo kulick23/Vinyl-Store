@@ -35,12 +35,17 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
+});
+
+builder.Services.AddCors(options =>
+{
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins("https://ibm-team-project-wwrs-ok3mhmcvv-rageangel18s-projects.vercel.app")
-    .AllowAnyHeader()
-    .AllowAnyMethod()
-    .AllowCredentials();
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
