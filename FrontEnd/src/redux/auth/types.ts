@@ -10,6 +10,10 @@ export interface LoginRequest {
   password: string
 }
 
+export interface GoogleAuthRequest {
+  idToken: string
+}
+
 export interface AuthResponse {
   accessToken: string
   refreshToken: string

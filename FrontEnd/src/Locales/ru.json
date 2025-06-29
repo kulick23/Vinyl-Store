@@ -188,7 +188,7 @@
   },
   "signup": {
     "title": "Создать аккаунт",
-    "subtitle": "Присоединяйтесь к нашему сообществу любителей винила и начните собирать свою коллекцию уже сегодня.",
+    "subtitle": "Присоединяйтесь к VinylHaven и начните свое путешествие в мир музыки!",
     "firstNameLabel": "Имя",
     "firstNamePlaceholder": "Введите ваше имя",
     "lastNameLabel": "Фамилия",
@@ -200,10 +200,12 @@
     "confirmPasswordLabel": "Подтвердите пароль",
     "confirmPasswordPlaceholder": "Подтвердите ваш пароль",
     "agreeToTerms": "Я согласен с",
-    "termsLink": "Условиями обслуживания и Политикой конфиденциальности",
+    "termsLink": "Условиями использования",
     "signUpButton": "Создать аккаунт",
     "haveAccount": "Уже есть аккаунт?",
     "signInLink": "Войти",
+    "orContinueWith": "Или продолжить с",
+    "googleSignUp": "Регистрация через Google",
     "errors": {
       "firstNameRequired": "Имя обязательно",
       "lastNameRequired": "Фамилия обязательна",
@@ -212,7 +214,7 @@
       "passwordRequired": "Пароль обязателен",
       "passwordTooShort": "Пароль должен содержать минимум 6 символов",
       "passwordMismatch": "Пароли не совпадают",
-      "agreeToTerms": "Вы должны согласиться с условиями",
+      "agreeToTerms": "Необходимо согласиться с условиями использования",
       "registrationFailed": "Регистрация не удалась. Попробуйте снова."
     }
   },

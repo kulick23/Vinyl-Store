@@ -187,8 +187,8 @@
     }
   },
   "signup": {
-    "title": "Create Your Account",
-    "subtitle": "Join our vinyl community and start building your collection today.",
+    "title": "Create Account",
+    "subtitle": "Join VinylHaven and start your music collection journey!",
     "firstNameLabel": "First Name",
     "firstNamePlaceholder": "Enter your first name",
     "lastNameLabel": "Last Name",
@@ -200,10 +200,12 @@
     "confirmPasswordLabel": "Confirm Password",
     "confirmPasswordPlaceholder": "Confirm your password",
     "agreeToTerms": "I agree to the",
-    "termsLink": "Terms of Service and Privacy Policy",
+    "termsLink": "Terms of Service",
     "signUpButton": "Create Account",
     "haveAccount": "Already have an account?",
-    "signInLink": "Sign in here",
+    "signInLink": "Sign In",
+    "orContinueWith": "Or continue with",
+    "googleSignUp": "Sign up with Google",
     "errors": {
       "firstNameRequired": "First name is required",
       "lastNameRequired": "Last name is required",
@@ -212,7 +214,7 @@
       "passwordRequired": "Password is required",
       "passwordTooShort": "Password must be at least 6 characters",
       "passwordMismatch": "Passwords do not match",
-      "agreeToTerms": "You must agree to the terms and conditions",
+      "agreeToTerms": "You must agree to the terms of service",
       "registrationFailed": "Registration failed. Please try again."
     }
   },
