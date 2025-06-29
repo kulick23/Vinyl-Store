@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useGetCurrentSellerProfileQuery, useUpdateSellerProfileMutation } from "../../redux/seller/api"
+import { useGetCurrentSellerProfileQuery, useUpdateSellerProfileMutation, useUploadSellerAvatarMutation } from "../../redux/seller/api"
 import { useNotification } from "../../hooks/useNotification"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
 import "./SellerProfileManagement.scss"
@@ -12,6 +12,7 @@ export const SellerProfileManagement: React.FC = () => {
   const { t } = useTranslation()
   const { data: sellerProfile, isLoading } = useGetCurrentSellerProfileQuery()
   const [updateProfile, { isLoading: isUpdating }] = useUpdateSellerProfileMutation()
+  const [uploadAvatar, { isLoading: isUploading }] = useUploadSellerAvatarMutation()
   const { showSuccess, showError } = useNotification()
   
   const [isEditing, setIsEditing] = useState(false)
@@ -61,6 +62,31 @@ export const SellerProfileManagement: React.FC = () => {
     setFormData({ displayName: "", description: "" })
   }
 
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showError('Please select a valid image file')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showError('Image must be smaller than 5MB')
+      return
+    }
+
+    try {
+      await uploadAvatar(file).unwrap()
+      showSuccess(t("seller.profile.avatarUploadSuccess"))
+    } catch (error) {
+      console.error('Failed to upload avatar:', error)
+      showError(t("seller.profile.avatarUploadError"))
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="seller-profile-management">
@@ -88,10 +114,35 @@ export const SellerProfileManagement: React.FC = () => {
           <div className="profile-header">
             <div className="profile-picture-section">
               <div className="profile-picture-placeholder">
-                {sellerProfile.displayName.charAt(0).toUpperCase()}
+                {sellerProfile.avatarPath ? (
+                  <img 
+                    src={sellerProfile.avatarPath} 
+                    alt={sellerProfile.displayName}
+                    style={{ 
+                      width: "100%", 
+                      height: "100%", 
+                      objectFit: "cover", 
+                      borderRadius: "50%" 
+                    }}
+                  />
+                ) : (
+                  sellerProfile.displayName.charAt(0).toUpperCase()
+                )}
               </div>
-              <button className="upload-picture-btn">
-                {t("seller.profile.uploadPicture")}
+              <input
+                type="file"
+                id="avatar-upload"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                style={{ display: "none" }}
+                disabled={isUploading}
+              />
+              <button 
+                className="upload-picture-btn"
+                onClick={() => document.getElementById('avatar-upload')?.click()}
+                disabled={isUploading}
+              >
+                {isUploading ? <VinylSpinner size="small" /> : t("seller.profile.uploadPicture")}
               </button>
             </div>
             <div className="profile-info">

@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
 import {
   useGetInventoryQuery,
   useCreateInventoryItemMutation,
@@ -32,6 +33,11 @@ const SellerInventory: React.FC = () => {
   const [updateItem] = useUpdateInventoryItemMutation()
   const [deleteItem] = useDeleteInventoryItemMutation()
   const [patchItem] = usePatchInventoryItemMutation()
+
+  // Helper function to get release information by ID
+  const getReleaseInfo = (releaseId: number) => {
+    return releases.find(release => release.id === releaseId)
+  }
 
   const getConditionText = (condition: number) => {
     const conditions = {
@@ -261,11 +267,11 @@ const SellerInventory: React.FC = () => {
       <table className="inventory-table">
         <thead>
           <tr>
-            <th>{t("seller.inventory.releaseId")}</th>
+            <th>{t("seller.inventory.release")}</th>
             <th>{t("seller.inventory.price")}</th>
             <th>{t("seller.inventory.quantity")}</th>
             <th>{t("seller.inventory.condition")}</th>
-            <th>{t("seller.inventory.status")}</th>
+            <th>{t("seller.inventory.shopStatus")}</th>
             <th>{t("seller.inventory.notes")}</th>
             <th>{t("seller.inventory.actions")}</th>
           </tr>
@@ -273,15 +279,50 @@ const SellerInventory: React.FC = () => {
         <tbody>
           {inventory.map((item) => (
             <tr key={item.id}>
-              <td>{item.releaseId}</td>
+                              <td>
+                  {getReleaseInfo(item.releaseId) ? (
+                    <Link 
+                      to={`/product/${item.releaseId}`}
+                      style={{ 
+                        color: "var(--orange-color)", 
+                        textDecoration: "none",
+                        fontWeight: "500" 
+                      }}
+                      onMouseEnter={(e) => (e.target as HTMLElement).style.textDecoration = "underline"}
+                      onMouseLeave={(e) => (e.target as HTMLElement).style.textDecoration = "none"}
+                    >
+                      {getReleaseInfo(item.releaseId)?.artist} - {getReleaseInfo(item.releaseId)?.title} ({getReleaseInfo(item.releaseId)?.year})
+                    </Link>
+                  ) : (
+                    <span style={{ color: "#666" }}>Release #{item.releaseId}</span>
+                  )}
+                </td>
               <td>${item.price.toFixed(2)}</td>
               <td>{item.quantity}</td>
               <td>{getConditionText(item.condition)}</td>
               <td>
                 <span
                   className={`status-badge ${item.isActive ? 'active' : 'inactive'}`}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "6px 12px",
+                    borderRadius: "20px",
+                    fontSize: "12px",
+                    fontWeight: "500",
+                    backgroundColor: item.isActive ? "#e7f5e7" : "#f5f5f5",
+                    color: item.isActive ? "#2d5a2d" : "#666",
+                    border: `1px solid ${item.isActive ? "#a3d9a3" : "#ddd"}`
+                  }}
                 >
-                  {item.isActive ? t("seller.inventory.statusActive") : t("seller.inventory.statusInactive")}
+                  <span style={{ 
+                    fontSize: "10px",
+                    color: item.isActive ? "#22c55e" : "#ef4444" 
+                  }}>
+                    {item.isActive ? "●" : "●"}
+                  </span>
+                  {item.isActive ? t("seller.inventory.inShop") : t("seller.inventory.notInShop")}
                 </span>
               </td>
               <td>{item.notes || t("seller.inventory.noNotes")}</td>
@@ -299,9 +340,39 @@ const SellerInventory: React.FC = () => {
                     onClick={() => handleToggleActive(item)}
                     className={`toggle ${!item.isActive ? "inactive" : ""}`}
                     disabled={isCreating || editingItem !== null}
-                    title={item.isActive ? t("seller.inventory.deactivate") : t("seller.inventory.activate")}
+                    title={item.isActive ? t("seller.inventory.removeFromShop") : t("seller.inventory.addToShop")}
+                    style={{
+                      padding: "8px 16px",
+                      borderRadius: "6px",
+                      border: "none",
+                      fontWeight: "500",
+                      fontSize: "12px",
+                      cursor: isCreating || editingItem !== null ? "not-allowed" : "pointer",
+                      opacity: isCreating || editingItem !== null ? 0.6 : 1,
+                      backgroundColor: item.isActive ? "#fef2f2" : "#f0f9ff",
+                      color: item.isActive ? "#dc2626" : "#2563eb",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      transition: "all 0.2s ease"
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isCreating && editingItem === null) {
+                        const button = e.currentTarget as HTMLButtonElement
+                        button.style.transform = "translateY(-1px)"
+                        button.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)"
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      const button = e.currentTarget as HTMLButtonElement
+                      button.style.transform = "translateY(0)"
+                      button.style.boxShadow = "none"
+                    }}
                   >
-                    {item.isActive ? "🔴" : "🟢"} {item.isActive ? t("seller.inventory.deactivate") : t("seller.inventory.activate")}
+                    <span style={{ fontSize: "14px" }}>
+                      {item.isActive ? "🏪" : "➕"}
+                    </span>
+                    {item.isActive ? t("seller.inventory.removeFromShop") : t("seller.inventory.addToShop")}
                   </button>
                   <button
                     onClick={() => handleDelete(item.id)}

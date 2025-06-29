@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useGetAdminUsersQuery, useUpdateAdminUserMutation, useDeleteAdminUserMutation } from "../../redux/admin/api"
+import { useGetAdminUsersQuery, useUpdateAdminUserMutation, useDeleteAdminUserMutation, useGetAdminSellersQuery } from "../../redux/admin/api"
 import type { AdminUser } from "../../redux/admin/types"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
 import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog"
@@ -23,9 +23,21 @@ const AdminUsers: React.FC = () => {
   const [userToDelete, setUserToDelete] = useState<string | null>(null)
 
   const { data: users = [], isLoading, error } = useGetAdminUsersQuery()
+  const { data: sellers = [] } = useGetAdminSellersQuery()
   const [updateUser] = useUpdateAdminUserMutation()
   const [deleteUser] = useDeleteAdminUserMutation()
   const { showSuccess, showError } = useNotification()
+
+  // Helper function to determine user role
+  const getUserRole = (user: AdminUser) => {
+    // Check if user has a seller profile by matching email or user ID
+    const hasSeller = sellers.some(seller => 
+      // Assuming seller has a way to link to user - checking by user ID if available
+      // or you might need to adjust this based on your data structure
+      seller.sellerId === parseInt(user.id)
+    )
+    return hasSeller ? 'Seller' : 'User'
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -197,6 +209,7 @@ const AdminUsers: React.FC = () => {
             <th>{t('admin.users.table.email')}</th>
             <th>{t('admin.users.table.name')}</th>
             <th>{t('admin.users.table.phone')}</th>
+            <th>{t('admin.users.table.role')}</th>
             <th>{t('admin.users.table.emailConfirmed')}</th>
             <th>{t('admin.users.table.lastLogin')}</th>
             <th>{t('admin.users.table.actions')}</th>
@@ -211,6 +224,11 @@ const AdminUsers: React.FC = () => {
                 {user.firstName} {user.lastName}
               </td>
               <td>{user.phone || t('admin.users.table.notAvailable')}</td>
+              <td>
+                <span className={`role-badge ${getUserRole(user).toLowerCase()}`}>
+                  {getUserRole(user)}
+                </span>
+              </td>
               <td>{user.isEmailConfirmed ? "✅" : "❌"}</td>
               <td>{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : t('admin.users.table.notAvailable')}</td>
               <td>

@@ -22,6 +22,8 @@ export interface SellerProfileDto {
   description?: string
   /** рейтинг продавца */
   rating: number
+  /** путь к аватару */
+  avatarPath?: string
 }
 
 /** DTO для создания профиля продавца */
