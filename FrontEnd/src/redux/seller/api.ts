@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { createBaseQuery } from '../base'
-import type { SellerPageDto, SellerProfileCreateDto, SellerProfileDto } from './types'
+import type { SellerPageDto, SellerProfileCreateDto, SellerProfileDto, SellerProfileUpdateDto } from './types'
 
 export const sellerApi = createApi({
   reducerPath: 'sellerApi',
@@ -84,6 +84,20 @@ export const sellerApi = createApi({
         }
       },
       providesTags: ['Seller']
+    }),
+
+    /**
+     * PUT /api/Seller/profile
+     * Body: SellerProfileUpdateDto
+     * Response: void
+     */
+    updateSellerProfile: builder.mutation<void, SellerProfileUpdateDto>({
+      query: (data) => ({
+        url: 'profile',
+        method: 'PUT',
+        body: data
+      }),
+      invalidatesTags: ['Seller']
     })
   })
 })
@@ -91,5 +105,6 @@ export const sellerApi = createApi({
 export const { 
   useGetSellerByIdQuery,
   useBecomeSellerMutation,
-  useGetCurrentSellerProfileQuery
+  useGetCurrentSellerProfileQuery,
+  useUpdateSellerProfileMutation
 } = sellerApi
