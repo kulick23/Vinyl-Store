@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import { NavLink, Link } from "react-router-dom"
 import { useGetCurrentUserQuery } from "../../redux/auth/api"
 import { useGetCartQuery } from "../../redux/cart/api"
+import { useGetCurrentSellerProfileQuery } from "../../redux/seller/api"
 import { MobileNav } from "../../Components/MobileNav/MobileNav"
 import logo from "../../Assets/icons/logo.svg"
 import cart from "../../Assets/icons/cart.svg"
@@ -29,6 +30,9 @@ export const Header: React.FC = () => {
     skip: !token,
   })
   const { data: cartData } = useGetCartQuery(undefined, {
+    skip: !token,
+  })
+  const { data: sellerProfile } = useGetCurrentSellerProfileQuery(undefined, {
     skip: !token,
   })
 
@@ -181,6 +185,9 @@ export const Header: React.FC = () => {
           {user ? (
             <Link to="/profile" className="header__link">
               {user.firstName}
+              {sellerProfile && (
+                <span className="seller-label"> ({t("profile.sellerLabel")})</span>
+              )}
             </Link>
           ) : (
             <Link to="/login" className="header__link">

@@ -8,6 +8,8 @@ import { useGetCurrentUserQuery, useEditProfileMutation } from "../../redux/auth
 import type { User } from "../../redux/auth/types"
 import { useGetCartQuery } from "../../redux/cart/api"
 import { useGetOrdersQuery } from "../../redux/orders/api"
+import { useGetCurrentSellerProfileQuery } from "../../redux/seller/api"
+import BecomeSellerModal from "../BecomeSellerModal/BecomeSellerModal"
 import { clearCredentials } from "../../redux/auth/authSlice"
 import { useDispatch } from "react-redux"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
@@ -22,6 +24,7 @@ export const UserProfile: React.FC = () => {
   const dispatch = useDispatch()
   const [activeSection, setActiveSection] = useState<ProfileSection>("overview")
   const [isEditing, setIsEditing] = useState(false)
+  const [isBecomeSellerModalOpen, setIsBecomeSellerModalOpen] = useState(false)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -33,6 +36,9 @@ export const UserProfile: React.FC = () => {
     skip: !user,
   })
   const { data: orders = [] } = useGetOrdersQuery(undefined, {
+    skip: !user,
+  })
+  const { data: sellerProfile, refetch: refetchSellerProfile } = useGetCurrentSellerProfileQuery(undefined, {
     skip: !user,
   })
   const [editProfile, { isLoading: isUpdating }] = useEditProfileMutation()
@@ -394,10 +400,17 @@ export const UserProfile: React.FC = () => {
               {t('profile.adminPanel')}
             </Link>
           )}
-          {userRoles.includes("Seller") && (
+          {sellerProfile ? (
             <Link to="/seller" className="action-button seller-button">
               {t('profile.sellerDashboard')}
             </Link>
+          ) : (
+            <button 
+              onClick={() => setIsBecomeSellerModalOpen(true)} 
+              className="action-button seller-button"
+            >
+              {t('profile.becomeSeller')}
+            </button>
           )}
           <button onClick={handleLogout} className="action-button logout-button">
             {t('profile.logout')}
@@ -444,6 +457,14 @@ export const UserProfile: React.FC = () => {
 
         <div className="profile-main">{renderContent()}</div>
       </div>
+
+      <BecomeSellerModal
+        isOpen={isBecomeSellerModalOpen}
+        onClose={() => setIsBecomeSellerModalOpen(false)}
+        onSuccess={() => {
+          refetchSellerProfile()
+        }}
+      />
     </div>
   )
 }
