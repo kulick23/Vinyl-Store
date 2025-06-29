@@ -47,7 +47,7 @@ public sealed class DiscogsImportService : IDiscogsImportService
 
                            int year = x.TryGetProperty("year", out var y)
                                    && y.ValueKind == JsonValueKind.Number
-                                   && y.TryGetInt32(out int yy) ? yy : 0;
+                                   && y.TryGetInt32(out int yy) ? yy : 2025;
 
                            string thumb = x.TryGetProperty("thumb", out var t)
                                         && t.ValueKind == JsonValueKind.String
