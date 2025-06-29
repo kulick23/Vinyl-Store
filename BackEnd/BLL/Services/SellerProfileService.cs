@@ -21,14 +21,19 @@ namespace BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<SellerPageDto?> GetProfileAsync(int sellerId, CancellationToken ct = default)
+        public async Task<SellerPageDto?> GetProfileAsync(
+    int sellerId,
+    CancellationToken ct = default)
         {
             var seller = await _repo.Query()
-                         .Include(s => s.Reviews)
-                             .ThenInclude(r => r.Customer)
-                         .FirstOrDefaultAsync(s => s.Id == sellerId, ct);
+                .Include(s => s.Reviews)
+                    .ThenInclude(r => r.Customer)
+                .Include(s => s.Listings)
+                    .ThenInclude(l => l.Release)
+                .FirstOrDefaultAsync(s => s.Id == sellerId, ct);
 
             if (seller is null) return null;
+
 
             var reviews = seller.Reviews
                                 .OrderByDescending(r => r.Created)
@@ -38,13 +43,22 @@ namespace BLL.Services
                              ? 0
                              : Math.Round((decimal)reviews.Average(r => r.Rating), 2);
 
+
+            var listings = seller.Listings
+                                 .Where(l => l.Quantity > 0)
+                                 .OrderByDescending(l => l.CreatedAt)
+                                 .ToList();
+
+
             return new SellerPageDto
             {
                 SellerId = seller.Id,
                 DisplayName = seller.DisplayName,
                 Description = seller.Description,
                 Rating = rating,
-                Reviews = _mapper.Map<IReadOnlyList<ReviewDto>>(reviews)
+
+                Reviews = _mapper.Map<IReadOnlyList<ReviewDto>>(reviews),
+                Listings = _mapper.Map<IReadOnlyList<InventoryItemDto>>(listings)
             };
         }
 

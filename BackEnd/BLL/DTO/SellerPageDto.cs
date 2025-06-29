@@ -7,4 +7,5 @@ public record class SellerPageDto
     public string? Description { get; init; }
     public decimal Rating { get; init; }
     public IReadOnlyList<ReviewDto> Reviews { get; init; } = [];
+    public IReadOnlyList<InventoryItemDto> Listings { get; init; } = [];
 }
