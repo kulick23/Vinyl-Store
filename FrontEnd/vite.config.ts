@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
   // For development, use the hosted backend directly
   const API = mode === 'development' 
     ? 'https://ibm-team-project-production.up.railway.app'
-    : env.VITE_API_URL || 'http://localhost:5000'
+    : env.VITE_API_URL || 'https://ibm-team-project-production.up.railway.app'
   
   // Debug logging
   console.log('Vite Config - Mode:', mode)
@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      'import.meta.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL ?? '')
+      'import.meta.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL || 'https://ibm-team-project-production.up.railway.app')
     },
     server: {
       proxy: {
