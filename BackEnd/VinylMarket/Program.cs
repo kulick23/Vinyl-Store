@@ -35,6 +35,12 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("https://ibm-team-project-wwrs-ok3mhmcvv-rageangel18s-projects.vercel.app")
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -70,6 +76,7 @@ app.UseStaticFiles(new StaticFileOptions
 app.UsePathBase("/");
 
 app.UseCors();
+app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
