@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { createBaseQuery } from '../base'
-import type { RegisterRequest, LoginRequest, AuthResponse, User, WishlistItem } from './types'
+import type { RegisterRequest, LoginRequest, GoogleAuthRequest, AuthResponse, User, WishlistItem } from './types'
 
 export const authApi = createApi({
   reducerPath: 'authApi',
@@ -14,6 +14,10 @@ export const authApi = createApi({
     /** POST /login */
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: creds => ({ url: 'login', method: 'POST', body: creds })
+    }),
+    /** POST /google - Google OAuth login */
+    googleLogin: builder.mutation<AuthResponse, GoogleAuthRequest>({
+      query: data => ({ url: 'google', method: 'POST', body: data })
     }),
     /** POST /refresh */
     refresh: builder.mutation<AuthResponse, string>({
@@ -116,6 +120,7 @@ export const authApi = createApi({
 export const {
   useRegisterMutation,
   useLoginMutation,
+  useGoogleLoginMutation,
   useRefreshMutation,
   useGetCurrentUserQuery,
   useConfirmEmailMutation,

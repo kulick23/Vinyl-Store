@@ -1,12 +1,19 @@
 import type React from 'react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { useLoginMutation } from '../../redux/auth/api';
+import { useLoginMutation, useGoogleLoginMutation } from '../../redux/auth/api';
 import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../redux/auth/authSlice';
 import { useNotification } from '../../hooks/useNotification';
+import { 
+  loadGoogleScript, 
+  initializeGoogleAuth, 
+  renderGoogleButton, 
+  GOOGLE_CLIENT_ID,
+  type GoogleUser 
+} from '../../utils/googleAuth';
 import './LoginPage.scss';
 
 interface LoginFormData {
@@ -26,7 +33,9 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginMutation();
-  const { showInfo } = useNotification();
+  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleLoginMutation();
+  const { showInfo, showError } = useNotification();
+  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -34,6 +43,59 @@ export const LoginPage: React.FC = () => {
     rememberMe: false,
   });
   const [errors, setErrors] = useState<FormErrors>({});
+
+  useEffect(() => {
+    const initGoogleAuth = async () => {
+      try {
+        await loadGoogleScript();
+        
+        initializeGoogleAuth({
+          clientId: GOOGLE_CLIENT_ID,
+          callback: handleGoogleResponse,
+        });
+
+        if (googleButtonRef.current) {
+          renderGoogleButton(googleButtonRef.current, {
+            theme: 'outline',
+            size: 'large',
+            text: 'continue_with',
+            shape: 'rectangular',
+            width: '100%',
+          });
+        }
+      } catch (error) {
+        console.error('Failed to initialize Google Auth:', error);
+        showError('Failed to load Google authentication');
+      }
+    };
+
+    initGoogleAuth();
+  }, []);
+
+  const handleGoogleResponse = async (response: GoogleUser) => {
+    try {
+      const result = await googleLogin({
+        idToken: response.credential
+      }).unwrap();
+
+      dispatch(
+        setCredentials({
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+        })
+      );
+
+      if (formData.rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      }
+
+      showInfo('Successfully logged in with Google!');
+      navigate('/');
+    } catch (error: any) {
+      console.error('Google login error:', error);
+      showError(error.data?.message || 'Google authentication failed');
+    }
+  };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -101,12 +163,6 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Here you would implement Google OAuth login
-    console.log('Google login clicked');
-    showInfo('notifications.googleLoginDemo');
-  };
-
   return (
     <div className="loginpage">
       <div className="login-container">
@@ -134,7 +190,7 @@ export const LoginPage: React.FC = () => {
               onChange={handleInputChange}
               placeholder={t('login.emailPlaceholder')}
               className={`form-input ${errors.email ? 'error' : ''}`}
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             />
             {errors.email && (
               <span className="error-message">{errors.email}</span>
@@ -153,7 +209,7 @@ export const LoginPage: React.FC = () => {
               onChange={handleInputChange}
               placeholder={t('login.passwordPlaceholder')}
               className={`form-input ${errors.password ? 'error' : ''}`}
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             />
             {errors.password && (
               <span className="error-message">{errors.password}</span>
@@ -167,7 +223,7 @@ export const LoginPage: React.FC = () => {
                 name="rememberMe"
                 checked={formData.rememberMe}
                 onChange={handleInputChange}
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
               />
               {t('login.rememberMe')}
             </label>
@@ -176,7 +232,7 @@ export const LoginPage: React.FC = () => {
             </Link>
           </div>
 
-          <button type="submit" className="login-button" disabled={isLoading}>
+          <button type="submit" className="login-button" disabled={isLoading || isGoogleLoading}>
             {isLoading ? (
               <VinylSpinner size="small" />
             ) : (
@@ -190,14 +246,20 @@ export const LoginPage: React.FC = () => {
         </div>
 
         <div className="social-login">
-          <button
-            type="button"
-            className="google-login-button"
-            onClick={handleGoogleLogin}
-            disabled={isLoading}
-          >
-            {t('login.googleSignIn')}
-          </button>
+          <div 
+            ref={googleButtonRef} 
+            className="google-button-container"
+            style={{ 
+              opacity: isGoogleLoading ? 0.6 : 1,
+              pointerEvents: isGoogleLoading ? 'none' : 'auto'
+            }}
+          />
+          {isGoogleLoading && (
+            <div className="google-loading">
+              <VinylSpinner size="small" />
+              <span>Authenticating with Google...</span>
+            </div>
+          )}
         </div>
 
         <div className="signup-link">

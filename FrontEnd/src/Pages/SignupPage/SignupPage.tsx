@@ -1,9 +1,19 @@
 import type React from 'react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { useRegisterMutation } from '../../redux/auth/api';
+import { useRegisterMutation, useGoogleLoginMutation } from '../../redux/auth/api';
 import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../redux/auth/authSlice';
+import { useNotification } from '../../hooks/useNotification';
+import { 
+  loadGoogleScript, 
+  initializeGoogleAuth, 
+  renderGoogleButton, 
+  GOOGLE_CLIENT_ID,
+  type GoogleUser 
+} from '../../utils/googleAuth';
 import './SignupPage.scss';
 
 interface SignupFormData {
@@ -28,7 +38,11 @@ interface FormErrors {
 export const SignupPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [register, { isLoading }] = useRegisterMutation();
+  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleLoginMutation();
+  const { showInfo, showError } = useNotification();
+  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState<SignupFormData>({
     firstName: '',
@@ -39,6 +53,55 @@ export const SignupPage: React.FC = () => {
     agreeToTerms: false,
   });
   const [errors, setErrors] = useState<FormErrors>({});
+
+  useEffect(() => {
+    const initGoogleAuth = async () => {
+      try {
+        await loadGoogleScript();
+        
+        initializeGoogleAuth({
+          clientId: GOOGLE_CLIENT_ID,
+          callback: handleGoogleResponse,
+        });
+
+        if (googleButtonRef.current) {
+          renderGoogleButton(googleButtonRef.current, {
+            theme: 'outline',
+            size: 'large',
+            text: 'signup_with',
+            shape: 'rectangular',
+            width: '100%',
+          });
+        }
+      } catch (error) {
+        console.error('Failed to initialize Google Auth:', error);
+        showError('Failed to load Google authentication');
+      }
+    };
+
+    initGoogleAuth();
+  }, []);
+
+  const handleGoogleResponse = async (response: GoogleUser) => {
+    try {
+      const result = await googleLogin({
+        idToken: response.credential
+      }).unwrap();
+
+      dispatch(
+        setCredentials({
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+        })
+      );
+
+      showInfo('Successfully signed up with Google!');
+      navigate('/');
+    } catch (error: any) {
+      console.error('Google signup error:', error);
+      showError(error.data?.message || 'Google authentication failed');
+    }
+  };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -146,7 +209,7 @@ export const SignupPage: React.FC = () => {
                 onChange={handleInputChange}
                 placeholder={t('signup.firstNamePlaceholder')}
                 className={`form-input ${errors.firstName ? 'error' : ''}`}
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
               />
               {errors.firstName && (
                 <span className="error-message">{errors.firstName}</span>
@@ -165,7 +228,7 @@ export const SignupPage: React.FC = () => {
                 onChange={handleInputChange}
                 placeholder={t('signup.lastNamePlaceholder')}
                 className={`form-input ${errors.lastName ? 'error' : ''}`}
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
               />
               {errors.lastName && (
                 <span className="error-message">{errors.lastName}</span>
@@ -185,7 +248,7 @@ export const SignupPage: React.FC = () => {
               onChange={handleInputChange}
               placeholder={t('signup.emailPlaceholder')}
               className={`form-input ${errors.email ? 'error' : ''}`}
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             />
             {errors.email && (
               <span className="error-message">{errors.email}</span>
@@ -204,7 +267,7 @@ export const SignupPage: React.FC = () => {
               onChange={handleInputChange}
               placeholder={t('signup.passwordPlaceholder')}
               className={`form-input ${errors.password ? 'error' : ''}`}
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             />
             {errors.password && (
               <span className="error-message">{errors.password}</span>
@@ -223,7 +286,7 @@ export const SignupPage: React.FC = () => {
               onChange={handleInputChange}
               placeholder={t('signup.confirmPasswordPlaceholder')}
               className={`form-input ${errors.confirmPassword ? 'error' : ''}`}
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             />
             {errors.confirmPassword && (
               <span className="error-message">{errors.confirmPassword}</span>
@@ -237,7 +300,7 @@ export const SignupPage: React.FC = () => {
                 name="agreeToTerms"
                 checked={formData.agreeToTerms}
                 onChange={handleInputChange}
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
               />
               <span className="checkbox-text">
                 {t('signup.agreeToTerms')}{' '}
@@ -251,7 +314,7 @@ export const SignupPage: React.FC = () => {
             )}
           </div>
 
-          <button type="submit" className="signup-button" disabled={isLoading}>
+          <button type="submit" className="signup-button" disabled={isLoading || isGoogleLoading}>
             {isLoading ? (
               <VinylSpinner size="small" />
             ) : (
@@ -259,6 +322,27 @@ export const SignupPage: React.FC = () => {
             )}
           </button>
         </form>
+
+        <div className="signup-divider">
+          <span>{t('signup.orContinueWith')}</span>
+        </div>
+
+        <div className="social-signup">
+          <div 
+            ref={googleButtonRef} 
+            className="google-button-container"
+            style={{ 
+              opacity: isGoogleLoading ? 0.6 : 1,
+              pointerEvents: isGoogleLoading ? 'none' : 'auto'
+            }}
+          />
+          {isGoogleLoading && (
+            <div className="google-loading">
+              <VinylSpinner size="small" />
+              <span>Signing up with Google...</span>
+            </div>
+          )}
+        </div>
 
         <div className="login-link">
           {t('signup.haveAccount')}{' '}
