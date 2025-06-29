@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useBecomeSellerMutation } from "../../redux/seller/api"
 import { useNotification } from "../../hooks/useNotification"
@@ -27,18 +27,6 @@ export const BecomeSellerModal: React.FC<BecomeSellerModalProps> = ({
   const [becomeSeller, { isLoading }] = useBecomeSellerMutation()
   const { showSuccess, showError } = useNotification()
 
-  // Debug authentication when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      const token = localStorage.getItem('accessToken')
-      console.log('=== SELLER MODAL DEBUG ===')
-      console.log('Token exists:', !!token)
-      console.log('Token length:', token?.length || 0)
-      console.log('API Base URL:', import.meta.env.VITE_API_URL || 'Using proxy')
-      console.log('========================')
-    }
-  }, [isOpen])
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
@@ -58,43 +46,18 @@ export const BecomeSellerModal: React.FC<BecomeSellerModalProps> = ({
     }
 
     try {
-      console.log('=== SELLER CREATION ATTEMPT ===')
-      console.log('Data being sent:', formData)
-      console.log('Backend URL:', `${import.meta.env.VITE_API_URL || 'proxy'}/api/Seller/becomeSeller`)
-      console.log('Token present:', !!localStorage.getItem('accessToken'))
-      console.log('===========================')
-      
-      const result = await becomeSeller(formData).unwrap()
-      console.log('Seller creation result:', result)
-      
+      await becomeSeller(formData).unwrap()
       showSuccess(t("seller.profile.createSuccess"))
       setFormData({ displayName: "", description: "" })
       onSuccess?.()
       onClose()
     } catch (error: any) {
-      console.error('=== SELLER CREATION ERROR ===')
-      console.error('Full error object:', error)
-      console.error('Error status:', error.status)
-      console.error('Error data:', error.data)
-      console.error('Error message:', error.message)
-      console.error('========================')
-      
-      // Handle specific error cases
       if (error.status === 401) {
-        showError("Authentication required. Please log in again.")
+        showError("Authentication failed. Please log in again.")
       } else if (error.status === 400) {
-        showError("Invalid data provided. Please check your input.")
+        showError("Invalid data provided. Please check your input and try again.")
       } else if (error.status === 409) {
         showError("You already have a seller profile.")
-      } else if (error.status === 500) {
-        showError("Server error. Please try again later.")
-      } else if (error.status === 302) {
-        // Backend sends redirect - treat as success for now
-        console.log('Received redirect response - treating as success')
-        showSuccess(t("seller.profile.createSuccess"))
-        setFormData({ displayName: "", description: "" })
-        onSuccess?.()
-        onClose()
       } else if (error.data?.message) {
         showError(error.data.message)
       } else if (error.message) {

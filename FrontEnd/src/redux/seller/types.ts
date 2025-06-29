@@ -29,7 +29,7 @@ export interface SellerProfileCreateDto {
   /** отображаемое имя магазина */
   displayName: string
   /** описание магазина */
-  description?: string
+  description: string
 }
 
 /** DTO для обновления профиля продавца */

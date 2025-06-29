@@ -4,7 +4,7 @@ import SellerDashboard from "../../Components/SellerDashboard/SellerDashboard"
 
 export const SellerPage: React.FC = () => {
   return (
-    <AuthGuard requiredRole="Seller">
+    <AuthGuard>
       <SellerDashboard />
     </AuthGuard>
   )

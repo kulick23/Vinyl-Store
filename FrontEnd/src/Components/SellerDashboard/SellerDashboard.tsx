@@ -23,29 +23,73 @@ const SellerOverview: React.FC<{ sellerProfile: any }> = ({ sellerProfile }) => 
   const totalValue = inventory.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   return (
-    <div>
-      <h2 className="section-title">{t("seller.overview.title")}</h2>
+    <div className="seller-overview">
+      <div className="seller-profile-showcase">
+        <div className="profile-header">
+          <div className="profile-avatar">
+            <div className="avatar-placeholder">
+              {sellerProfile?.displayName ? sellerProfile.displayName.charAt(0).toUpperCase() : 'S'}
+            </div>
+          </div>
+          <div className="profile-details">
+            <h2 className="shop-name">{sellerProfile?.displayName || t("seller.profile.title")}</h2>
+            <div className="rating-section">
+              <div className="star-rating">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span 
+                    key={star} 
+                    className={`star ${star <= Math.round(sellerProfile?.rating || 0) ? 'filled' : ''}`}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <span className="rating-value">{(sellerProfile?.rating || 0).toFixed(1)}</span>
+            </div>
+            <p className="shop-description">{sellerProfile?.description || t("seller.overview.welcomeMessage")}</p>
+          </div>
+        </div>
+      </div>
+
       <div className="seller-stats">
         <div className="stat-card">
+          <div className="stat-icon">📦</div>
           <div className="stat-number">{inventory.length}</div>
           <div className="stat-label">{t("seller.overview.totalItems")}</div>
         </div>
         <div className="stat-card">
+          <div className="stat-icon">✅</div>
           <div className="stat-number">{activeItems.length}</div>
           <div className="stat-label">{t("seller.overview.activeListings")}</div>
         </div>
         <div className="stat-card">
+          <div className="stat-icon">💰</div>
           <div className="stat-number">${totalValue.toFixed(2)}</div>
           <div className="stat-label">{t("seller.overview.totalValue")}</div>
         </div>
         <div className="stat-card">
+          <div className="stat-icon">📋</div>
           <div className="stat-number">0</div>
           <div className="stat-label">{t("seller.overview.pendingOrders")}</div>
         </div>
       </div>
-      <div className="welcome-section">
-        <h3>{t("seller.dashboard.welcome", { name: sellerProfile?.displayName || "Seller" })}</h3>
-        <p>{t("seller.overview.welcomeMessage")}</p>
+
+      <div className="quick-actions">
+        <h3>{t("seller.overview.quickActions")}</h3>
+        <div className="action-buttons">
+          <button 
+            className="action-btn primary" 
+            onClick={() => window.location.href = '/seller/inventory'}
+          >
+            📦 {t("seller.overview.manageInventory")}
+          </button>
+          <button 
+            className="action-btn secondary" 
+            onClick={() => window.location.href = '/seller/profile'}
+          >
+            👤 {t("seller.overview.editProfile")}
+          </button>
+        </div>
       </div>
     </div>
   )

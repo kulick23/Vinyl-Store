@@ -122,15 +122,29 @@ const SellerInventory: React.FC = () => {
     return (
       <div className="loading-spinner">
         <VinylSpinner size="large" />
-        <p>Loading inventory...</p>
+        <p>{t("seller.inventory.loading")}</p>
       </div>
     )
   }
 
   if (error) {
+    const errorMessage = error as any
+    if (errorMessage?.status === 401) {
+      return (
+        <div className="error-message">
+          <p>{t("seller.inventory.authError")}</p>
+          <button onClick={() => window.location.href = '/login'} className="retry-btn">
+            {t("seller.inventory.loginAgain")}
+          </button>
+        </div>
+      )
+    }
     return (
       <div className="error-message">
-        <p>Failed to load inventory. Please try again.</p>
+        <p>{t("seller.inventory.loadError")}</p>
+        <button onClick={() => window.location.reload()} className="retry-btn">
+          {t("seller.inventory.retry")}
+        </button>
       </div>
     )
   }
@@ -170,14 +184,14 @@ const SellerInventory: React.FC = () => {
           }}
         >
           <div className="form-group">
-            <label htmlFor="releaseId">Release</label>
+            <label htmlFor="releaseId">{t("seller.inventory.release")}</label>
             <select
               id="releaseId"
               value={formData.releaseId}
               onChange={(e) => setFormData({ ...formData, releaseId: Number(e.target.value) })}
               required
             >
-              <option value={0}>Select a release</option>
+              <option value={0}>{t("seller.inventory.selectRelease")}</option>
               {releases.map((release) => (
                 <option key={release.id} value={release.id}>
                   {release.artist} - {release.title} ({release.year})
@@ -186,7 +200,7 @@ const SellerInventory: React.FC = () => {
             </select>
           </div>
           <div className="form-group">
-            <label htmlFor="price">Price ($)</label>
+            <label htmlFor="price">{t("seller.inventory.price")} ($)</label>
             <input
               type="number"
               id="price"
@@ -198,7 +212,7 @@ const SellerInventory: React.FC = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="quantity">Quantity</label>
+            <label htmlFor="quantity">{t("seller.inventory.quantity")}</label>
             <input
               type="number"
               id="quantity"
@@ -209,36 +223,36 @@ const SellerInventory: React.FC = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="condition">Condition</label>
+            <label htmlFor="condition">{t("seller.inventory.condition")}</label>
             <select
               id="condition"
               value={formData.condition}
               onChange={(e) => setFormData({ ...formData, condition: Number(e.target.value) })}
               required
             >
-              <option value={1}>Poor (P)</option>
-              <option value={2}>Fair (F)</option>
-              <option value={3}>Good (G)</option>
-              <option value={4}>Very Good (VG)</option>
-              <option value={5}>Near Mint (NM)</option>
-              <option value={6}>Mint (M)</option>
+              <option value={1}>{t("seller.inventory.conditionPoor")}</option>
+              <option value={2}>{t("seller.inventory.conditionFair")}</option>
+              <option value={3}>{t("seller.inventory.conditionGood")}</option>
+              <option value={4}>{t("seller.inventory.conditionVeryGood")}</option>
+              <option value={5}>{t("seller.inventory.conditionNearMint")}</option>
+              <option value={6}>{t("seller.inventory.conditionMint")}</option>
             </select>
           </div>
           <div className="form-group">
-            <label htmlFor="notes">Notes (Optional)</label>
+            <label htmlFor="notes">{t("seller.inventory.notes")}</label>
             <textarea
               id="notes"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="Any additional notes about this item..."
+              placeholder={t("seller.inventory.notesPlaceholder")}
             />
           </div>
           <div className="form-actions">
             <button type="submit" className="primary">
-              {editingItem ? "Update Item" : "Add Item"}
+              {editingItem ? t("seller.inventory.updateItem") : t("seller.inventory.addItem")}
             </button>
             <button type="button" onClick={handleCancel} className="secondary">
-              Cancel
+              {t("seller.inventory.cancel")}
             </button>
           </div>
         </form>
@@ -247,55 +261,55 @@ const SellerInventory: React.FC = () => {
       <table className="inventory-table">
         <thead>
           <tr>
-            <th>Release ID</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Condition</th>
-            <th>Status</th>
-            <th>Notes</th>
-            <th>Actions</th>
+            <th>{t("seller.inventory.releaseId")}</th>
+            <th>{t("seller.inventory.price")}</th>
+            <th>{t("seller.inventory.quantity")}</th>
+            <th>{t("seller.inventory.condition")}</th>
+            <th>{t("seller.inventory.status")}</th>
+            <th>{t("seller.inventory.notes")}</th>
+            <th>{t("seller.inventory.actions")}</th>
           </tr>
         </thead>
         <tbody>
           {inventory.map((item) => (
             <tr key={item.id}>
               <td>{item.releaseId}</td>
-              <td>${item.price}</td>
+              <td>${item.price.toFixed(2)}</td>
               <td>{item.quantity}</td>
               <td>{getConditionText(item.condition)}</td>
               <td>
                 <span
-                  style={{
-                    color: item.isActive ? "#10b981" : "#ef4444",
-                    fontWeight: "bold",
-                  }}
+                  className={`status-badge ${item.isActive ? 'active' : 'inactive'}`}
                 >
-                  {item.isActive ? "Active" : "Inactive"}
+                  {item.isActive ? t("seller.inventory.statusActive") : t("seller.inventory.statusInactive")}
                 </span>
               </td>
-              <td>{item.notes || "N/A"}</td>
+              <td>{item.notes || t("seller.inventory.noNotes")}</td>
               <td>
                 <div className="action-buttons">
                   <button
                     onClick={() => handleEdit(item)}
                     className="edit"
                     disabled={isCreating || editingItem !== null}
+                    title={t("seller.inventory.edit")}
                   >
-                    Edit
+                    ✏️ {t("seller.inventory.edit")}
                   </button>
                   <button
                     onClick={() => handleToggleActive(item)}
                     className={`toggle ${!item.isActive ? "inactive" : ""}`}
                     disabled={isCreating || editingItem !== null}
+                    title={item.isActive ? t("seller.inventory.deactivate") : t("seller.inventory.activate")}
                   >
-                    {item.isActive ? "Deactivate" : "Activate"}
+                    {item.isActive ? "🔴" : "🟢"} {item.isActive ? t("seller.inventory.deactivate") : t("seller.inventory.activate")}
                   </button>
                   <button
                     onClick={() => handleDelete(item.id)}
                     className="delete"
                     disabled={isCreating || editingItem !== null}
+                    title={t("seller.inventory.delete")}
                   >
-                    Delete
+                    🗑️ {t("seller.inventory.delete")}
                   </button>
                 </div>
               </td>
@@ -305,8 +319,16 @@ const SellerInventory: React.FC = () => {
       </table>
 
       {inventory.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px", color: "var(--text-color)" }}>
-          <p>No inventory items found. Add your first item to get started selling!</p>
+        <div className="empty-inventory">
+          <div className="empty-icon">📦</div>
+          <h3>{t("seller.inventory.noItems")}</h3>
+          <p>{t("seller.inventory.noItemsMessage")}</p>
+          <button 
+            onClick={() => setIsCreating(true)} 
+            className="add-first-item-btn"
+          >
+            {t("seller.inventory.addFirstItem")}
+          </button>
         </div>
       )}
     </div>
