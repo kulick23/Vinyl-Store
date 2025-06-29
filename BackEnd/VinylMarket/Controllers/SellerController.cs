@@ -41,7 +41,7 @@ namespace Web.Api.Controllers
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             var profile = await _sellerService.CreateProfileAsync(userId, dto, ct);
-            return Ok();
+            return Ok(profile);
         }
 
         [HttpGet("my-profile")]

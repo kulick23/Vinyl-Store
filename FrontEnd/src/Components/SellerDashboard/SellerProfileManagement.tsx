@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useGetCurrentSellerProfileQuery, useUpdateSellerProfileMutation } from "../../redux/seller/api"
+import { useGetCurrentSellerProfileQuery, useUpdateSellerProfileWithId } from "../../redux/seller/api"
 import { useNotification } from "../../hooks/useNotification"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
 import "./SellerProfileManagement.scss"
@@ -11,7 +11,7 @@ import "./SellerProfileManagement.scss"
 export const SellerProfileManagement: React.FC = () => {
   const { t } = useTranslation()
   const { data: sellerProfile, isLoading } = useGetCurrentSellerProfileQuery()
-  const [updateProfile, { isLoading: isUpdating }] = useUpdateSellerProfileMutation()
+  const [updateProfile, { isLoading: isUpdating }] = useUpdateSellerProfileWithId()
   const { showSuccess, showError } = useNotification()
   
   const [isEditing, setIsEditing] = useState(false)
@@ -47,7 +47,10 @@ export const SellerProfileManagement: React.FC = () => {
     }
 
     try {
-      await updateProfile(formData).unwrap()
+      await updateProfile({
+        displayName: formData.displayName,
+        description: formData.description
+      })
       showSuccess(t("seller.profile.updateSuccess"))
       setIsEditing(false)
     } catch (error) {
