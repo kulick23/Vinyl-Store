@@ -1,9 +1,4 @@
-using System.Collections.Generic;
+using BLL.DTO;
 
-namespace BLL.DTO
-{
-    public record CheckoutDto(
-        IReadOnlyList<CheckoutItemDto> Items,
-        string ShippingAddress,
-        string PaymentMethod);
-}
+public record CheckoutDto(
+    IReadOnlyList<CheckoutItemDto> Items);

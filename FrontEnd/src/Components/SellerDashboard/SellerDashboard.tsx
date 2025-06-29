@@ -5,15 +5,18 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom"
 import { useGetCurrentUserQuery } from "../../redux/auth/api"
+import { useGetCurrentSellerProfileQuery } from "../../redux/seller/api"
 import { useGetInventoryQuery } from "../../redux/inventory/api"
 import VinylSpinner from "../VinylSpinner/VinylSpinner"
 import SellerInventory from "./SellerInventory"
 import SellerOrders from "./SellerOrders"
+import SellerProfileManagement from "./SellerProfileManagement"
 import "./SellerDashboard.scss"
 
-type SellerSection = "overview" | "inventory" | "orders" | "profile"
+type SellerSection = "overview" | "inventory" | "orders" | "profile" | "reviews"
 
-const SellerOverview: React.FC = () => {
+const SellerOverview: React.FC<{ sellerProfile: any }> = ({ sellerProfile }) => {
+  const { t } = useTranslation()
   const { data: inventory = [] } = useGetInventoryQuery()
 
   const activeItems = inventory.filter((item) => item.isActive)
@@ -21,29 +24,28 @@ const SellerOverview: React.FC = () => {
 
   return (
     <div>
-      <h2 className="section-title">Seller Overview</h2>
+      <h2 className="section-title">{t("seller.overview.title")}</h2>
       <div className="seller-stats">
         <div className="stat-card">
           <div className="stat-number">{inventory.length}</div>
-          <div className="stat-label">Total Items</div>
+          <div className="stat-label">{t("seller.overview.totalItems")}</div>
         </div>
         <div className="stat-card">
           <div className="stat-number">{activeItems.length}</div>
-          <div className="stat-label">Active Listings</div>
+          <div className="stat-label">{t("seller.overview.activeListings")}</div>
         </div>
         <div className="stat-card">
           <div className="stat-number">${totalValue.toFixed(2)}</div>
-          <div className="stat-label">Total Value</div>
+          <div className="stat-label">{t("seller.overview.totalValue")}</div>
         </div>
         <div className="stat-card">
           <div className="stat-number">0</div>
-          <div className="stat-label">Pending Orders</div>
+          <div className="stat-label">{t("seller.overview.pendingOrders")}</div>
         </div>
       </div>
-      <div>
-        <h3>Welcome to your seller dashboard!</h3>
-        <p>Here you can manage your inventory, track orders, and update your seller profile.</p>
-        <p>Use the sidebar to navigate between different sections of your dashboard.</p>
+      <div className="welcome-section">
+        <h3>{t("seller.dashboard.welcome", { name: sellerProfile?.displayName || "Seller" })}</h3>
+        <p>{t("seller.overview.welcomeMessage")}</p>
       </div>
     </div>
   )
@@ -53,7 +55,8 @@ export const SellerDashboard: React.FC = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const { data: user, isLoading } = useGetCurrentUserQuery()
+  const { data: user, isLoading: isUserLoading } = useGetCurrentUserQuery()
+  const { data: sellerProfile, isLoading: isSellerLoading } = useGetCurrentSellerProfileQuery()
 
   const getCurrentSection = (): SellerSection => {
     const path = location.pathname.split("/seller/")[1] || "overview"
@@ -71,6 +74,8 @@ export const SellerDashboard: React.FC = () => {
     }
   }
 
+  const isLoading = isUserLoading || isSellerLoading
+
   if (isLoading) {
     return (
       <div className="seller-dashboard">
@@ -82,7 +87,7 @@ export const SellerDashboard: React.FC = () => {
     )
   }
 
-  if (!user || !user.roles.includes("Seller")) {
+  if (!user || !sellerProfile) {
     return (
       <div className="seller-dashboard">
         <div className="error-message">
@@ -96,30 +101,30 @@ export const SellerDashboard: React.FC = () => {
     <div className="seller-dashboard">
       <div className="seller-header">
         <div>
-          <h1 className="seller-title">Seller Dashboard</h1>
-          <p className="seller-subtitle">Manage your vinyl inventory and sales</p>
+          <h1 className="seller-title">{t("seller.dashboard.title")}</h1>
+          <p className="seller-subtitle">{t("seller.dashboard.subtitle")}</p>
         </div>
         <div>
-          <p>Welcome, {user.firstName}!</p>
+          <p>{t("seller.dashboard.welcome", { name: user.firstName })}</p>
         </div>
       </div>
 
       <div className="seller-content">
         <div className="seller-sidebar">
           <div className="sidebar-section">
-            <h3>Navigation</h3>
+            <h3>{t("seller.dashboard.navigation")}</h3>
             <div className="nav-links">
               <button
                 className={`nav-link ${activeSection === "overview" ? "active" : ""}`}
                 onClick={() => handleSectionChange("overview")}
               >
-                📊 Overview
+                📊 {t("seller.dashboard.overview")}
               </button>
               <button
                 className={`nav-link ${activeSection === "inventory" ? "active" : ""}`}
                 onClick={() => handleSectionChange("inventory")}
               >
-                📦 Inventory
+                📦 {t("seller.dashboard.inventory")}
               </button>
               <button
                 className={`nav-link ${activeSection === "orders" ? "active" : ""}`}
@@ -131,7 +136,13 @@ export const SellerDashboard: React.FC = () => {
                 className={`nav-link ${activeSection === "profile" ? "active" : ""}`}
                 onClick={() => handleSectionChange("profile")}
               >
-                👤 Profile
+                👤 {t("seller.dashboard.profile")}
+              </button>
+              <button
+                className={`nav-link ${activeSection === "reviews" ? "active" : ""}`}
+                onClick={() => handleSectionChange("reviews")}
+              >
+                ⭐ {t("seller.dashboard.reviews")}
               </button>
             </div>
           </div>
@@ -139,17 +150,20 @@ export const SellerDashboard: React.FC = () => {
 
         <div className="seller-main">
           <Routes>
-            <Route path="/" element={<SellerOverview />} />
+            <Route path="/" element={<SellerOverview sellerProfile={sellerProfile} />} />
             <Route path="/inventory" element={<SellerInventory />} />
             <Route path="/orders" element={<SellerOrders />} />
-            <Route
-              path="/profile"
+            <Route path="/profile" element={<SellerProfileManagement />} />
+            <Route 
+              path="/reviews" 
               element={
                 <div>
-                  <h2 className="section-title">Seller Profile</h2>
-                  <p>Profile management coming soon...</p>
+                  <h2 className="section-title">{t("seller.reviews.title")}</h2>
+                  <div className="no-reviews">
+                    <p>{t("seller.reviews.noReviews")}</p>
+                  </div>
                 </div>
-              }
+              } 
             />
           </Routes>
         </div>

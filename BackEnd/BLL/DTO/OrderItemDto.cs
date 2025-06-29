@@ -1,12 +1,10 @@
-using Domain.Entities;
+namespace BLL.DTO;
 
-namespace BLL.DTO
+public class OrderItemDto
 {
-    public record OrderItemDto(
-        int InventoryItemId,
-        string ReleaseTitle,
-        RecordCondition Condition,
-        int Quantity,
-        decimal UnitPrice,
-        decimal LineTotal);
+    public int InventoryItemId { get; init; }
+    public string Title { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public decimal UnitPrice { get; init; }
+    public decimal Subtotal => UnitPrice * Quantity;
 }

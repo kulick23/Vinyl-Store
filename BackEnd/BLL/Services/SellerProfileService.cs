@@ -78,5 +78,23 @@ namespace BLL.Services
 
             return _mapper.Map<SellerProfileDto>(entity);
         }
+
+        public async Task<SellerProfileDto?> GetProfileByCustomerIdAsync(
+    int customerId,
+    CancellationToken ct = default)
+        {
+            var entity = await _repo.Query()
+                                    .Include(s => s.Reviews)
+                                    .FirstOrDefaultAsync(s => s.CustomerId == customerId, ct);
+
+            if (entity is null)
+                return null;
+
+            if (entity.Reviews.Count > 0)
+                entity.Rating = Math.Round(
+                    (decimal)entity.Reviews.Average(r => r.Rating), 2);
+
+            return _mapper.Map<SellerProfileDto>(entity);
+        }
     }
 }
