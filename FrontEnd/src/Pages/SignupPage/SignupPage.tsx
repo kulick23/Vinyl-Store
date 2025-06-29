@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRegisterMutation, useGoogleLoginMutation } from '../../redux/auth/api';
@@ -54,35 +54,7 @@ export const SignupPage: React.FC = () => {
   });
   const [errors, setErrors] = useState<FormErrors>({});
 
-  useEffect(() => {
-    const initGoogleAuth = async () => {
-      try {
-        await loadGoogleScript();
-        
-        initializeGoogleAuth({
-          clientId: GOOGLE_CLIENT_ID,
-          callback: handleGoogleResponse,
-        });
-
-        if (googleButtonRef.current) {
-          renderGoogleButton(googleButtonRef.current, {
-            theme: 'outline',
-            size: 'large',
-            text: 'signup_with',
-            shape: 'rectangular',
-            width: '100%',
-          });
-        }
-      } catch (error) {
-        console.error('Failed to initialize Google Auth:', error);
-        showError('Failed to load Google authentication');
-      }
-    };
-
-    initGoogleAuth();
-  }, []);
-
-  const handleGoogleResponse = async (response: GoogleUser) => {
+  const handleGoogleResponse = useCallback(async (response: GoogleUser) => {
     try {
       const result = await googleLogin({
         idToken: response.credential
@@ -101,7 +73,35 @@ export const SignupPage: React.FC = () => {
       console.error('Google signup error:', error);
       showError(error.data?.message || 'Google authentication failed');
     }
-  };
+  }, [googleLogin, dispatch, showInfo, showError, navigate]);
+
+  useEffect(() => {
+    const initGoogleAuth = async () => {
+      try {
+        await loadGoogleScript();
+        
+        initializeGoogleAuth({
+          clientId: GOOGLE_CLIENT_ID,
+          callback: handleGoogleResponse,
+        });
+
+        if (googleButtonRef.current) {
+          renderGoogleButton(googleButtonRef.current, {
+            theme: 'outline',
+            size: 'large',
+            text: 'signup_with',
+            shape: 'rectangular',
+            width: '300',
+          });
+        }
+      } catch (error) {
+        console.error('Failed to initialize Google Auth:', error);
+        showError('Failed to load Google authentication');
+      }
+    };
+
+    initGoogleAuth();
+  }, [handleGoogleResponse, showError]);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};

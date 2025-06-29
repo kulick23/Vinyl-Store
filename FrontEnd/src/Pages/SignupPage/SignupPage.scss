@@ -341,20 +341,27 @@
 
   .google-button-container {
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     transition: opacity 0.3s;
     
     // Style the Google button when it's rendered
     :global(#credential_picker_container) {
       width: 100% !important;
+      display: flex !important;
+      justify-content: center !important;
     }
     
     :global(.gsi-material-button) {
       width: 100% !important;
+      max-width: 300px !important;
       height: 48px !important;
       border-radius: 8px !important;
       font-size: 16px !important;
       font-weight: 500 !important;
       border: 2px solid #e0e0e0 !important;
+      margin: 0 auto !important;
       
       @include bp.phone {
         height: 44px !important;
