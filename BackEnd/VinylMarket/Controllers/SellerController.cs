@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Api.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class SellerController : ControllerBase
