@@ -8,7 +8,8 @@ import { useDispatch } from "react-redux"
 import { 
   useGetCurrentUserQuery, 
   useEditProfileMutation, 
-  useUploadUserAvatarMutation
+  useUploadUserAvatarMutation,
+  useForgotPasswordMutation
 } from "../../redux/auth/api"
 import type { User } from "../../redux/auth/types"
 import { clearCredentials } from "../../redux/auth/authSlice"
@@ -24,6 +25,13 @@ import "./UserProfile.scss"
 
 type ProfileSection = "overview" | "orders" | "cart" | "settings"
 
+// Backend base URL configuration
+const getBackendBaseUrl = () => {
+  const isDev = import.meta.env.MODE === 'development'
+  const API_URL = import.meta.env.VITE_API_URL ?? ''
+  return isDev ? 'http://localhost:5000' : API_URL
+}
+
 export const UserProfile: React.FC = () => {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
@@ -31,6 +39,11 @@ export const UserProfile: React.FC = () => {
   const [activeSection, setActiveSection] = useState<ProfileSection>("overview")
   const [isBecomeSellerModalOpen, setIsBecomeSellerModalOpen] = useState(false)
   const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phone: ""
+  })
+  const [formErrors, setFormErrors] = useState({
     firstName: "",
     lastName: "",
     phone: ""
@@ -48,6 +61,7 @@ export const UserProfile: React.FC = () => {
   })
   const [editProfile, { isLoading: isUpdating }] = useEditProfileMutation()
   const [uploadUserAvatar, { isLoading: isUploadingAvatar }] = useUploadUserAvatarMutation()
+  const [forgotPassword, { isLoading: isResettingPassword }] = useForgotPasswordMutation()
   const { showSuccess, showError } = useNotification()
 
   // Get cart items from CartDto structure
@@ -81,13 +95,37 @@ export const UserProfile: React.FC = () => {
     localStorage.setItem('language', lang)
   }
 
+  // Validate name fields to only allow letters, spaces, hyphens, and apostrophes
+  const validateName = (name: string): boolean => {
+    const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]+$/
+    return nameRegex.test(name.trim())
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+
+    // Validate names in real-time
+    if (name === 'firstName' || name === 'lastName') {
+      if (value.trim() && !validateName(value)) {
+        setFormErrors(prev => ({ ...prev, [name]: "Only letters, spaces, hyphens, and apostrophes are allowed" }))
+      } else {
+        setFormErrors(prev => ({ ...prev, [name]: "" }))
+      }
+    }
   }
 
   const handleSaveProfile = async () => {
     try {
+      // Validate names before saving
+      const firstNameValid = !formData.firstName.trim() || validateName(formData.firstName)
+      const lastNameValid = !formData.lastName.trim() || validateName(formData.lastName)
+
+      if (!firstNameValid || !lastNameValid) {
+        showError("Please ensure names contain only letters, spaces, hyphens, and apostrophes.")
+        return
+      }
+
       // Prepare the complete profile data as expected by backend (CustomerUpdateDto)
       const updateData: Record<string, string> = {
         email: user?.email || "", // Backend requires email
@@ -149,6 +187,34 @@ export const UserProfile: React.FC = () => {
       console.error('Failed to upload avatar:', error)
       showError("Failed to upload profile picture. Please try again.")
     }
+  }
+
+  const handleResetPassword = async () => {
+    if (!user?.email) {
+      showError("Email not found. Please contact support.")
+      return
+    }
+
+    try {
+      await forgotPassword({ email: user.email }).unwrap()
+      showSuccess("Password reset email sent! Please check your inbox.")
+    } catch (error) {
+      console.error('Failed to send reset password email:', error)
+      showError("Failed to send reset password email. Please try again.")
+    }
+  }
+
+  // Helper function to format avatar URL
+  const getAvatarUrl = (avatarPath: string | null | undefined) => {
+    if (!avatarPath) return null
+    
+    // If it's already a full URL, return as is
+    if (avatarPath.startsWith('http')) {
+      return `${avatarPath}?t=${Date.now()}`
+    }
+    
+    // If it's a relative path, prepend the backend base URL
+    return `${getBackendBaseUrl()}${avatarPath}?t=${Date.now()}`
   }
 
   if (isLoading) {
@@ -238,19 +304,9 @@ export const UserProfile: React.FC = () => {
                   </div>
                   <div className="info-item">
                     <span className="info-label">Email Status:</span>
-                    <div className="email-status-container">
-                      <span className={`info-value status-badge ${user.isEmailConfirmed ? 'confirmed' : 'pending'}`}>
-                        {user.isEmailConfirmed ? '✅ ' + t('profile.emailConfirmed') : '❌ ' + t('profile.emailNotConfirmed')}
-                      </span>
-                      {!user.isEmailConfirmed && (
-                        <button 
-                          className="resend-confirmation-btn"
-                          onClick={() => showSuccess("Confirmation email sent! Please check your inbox.")}
-                        >
-                          Resend Confirmation
-                        </button>
-                      )}
-                    </div>
+                    <span className={`info-value email-status ${user.isEmailConfirmed ? 'confirmed' : 'not-confirmed'}`}>
+                      {user.isEmailConfirmed ? t('profile.emailConfirmed') : t('profile.emailNotConfirmed')}
+                    </span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">{t('profile.roles')}:</span>
@@ -351,9 +407,12 @@ export const UserProfile: React.FC = () => {
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleInputChange}
-                        className="form-input"
+                        className={`form-input ${formErrors.firstName ? 'error' : ''}`}
                         placeholder="Enter your first name"
                       />
+                      {formErrors.firstName && (
+                        <span className="error-message">{formErrors.firstName}</span>
+                      )}
                     </div>
                     <div className="form-group">
                       <label htmlFor="lastName">{t('profile.lastName')}</label>
@@ -363,9 +422,12 @@ export const UserProfile: React.FC = () => {
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleInputChange}
-                        className="form-input"
+                        className={`form-input ${formErrors.lastName ? 'error' : ''}`}
                         placeholder="Enter your last name"
                       />
+                      {formErrors.lastName && (
+                        <span className="error-message">{formErrors.lastName}</span>
+                      )}
                     </div>
                   </div>
                   
@@ -399,33 +461,44 @@ export const UserProfile: React.FC = () => {
                 <div className="avatar-settings">
                   <div className="current-avatar">
                     <div className="avatar-display">
-                      {user.avatarPath ? (
-                        <img 
-                          src={`${user.avatarPath}?t=${Date.now()}`} 
-                          alt={`${user.firstName} ${user.lastName}`}
-                          style={{ 
-                            width: "100px", 
-                            height: "100px", 
-                            objectFit: "cover", 
-                            borderRadius: "50%" 
-                          }}
-                        />
-                      ) : sellerProfile?.avatarPath ? (
-                        <img 
-                          src={`${sellerProfile.avatarPath}?t=${Date.now()}`} 
-                          alt={`${user.firstName} ${user.lastName}`}
-                          style={{ 
-                            width: "100px", 
-                            height: "100px", 
-                            objectFit: "cover", 
-                            borderRadius: "50%" 
-                          }}
-                        />
-                      ) : (
-                        <div className="avatar-placeholder-large">
-                          {user.firstName?.charAt(0) || '?'}{user.lastName?.charAt(0) || '?'}
-                        </div>
-                      )}
+                      {(() => {
+                        const userAvatarUrl = getAvatarUrl(user.avatarPath)
+                        const sellerAvatarUrl = getAvatarUrl(sellerProfile?.avatarPath)
+                        
+                        if (userAvatarUrl) {
+                          return (
+                            <img 
+                              src={userAvatarUrl} 
+                              alt={`${user.firstName} ${user.lastName}`}
+                              style={{ 
+                                width: "100px", 
+                                height: "100px", 
+                                objectFit: "cover", 
+                                borderRadius: "50%" 
+                              }}
+                            />
+                          )
+                        } else if (sellerAvatarUrl) {
+                          return (
+                            <img 
+                              src={sellerAvatarUrl} 
+                              alt={`${user.firstName} ${user.lastName}`}
+                              style={{ 
+                                width: "100px", 
+                                height: "100px", 
+                                objectFit: "cover", 
+                                borderRadius: "50%" 
+                              }}
+                            />
+                          )
+                        } else {
+                          return (
+                            <div className="avatar-placeholder-large">
+                              {user.firstName?.charAt(0) || '?'}{user.lastName?.charAt(0) || '?'}
+                            </div>
+                          )
+                        }
+                      })()}
                     </div>
                   </div>
                   
@@ -448,6 +521,27 @@ export const UserProfile: React.FC = () => {
                     <p className="upload-info">
                       Upload a new profile picture (max 5MB, JPEG/PNG only)
                     </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="settings-section">
+                <h3>Security</h3>
+                <div className="security-content">
+                  <div className="security-item">
+                    <div className="security-info">
+                      <label>Password</label>
+                      <p className="security-description">
+                        Change your password to keep your account secure
+                      </p>
+                    </div>
+                    <button 
+                      onClick={handleResetPassword}
+                      disabled={isResettingPassword}
+                      className="reset-password-button"
+                    >
+                      {isResettingPassword ? <VinylSpinner size="small" /> : "Reset Password"}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -496,33 +590,44 @@ export const UserProfile: React.FC = () => {
         <div className="profile-info">
           <div className="profile-avatar">
             <div className="avatar-placeholder">
-              {user.avatarPath ? (
-                <img 
-                  src={`${user.avatarPath}?t=${Date.now()}`} 
-                  alt={`${user.firstName} ${user.lastName}`}
-                  style={{ 
-                    width: "100%", 
-                    height: "100%", 
-                    objectFit: "cover", 
-                    borderRadius: "50%" 
-                  }}
-                />
-              ) : sellerProfile?.avatarPath ? (
-                <img 
-                  src={`${sellerProfile.avatarPath}?t=${Date.now()}`} 
-                  alt={`${user.firstName} ${user.lastName}`}
-                  style={{ 
-                    width: "100%", 
-                    height: "100%", 
-                    objectFit: "cover", 
-                    borderRadius: "50%" 
-                  }}
-                />
-              ) : (
-                <>
-                  {user.firstName?.charAt(0) || '?'}{user.lastName?.charAt(0) || '?'}
-                </>
-              )}
+              {(() => {
+                const userAvatarUrl = getAvatarUrl(user.avatarPath)
+                const sellerAvatarUrl = getAvatarUrl(sellerProfile?.avatarPath)
+                
+                if (userAvatarUrl) {
+                  return (
+                    <img 
+                      src={userAvatarUrl} 
+                      alt={`${user.firstName} ${user.lastName}`}
+                      style={{ 
+                        width: "100%", 
+                        height: "100%", 
+                        objectFit: "cover", 
+                        borderRadius: "50%" 
+                      }}
+                    />
+                  )
+                } else if (sellerAvatarUrl) {
+                  return (
+                    <img 
+                      src={sellerAvatarUrl} 
+                      alt={`${user.firstName} ${user.lastName}`}
+                      style={{ 
+                        width: "100%", 
+                        height: "100%", 
+                        objectFit: "cover", 
+                        borderRadius: "50%" 
+                      }}
+                    />
+                  )
+                } else {
+                  return (
+                    <>
+                      {user.firstName?.charAt(0) || '?'}{user.lastName?.charAt(0) || '?'}
+                    </>
+                  )
+                }
+              })()}
             </div>
           </div>
           <div className="profile-details">
@@ -600,16 +705,21 @@ export const UserProfile: React.FC = () => {
           </div>
         </div>
 
-        <div className="profile-main">{renderContent()}</div>
+        <div className="profile-main">
+          {renderContent()}
+        </div>
       </div>
 
-      <BecomeSellerModal
-        isOpen={isBecomeSellerModalOpen}
-        onClose={() => setIsBecomeSellerModalOpen(false)}
-        onSuccess={() => {
-          refetchSellerProfile()
-        }}
-      />
+      {isBecomeSellerModalOpen && (
+        <BecomeSellerModal
+          isOpen={isBecomeSellerModalOpen}
+          onClose={() => setIsBecomeSellerModalOpen(false)}
+          onSuccess={() => {
+            setIsBecomeSellerModalOpen(false)
+            refetchSellerProfile()
+          }}
+        />
+      )}
     </div>
   )
 }

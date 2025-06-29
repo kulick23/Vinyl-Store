@@ -842,4 +842,124 @@
       }
     }
   }
+
+  // Security section styles
+  .security-content {
+    .security-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(229, 89, 46, 0.1);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      @include bp.phone {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .security-info {
+        flex: 1;
+
+        label {
+          display: block;
+          margin-bottom: 4px;
+          color: var(--title-color);
+          font-weight: 600;
+          font-size: 16px;
+        }
+
+        .security-description {
+          margin: 0;
+          color: var(--text-color);
+          font-size: 14px;
+          opacity: 0.8;
+        }
+      }
+
+      .reset-password-button {
+        background: linear-gradient(135deg, var(--orange-color) 0%, var(--orange-hover) 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(229, 89, 46, 0.4);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+      }
+    }
+  }
+}
+
+// Email status styling
+.email-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.confirmed {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+  }
+
+  &.not-confirmed {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+}
+
+// Form error messages
+.error-message {
+  display: block;
+  margin-top: 4px;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+// Form input error state
+.form-input.error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+// Dark theme adjustments
+[data-theme="dark"] {
+  .email-status {
+    &.confirmed {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+
+    &.not-confirmed {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+  }
 }
