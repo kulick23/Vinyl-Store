@@ -35,7 +35,7 @@ namespace VinylMarket.Controllers
 
         [HttpPost("confirm")]
         public async Task<IActionResult> ConfirmOrder(
-    [FromBody] ConfirmOrderDto dto,           // { "intentId": "pi_..." }
+    [FromBody] ConfirmOrderDto dto,
     CancellationToken ct = default)
         {
             int customerId = GetCustomerId();

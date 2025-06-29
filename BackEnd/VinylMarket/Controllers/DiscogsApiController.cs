@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/admin/discogs")]
-//[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]
 public sealed class DiscogsImportController : ControllerBase
 {
     private readonly IDiscogsImportService _svc;

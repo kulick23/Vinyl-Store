@@ -34,12 +34,21 @@ namespace Web.Api.Auth
 
         public string GenerateAccessToken(Customer user)
         {
+            var adminEmail = _cfg["AdminAccount:Email"] ?? "admin@vinylheaven.com";
+
+            string role =
+                user.Email.Equals(adminEmail, StringComparison.OrdinalIgnoreCase)
+                    ? "Admin"
+                : user.SellerProfile is not null
+                    ? "Seller"
+                : "User";
+
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub,  user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email,user.Email),
                 new Claim("name", $"{user.FirstName} {user.LastName}".Trim()),
-                new Claim("role", user.SellerProfile is null ? "User" : "Seller"),
+                new Claim(ClaimTypes.Role, role),
                 new Claim(JwtRegisteredClaimNames.Jti,  Guid.NewGuid().ToString())
             };
 

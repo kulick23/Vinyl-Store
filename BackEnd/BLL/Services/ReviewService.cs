@@ -22,22 +22,28 @@ public sealed class ReviewService : IReviewService
     }
 
     public async Task<ReviewDto> AddReviewAsync(
-        int customerId, ReviewCreateDto dto, CancellationToken ct)
+    int customerId, ReviewCreateDto dto, CancellationToken ct)
     {
-        bool allowed = await _repo.HasCustomerBoughtFromSellerAsync(customerId, dto.SellerId, ct);
-        if (!allowed) throw new InvalidOperationException("You have no orders with this seller.");
+        var seller = await _sellerRepo.GetByIdAsync(dto.SellerId, ct)
+                     ?? throw new KeyNotFoundException("Seller not found");
+
+        if (seller.CustomerId == customerId)
+            throw new InvalidOperationException("You cannot review yourself.");
+
+        bool allowed = await _repo.HasCustomerBoughtFromSellerAsync(customerId,
+                                                                    dto.SellerId, ct);
+        if (!allowed)
+            throw new InvalidOperationException(
+                "You have no orders with this seller.");
 
         var entity = _mapper.Map<Review>(dto);
         entity.CustomerId = customerId;
-
         await _repo.AddAsync(entity, ct);
 
-        var seller = await _sellerRepo.GetByIdAsync(dto.SellerId, ct);
-        seller!.Rating = await _repo.GetSellerReviews(dto.SellerId)
-                                    .AverageAsync(r => (decimal)r.Rating, ct);
+        seller.Rating = await _repo.GetSellerReviews(dto.SellerId)
+                                   .AverageAsync(r => (decimal)r.Rating, ct);
 
         await _uow.SaveChangesAsync(ct);
-
         return _mapper.Map<ReviewDto>(entity);
     }
 

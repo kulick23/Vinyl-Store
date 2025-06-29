@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Web.Api.Controllers;
 
 [Route("api/admin/seed")]
+[Authorize(Roles = "Admin")]
 [ApiController]
 public sealed class AdminSeedController(AppDbContext ctx) : ControllerBase
 {

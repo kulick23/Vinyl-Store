@@ -1,7 +1,5 @@
 ﻿using BLL.DTO;
 using AutoMapper;
-using BLL.DTO;
-using BLL.DTO;
 using BLL.Interfaces;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace VinylMarket.Controllers
 {
     [ApiController]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [Route("api/admin")]
     public class AdminController : ControllerBase
     {
