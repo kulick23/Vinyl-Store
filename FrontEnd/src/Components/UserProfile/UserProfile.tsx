@@ -4,17 +4,22 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
-import { useGetCurrentUserQuery, useEditProfileMutation } from "../../redux/auth/api"
+import { useDispatch } from "react-redux"
+import { 
+  useGetCurrentUserQuery, 
+  useEditProfileMutation, 
+  useUploadUserAvatarMutation
+} from "../../redux/auth/api"
 import type { User } from "../../redux/auth/types"
+import { clearCredentials } from "../../redux/auth/authSlice"
 import { useGetCartQuery } from "../../redux/cart/api"
 import { useGetOrdersQuery } from "../../redux/orders/api"
 import type { OrderDto } from "../../redux/orders/types"
 import { useGetCurrentSellerProfileQuery } from "../../redux/seller/api"
-import BecomeSellerModal from "../BecomeSellerModal/BecomeSellerModal"
-import { clearCredentials } from "../../redux/auth/authSlice"
-import { useDispatch } from "react-redux"
-import VinylSpinner from "../VinylSpinner/VinylSpinner"
 import { useNotification } from "../../hooks/useNotification"
+import VinylSpinner from "../VinylSpinner/VinylSpinner"
+import { BecomeSellerModal } from "../BecomeSellerModal/BecomeSellerModal"
+import i18n from "../../i18n"
 import "./UserProfile.scss"
 
 type ProfileSection = "overview" | "orders" | "cart" | "settings"
@@ -24,7 +29,6 @@ export const UserProfile: React.FC = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [activeSection, setActiveSection] = useState<ProfileSection>("overview")
-  const [isEditing, setIsEditing] = useState(false)
   const [isBecomeSellerModalOpen, setIsBecomeSellerModalOpen] = useState(false)
   const [formData, setFormData] = useState({
     firstName: "",
@@ -43,6 +47,7 @@ export const UserProfile: React.FC = () => {
     skip: !user,
   })
   const [editProfile, { isLoading: isUpdating }] = useEditProfileMutation()
+  const [uploadUserAvatar, { isLoading: isUploadingAvatar }] = useUploadUserAvatarMutation()
   const { showSuccess, showError } = useNotification()
 
   // Get cart items from CartDto structure
@@ -109,11 +114,40 @@ export const UserProfile: React.FC = () => {
 
       console.log('Sending profile update:', updateData)
       await editProfile(updateData).unwrap()
-      setIsEditing(false)
       showSuccess("Profile updated successfully!")
     } catch (error) {
       console.error('Failed to update profile:', error)
       showError("Failed to update profile. Please check your input and try again.")
+    }
+  }
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showError('Please select a valid image file')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showError('Image must be smaller than 5MB')
+      return
+    }
+
+    try {
+      const result = await uploadUserAvatar(file).unwrap()
+      console.log('User avatar upload result:', result)
+      showSuccess("Profile picture updated successfully!")
+      
+      // Clear the file input
+      const input = event.target
+      input.value = ''
+    } catch (error) {
+      console.error('Failed to upload avatar:', error)
+      showError("Failed to upload profile picture. Please try again.")
     }
   }
 
@@ -134,9 +168,14 @@ export const UserProfile: React.FC = () => {
   // Helper function to get user roles as array for backward compatibility
   const getUserRoles = () => {
     if (user.role) {
+      // If user has a seller profile, show "Seller" instead of "User"
+      if (user.role === 'User' && sellerProfile) {
+        return ['Seller']
+      }
       return [user.role]
     }
-    return ['User'] // Default fallback
+    // Default fallback - check if user has seller profile
+    return sellerProfile ? ['Seller'] : ['User']
   }
 
   const userRoles = getUserRoles()
@@ -300,88 +339,146 @@ export const UserProfile: React.FC = () => {
             <h2 className="section-title">{t('profile.settings')}</h2>
             
             <div className="settings-sections">
-              <div className="settings-card">
-                <h3>{t('profile.editProfile')}</h3>
-                {isEditing ? (
-                  <div className="edit-form">
+              <div className="settings-section">
+                <h3>Profile Information</h3>
+                <div className="profile-edit-form">
+                  <div className="form-row">
                     <div className="form-group">
-                      <label>{t('profile.firstName')}</label>
+                      <label htmlFor="firstName">{t('profile.firstName')}</label>
                       <input
                         type="text"
+                        id="firstName"
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleInputChange}
                         className="form-input"
+                        placeholder="Enter your first name"
                       />
                     </div>
                     <div className="form-group">
-                      <label>{t('profile.lastName')}</label>
+                      <label htmlFor="lastName">{t('profile.lastName')}</label>
                       <input
                         type="text"
+                        id="lastName"
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleInputChange}
                         className="form-input"
+                        placeholder="Enter your last name"
                       />
                     </div>
-                    <div className="form-group">
-                      <label>{t('profile.phone')}</label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className="form-input"
-                      />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="phone">{t('profile.phone')}</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
+
+                  <div className="form-actions">
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={isUpdating}
+                      className="save-button"
+                    >
+                      {isUpdating ? <VinylSpinner size="small" /> : "Save Changes"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="settings-section">
+                <h3>Profile Picture</h3>
+                <div className="avatar-settings">
+                  <div className="current-avatar">
+                    <div className="avatar-display">
+                      {user.avatarPath ? (
+                        <img 
+                          src={`${user.avatarPath}?t=${Date.now()}`} 
+                          alt={`${user.firstName} ${user.lastName}`}
+                          style={{ 
+                            width: "100px", 
+                            height: "100px", 
+                            objectFit: "cover", 
+                            borderRadius: "50%" 
+                          }}
+                        />
+                      ) : sellerProfile?.avatarPath ? (
+                        <img 
+                          src={`${sellerProfile.avatarPath}?t=${Date.now()}`} 
+                          alt={`${user.firstName} ${user.lastName}`}
+                          style={{ 
+                            width: "100px", 
+                            height: "100px", 
+                            objectFit: "cover", 
+                            borderRadius: "50%" 
+                          }}
+                        />
+                      ) : (
+                        <div className="avatar-placeholder-large">
+                          {user.firstName?.charAt(0) || '?'}{user.lastName?.charAt(0) || '?'}
+                        </div>
+                      )}
                     </div>
-                    <div className="form-actions">
-                      <button onClick={handleSaveProfile} disabled={isUpdating} className="save-button">
-                        {isUpdating ? <VinylSpinner size="small" /> : t('profile.saveChanges')}
+                  </div>
+                  
+                  <div className="avatar-actions">
+                    <input
+                      type="file"
+                      id="settings-avatar-upload"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      style={{ display: "none" }}
+                      disabled={isUploadingAvatar}
+                    />
+                    <button 
+                      className="upload-avatar-button"
+                      onClick={() => document.getElementById('settings-avatar-upload')?.click()}
+                      disabled={isUploadingAvatar}
+                    >
+                      {isUploadingAvatar ? <VinylSpinner size="small" /> : "Change Picture"}
+                    </button>
+                    <p className="upload-info">
+                      Upload a new profile picture (max 5MB, JPEG/PNG only)
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="settings-section">
+                <h3>Preferences</h3>
+                <div className="preferences-content">
+                  <div className="preference-item">
+                    <label>Language</label>
+                    <div className="language-buttons">
+                      <button 
+                        onClick={() => changeLanguage('en')}
+                        className={`lang-btn ${i18n.language === 'en' ? 'active' : ''}`}
+                      >
+                        English
                       </button>
-                      <button onClick={() => setIsEditing(false)} className="cancel-button">
-                        Cancel
+                      <button 
+                        onClick={() => changeLanguage('ru')}
+                        className={`lang-btn ${i18n.language === 'ru' ? 'active' : ''}`}
+                      >
+                        Русский
                       </button>
                     </div>
                   </div>
-                ) : (
-                  <button onClick={() => setIsEditing(true)} className="edit-button">
-                    {t('profile.editProfile')}
-                  </button>
-                )}
-              </div>
-
-              <div className="settings-card">
-                <h3>{t('profile.forgotPassword')}</h3>
-                <Link to="/forgot-password" className="forgot-password-button">
-                  {t('profile.forgotPassword')}
-                </Link>
-              </div>
-
-              <div className="settings-card">
-                <h3>{t('profile.theme')}</h3>
-                <button onClick={toggleTheme} className="theme-button">
-                  {document.documentElement.getAttribute('data-theme') === 'dark' 
-                    ? t('profile.lightTheme') 
-                    : t('profile.darkTheme')
-                  }
-                </button>
-              </div>
-
-              <div className="settings-card">
-                <h3>{t('profile.language')}</h3>
-                <div className="language-buttons">
-                  <button 
-                    onClick={() => changeLanguage('en')} 
-                    className={`language-button ${i18n.language === 'en' ? 'active' : ''}`}
-                  >
-                    English
-                  </button>
-                  <button 
-                    onClick={() => changeLanguage('ru')} 
-                    className={`language-button ${i18n.language === 'ru' ? 'active' : ''}`}
-                  >
-                    Русский
-                  </button>
+                  
+                  <div className="preference-item">
+                    <label>Theme</label>
+                    <button onClick={toggleTheme} className="theme-toggle-btn">
+                      Toggle Dark/Light Mode
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -399,7 +496,33 @@ export const UserProfile: React.FC = () => {
         <div className="profile-info">
           <div className="profile-avatar">
             <div className="avatar-placeholder">
-              {user.firstName?.charAt(0) || '?'}{user.lastName?.charAt(0) || '?'}
+              {user.avatarPath ? (
+                <img 
+                  src={`${user.avatarPath}?t=${Date.now()}`} 
+                  alt={`${user.firstName} ${user.lastName}`}
+                  style={{ 
+                    width: "100%", 
+                    height: "100%", 
+                    objectFit: "cover", 
+                    borderRadius: "50%" 
+                  }}
+                />
+              ) : sellerProfile?.avatarPath ? (
+                <img 
+                  src={`${sellerProfile.avatarPath}?t=${Date.now()}`} 
+                  alt={`${user.firstName} ${user.lastName}`}
+                  style={{ 
+                    width: "100%", 
+                    height: "100%", 
+                    objectFit: "cover", 
+                    borderRadius: "50%" 
+                  }}
+                />
+              ) : (
+                <>
+                  {user.firstName?.charAt(0) || '?'}{user.lastName?.charAt(0) || '?'}
+                </>
+              )}
             </div>
           </div>
           <div className="profile-details">
