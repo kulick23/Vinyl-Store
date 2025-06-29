@@ -1,13 +1,17 @@
 ﻿using AutoMapper;
+using BLL.DTO;
 using Domain.Entities;
 
-public class ReviewProfile : Profile
+namespace BLL.AutoMapper
 {
-    public ReviewProfile()
+    public class ReviewProfile : Profile
     {
-        CreateMap<ReviewCreateDto, Review>();
-        CreateMap<Review, ReviewDto>()
-            .ForMember(d => d.CustomerName,
-                       m => m.MapFrom(s => $"{s.Customer.FirstName} {s.Customer.LastName}".Trim()));
+        public ReviewProfile()
+        {
+            CreateMap<ReviewCreateDto, Review>();
+            CreateMap<Review, ReviewDto>()
+                .ForMember(d => d.CustomerName,
+                           m => m.MapFrom(s => $"{s.Customer.FirstName} {s.Customer.LastName}".Trim()));
+        }
     }
 }

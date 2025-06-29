@@ -1,11 +1,11 @@
-﻿using DAL.Data;
-using DAL.Interfaces;
-using DAL.Repositories;
+﻿using DAL.Interfaces;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
-public interface IReviewRepository : IRepository<Review>
+namespace DAL.Interfaces
 {
-    Task<bool> HasCustomerBoughtFromSellerAsync(int customerId, int sellerId, CancellationToken ct);
-    IQueryable<Review> GetSellerReviews(int sellerId);
+    public interface IReviewRepository : IRepository<Review>
+    {
+        Task<bool> HasCustomerBoughtFromSellerAsync(int customerId, int sellerId, CancellationToken ct);
+        IQueryable<Review> GetSellerReviews(int sellerId);
+    }
 }

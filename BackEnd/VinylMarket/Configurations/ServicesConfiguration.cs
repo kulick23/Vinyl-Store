@@ -34,6 +34,7 @@ namespace VinylRecordShop.Configurations
             services.AddAutoMapper(typeof(ArtistProfile).Assembly);
             services.AddAutoMapper(typeof(GenreProfile).Assembly);
             services.AddAutoMapper(typeof(CustomerProfile).Assembly);
+            services.AddAutoMapper(typeof(ReviewProfile).Assembly);
 
             // BLL services
             services.AddScoped<IAccountService, BLL.Services.AccountService>();
