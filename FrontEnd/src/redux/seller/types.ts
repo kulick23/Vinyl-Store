@@ -57,6 +57,19 @@ export interface ReviewDto {
   }
 }
 
+/** DTO инвентарного элемента продавца */
+export interface InventoryItemDto {
+  id: number
+  releaseId: number
+  sellerId: number
+  sellerDisplayName: string
+  price: number
+  quantity: number
+  condition: number
+  sellerRating: number
+  notes: string
+}
+
 // Legacy type for backward compatibility
 export interface Seller extends SellerProfileDto {
   id: number

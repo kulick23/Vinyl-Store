@@ -29,13 +29,31 @@ public sealed class ReviewsController : ControllerBase
         [FromBody] ReviewCreateDto dto,
         CancellationToken ct = default)
     {
-        var userId = CurrentUserId();
+        try
+        {
+            var userId = CurrentUserId();
 
-        var created = await _reviews.AddReviewAsync(userId, dto, ct);
+            var created = await _reviews.AddReviewAsync(userId, dto, ct);
 
-        return CreatedAtAction(nameof(GetSellerReviews),
-                               new { sellerId = dto.SellerId },
-                               created);
+            return CreatedAtAction(nameof(GetSellerReviews),
+                                   new { sellerId = dto.SellerId },
+                                   created);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Handle business rule violations
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            // Handle seller not found
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            // Handle authentication issues
+            return Unauthorized(new { message = ex.Message });
+        }
     }
 
     [HttpGet("seller/{sellerId:int}")]

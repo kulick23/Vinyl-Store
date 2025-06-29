@@ -291,7 +291,13 @@ const ProductPage: React.FC = () => {
                       </span>
                     </div>
                     <div className="listing-details">
-                      <p className="seller-name">{listing.sellerDisplayName}</p>
+                      <Link 
+                        to={`/seller-shop/${listing.sellerId}`} 
+                        className="seller-name-link"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <p className="seller-name">{listing.sellerDisplayName}</p>
+                      </Link>
                       <p className="seller-rating">
                         ⭐ {listing.sellerRating}/5.0
                       </p>

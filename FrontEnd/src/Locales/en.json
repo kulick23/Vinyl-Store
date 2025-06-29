@@ -703,6 +703,48 @@
       }
     }
   },
+  "sellerShop": {
+    "loading": "Loading seller shop...",
+    "notFound": "Seller not found",
+    "invalidSeller": "Invalid seller ID",
+    "backToShop": "Back to Shop",
+    "items": {
+      "title": "Items for Sale",
+      "loading": "Loading inventory...",
+      "loadError": "Failed to load inventory. Please try again later.",
+      "noItems": "No Items Available",
+      "noItemsDescription": "This seller doesn't have any items listed currently.",
+      "price": "Price",
+      "condition": "Condition", 
+      "quantity": "Available",
+      "notes": "Notes",
+      "viewItem": "View Details"
+    },
+    "reviews": {
+      "title": "Customer Reviews",
+      "count": "reviews",
+      "noReviews": "No reviews yet. Be the first to leave a review!",
+      "leaveReview": "Leave a Review",
+      "rating": "Your Rating",
+      "comment": "Your Review",
+      "commentPlaceholder": "Share your experience with this seller...",
+      "submit": "Submit Review",
+      "submitting": "Submitting...",
+      "submitSuccess": "Review submitted successfully!",
+      "submitError": "Failed to submit review. Please try again.",
+      "loginRequired": "Please log in to leave a review",
+      "commentRequired": "Please write a comment",
+      "anonymousUser": "Anonymous User",
+      "loading": "Loading reviews...",
+      "authenticationError": "Authentication failed. Please log in again.",
+      "noPurchaseError": "You can only review sellers you have purchased from.",
+      "selfReviewError": "You cannot review your own shop.",
+      "requirementNote": "Note: You can only leave a review if you have previously purchased from this seller.",
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "invalidSession": "Invalid session. Please log in again.",
+      "serverError": "Server error occurred. Please try again later."
+    }
+  },
   "cart": {
     "title": "Shopping Cart",
     "emptyTitle": "Your cart is empty",

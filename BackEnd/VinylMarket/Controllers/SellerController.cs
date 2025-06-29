@@ -15,10 +15,12 @@ namespace Web.Api.Controllers
     public class SellerController : ControllerBase
     {
         private readonly ISellerProfileService _sellerService;
+        private readonly IInventoryService _inventoryService;
 
-        public SellerController(ISellerProfileService sellerService)
+        public SellerController(ISellerProfileService sellerService, IInventoryService inventoryService)
         {
             _sellerService = sellerService;
+            _inventoryService = inventoryService;
         }
 
         [AllowAnonymous]
@@ -31,6 +33,16 @@ namespace Web.Api.Controllers
             return profile is null
                 ? NotFound()
                 : Ok(profile);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{id:int}/inventory")]
+        public async Task<IActionResult> GetSellerInventory(
+            int id,
+            CancellationToken ct = default)
+        {
+            var inventory = await _inventoryService.GetSellerListingsAsync(id, ct);
+            return Ok(inventory);
         }
 
         [HttpPost("becomeSeller")]

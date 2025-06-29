@@ -9,6 +9,7 @@ import { adminApi } from './admin/api';
 import { inventoryApi } from './inventory/api';
 import { ordersApi } from './orders/api';
 import { sellerApi } from './seller/api';
+import { reviewsApi } from './reviews/api';
 
 export const store = configureStore({
   reducer: {
@@ -21,17 +22,20 @@ export const store = configureStore({
     [inventoryApi.reducerPath]: inventoryApi.reducer,
     [ordersApi.reducerPath]: ordersApi.reducer,
     [sellerApi.reducerPath]: sellerApi.reducer,
+    [reviewsApi.reducerPath]: reviewsApi.reducer,
   },
-  middleware: (gDM) =>
-    gDM({ serializableCheck: false })
-      .concat(authApi.middleware)
-      .concat(catalogApi.middleware)
-      .concat(cartApi.middleware)
-      .concat(checkoutApi.middleware)
-      .concat(adminApi.middleware)
-      .concat(inventoryApi.middleware)
-      .concat(ordersApi.middleware)
-      .concat(sellerApi.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      authApi.middleware,
+      catalogApi.middleware,
+      cartApi.middleware,
+      checkoutApi.middleware,
+      adminApi.middleware,
+      inventoryApi.middleware,
+      ordersApi.middleware,
+      sellerApi.middleware,
+      reviewsApi.middleware,
+    ),
 });
 
 setupListeners(store.dispatch);

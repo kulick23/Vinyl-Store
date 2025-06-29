@@ -1,11 +1,11 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { createBaseQuery } from '../base'
-import type { SellerPageDto, SellerProfileCreateDto, SellerProfileDto, SellerProfileUpdateDto } from './types'
+import type { SellerPageDto, SellerProfileCreateDto, SellerProfileDto, SellerProfileUpdateDto, InventoryItemDto } from './types'
 
 export const sellerApi = createApi({
   reducerPath: 'sellerApi',
   baseQuery: createBaseQuery({ baseUrl: '/Seller' }),
-  tagTypes: ['Seller'],
+  tagTypes: ['Seller', 'SellerInventory'],
   endpoints: builder => ({
     /**
      * GET /api/Seller/{sellerId}
@@ -15,6 +15,16 @@ export const sellerApi = createApi({
     getSellerById: builder.query<SellerPageDto, number>({
       query: sellerId => `${sellerId}`,
       providesTags: (seller, error, sellerId) => [{ type: 'Seller', id: sellerId }]
+    }),
+
+    /**
+     * GET /api/Seller/{sellerId}/inventory
+     * Path param: sellerId
+     * Response: InventoryItemDto[]
+     */
+    getSellerInventory: builder.query<InventoryItemDto[], number>({
+      query: sellerId => `${sellerId}/inventory`,
+      providesTags: (inventory, error, sellerId) => [{ type: 'SellerInventory', id: sellerId }]
     }),
 
     /**
@@ -70,10 +80,13 @@ export const {
   useGetSellerByIdQuery,
   useBecomeSellerMutation,
   useGetCurrentSellerProfileQuery,
-  useUploadSellerAvatarMutation
+  useUploadSellerAvatarMutation,
+  useGetSellerInventoryQuery
 } = sellerApi
 
 // Enhanced hook that handles getting seller ID for updates
+// Note: Commented out due to missing updateSellerProfileMutation endpoint
+/*
 export const useUpdateSellerProfileWithId = () => {
   const { data: currentProfile } = useGetCurrentSellerProfileQuery()
   const [updateProfile, result] = useUpdateSellerProfileMutation()
@@ -117,3 +130,4 @@ export const useUpdateSellerProfileWithId = () => {
 
   return [updateSellerProfile, result] as const
 }
+*/
