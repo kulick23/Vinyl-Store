@@ -521,6 +521,44 @@
     "cardElementNotFound": "Card element not found",
     "unexpectedError": "An unexpected error occurred."
   },
+  "sellerShop": {
+    "loading": "Loading seller shop...",
+    "notFound": "Seller shop not found",
+    "loadError": "Failed to load seller shop. Please try again.",
+    "backToShop": "Back to Shop",
+    "reviewsCount": "reviews",
+    "inventory": {
+      "title": "Shop Inventory",
+      "quantity": "Qty",
+      "noItems": "This seller has no items currently available."
+    },
+    "condition": {
+      "poor": "Poor (P)",
+      "fair": "Fair (F)",
+      "good": "Good (G)",
+      "veryGood": "Very Good (VG)",
+      "nearMint": "Near Mint (NM)",
+      "mint": "Mint (M)"
+    },
+    "reviews": {
+      "title": "Customer Reviews",
+      "leaveReview": "Leave a Review",
+      "rating": "Rating",
+      "comment": "Comment",
+      "commentPlaceholder": "Share your experience with this seller...",
+      "submit": "Submit Review",
+      "submitting": "Submitting...",
+      "cancel": "Cancel",
+      "noReviews": "No reviews yet. Be the first to leave one!",
+      "anonymousUser": "Anonymous User",
+      "loginRequired": "Please sign in to leave a review",
+      "commentRequired": "Please write a comment",
+      "submitSuccess": "Review submitted successfully!",
+      "submitError": "Failed to submit review. Please try again.",
+      "cannotReviewSelf": "You cannot review your own shop",
+      "mustPurchaseFirst": "You must purchase from this seller before leaving a review"
+    }
+  },
   "admin": {
     "panel": {
       "title": "Admin Panel",

@@ -10,6 +10,21 @@ export interface SellerPageDto {
   rating: number
   /** отзывы о продавце */
   reviews: ReviewDto[]
+  /** товары продавца */
+  listings: InventoryItemDto[]
+}
+
+/** DTO товара в инвентаре */
+export interface InventoryItemDto {
+  id: number
+  releaseId: number
+  sellerId: number
+  sellerDisplayName: string
+  price: number
+  quantity: number
+  condition: number
+  sellerRating: number
+  notes?: string
 }
 
 /** DTO профиля продавца */

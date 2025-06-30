@@ -383,8 +383,15 @@
 
           .seller-name {
             font-weight: 500;
-            color: var(--title-color);
+            color: var(--orange-color);
             margin: 0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+
+            &:hover {
+              text-decoration: underline;
+              color: #e85d0a;
+            }
           }
 
           .seller-rating,

@@ -17,6 +17,7 @@ import ApprovalPage from "../Pages/ApprovalPage/ApprovalPage"
 import ForgotPasswordPage from "../Pages/ForgotPasswordPage/ForgotPasswordPage"
 import ResetPasswordPage from "../Pages/ResetPasswordPage/ResetPasswordPage"
 import CheckoutPage from "../Pages/CheckoutPage/CheckoutPage"
+import SellerShopPage from "../Pages/SellerShopPage/SellerShopPage"
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -27,6 +28,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/policy" element={<PolicyPage />} />
       <Route path="/shop" element={<ShopPage />} />
       <Route path="/product/:id" element={<ProductPage />} />
+      <Route path="/seller-shop/:id" element={<SellerShopPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
