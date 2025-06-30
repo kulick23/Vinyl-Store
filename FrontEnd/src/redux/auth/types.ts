@@ -27,7 +27,7 @@ export interface User {
   lastName: string
   phone?: string
   isEmailConfirmed: boolean
-  role?: string
+  role?: UserRole
   lastLoginAt: string
   createdAt: string
   avatarPath?: string
