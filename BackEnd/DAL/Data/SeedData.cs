@@ -152,9 +152,6 @@ namespace DAL.Data
 
             Console.WriteLine($"Seeded {releases.Length} record releases");
 
-            context.Set<Customer>().Add(adminCustomer);
-            await context.SaveChangesAsync();
-
             var dummyCustomer = new Customer
             {
                 Email = "shop@vinylmarket.com",
