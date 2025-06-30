@@ -1,6 +1,32 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { createBaseQuery } from '../base'
-import type { RegisterRequest, LoginRequest, GoogleAuthRequest, AuthResponse, User, WishlistItem } from './types'
+import type { RegisterRequest, LoginRequest, GoogleAuthRequest, AuthResponse, User, WishlistItem, UserRole } from './types'
+
+// Utility function to decode JWT token and extract role
+const extractRoleFromToken = (): UserRole | undefined => {
+  const token = localStorage.getItem('accessToken')
+  if (!token) {
+    console.log('extractRoleFromToken: No token found')
+    return undefined
+  }
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    console.log('JWT Payload:', payload)
+    
+    // Try different possible claim names for role
+    const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] 
+                 || payload.role 
+                 || payload['role']
+                 || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role']
+    
+    console.log('Extracted role:', role)
+    return role as UserRole
+  } catch (error) {
+    console.error('Error extracting role from token:', error)
+    return undefined
+  }
+}
 
 export const authApi = createApi({
   reducerPath: 'authApi',
@@ -31,6 +57,14 @@ export const authApi = createApi({
     /** GET /myAccount - Get current user profile */
     getCurrentUser: builder.query<User, void>({
       query: () => ({ url: 'myAccount', method: 'GET' }),
+      transformResponse: (response: any) => {
+        // Add role from JWT token to the user object
+        const role = extractRoleFromToken()
+        return {
+          ...response,
+          role
+        }
+      },
       providesTags: ['User']
     }),
     /** POST /confirm - Confirm email address */
