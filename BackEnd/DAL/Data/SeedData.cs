@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace DAL.Data
 {
@@ -151,6 +152,21 @@ namespace DAL.Data
             await context.SaveChangesAsync();
 
             Console.WriteLine($"Seeded {releases.Length} record releases");
+
+            // Create admin account first
+            var passwordHasher = new PasswordHasher<Customer>();
+            var adminCustomer = new Customer
+            {
+                Email = "admin@vinylheaven.com",
+                FirstName = "Admin",
+                LastName = "User",
+                PasswordHash = passwordHasher.HashPassword(null!, "admin123"),
+                CreatedAt = DateTime.UtcNow.AddMonths(-12),
+                IsEmailConfirmed = true
+            };
+
+            context.Set<Customer>().Add(adminCustomer);
+            await context.SaveChangesAsync();
 
             var dummyCustomer = new Customer
             {

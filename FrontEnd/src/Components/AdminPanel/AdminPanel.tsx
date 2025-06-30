@@ -96,16 +96,15 @@ export const AdminPanel: React.FC = () => {
     )
   }
 
-  // Temporarily commented out admin role check - any user can access admin panel
-  // if (!user || !user.roles.includes("Admin")) {
-  //   return (
-  //     <div className="admin-panel">
-  //       <div className="error-message">
-  //         <p>{t('admin.panel.accessDenied')}</p>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+  if (!user || user.role !== "Admin") {
+    return (
+      <div className="admin-panel">
+        <div className="error-message">
+          <p>{t('admin.panel.accessDenied')}</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="admin-panel">
