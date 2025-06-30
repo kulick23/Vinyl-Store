@@ -29,7 +29,14 @@ type ProfileSection = "overview" | "orders" | "cart" | "settings"
 const getBackendBaseUrl = () => {
   const isDev = import.meta.env.MODE === 'development'
   const API_URL = import.meta.env.VITE_API_URL ?? ''
-  return isDev ? 'http://localhost:5000' : API_URL
+  
+  if (isDev) {
+    // In development, use the same URL as the API proxy
+    return API_URL || 'https://ibm-team-project-production.up.railway.app'
+  } else {
+    // In production, use the environment variable
+    return API_URL || 'https://ibm-team-project-production.up.railway.app'
+  }
 }
 
 export const UserProfile: React.FC = () => {
@@ -49,7 +56,7 @@ export const UserProfile: React.FC = () => {
     phone: ""
   })
 
-  const { data: user, isLoading } = useGetCurrentUserQuery()
+  const { data: user, isLoading, refetch: refetchUser } = useGetCurrentUserQuery()
   const { data: cartData, isLoading: isCartLoading } = useGetCartQuery(undefined, {
     skip: !user,
   })
@@ -163,6 +170,17 @@ export const UserProfile: React.FC = () => {
     const file = event.target.files?.[0]
     if (!file) return
 
+    // Check if user is authenticated
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      showError("Please log in to upload a profile picture.")
+      return
+    }
+
+    console.log('Selected file:', file.name, file.type, file.size)
+    console.log('Backend URL:', getBackendBaseUrl())
+    console.log('Has auth token:', !!token)
+
     // Validate file type
     if (!file.type.startsWith('image/')) {
       showError('Please select a valid image file')
@@ -176,6 +194,8 @@ export const UserProfile: React.FC = () => {
     }
 
     try {
+      console.log('Starting avatar upload...')
+      console.log('API endpoint will be: PUT /api/auth/account/avatar')
       const result = await uploadUserAvatar(file).unwrap()
       console.log('User avatar upload result:', result)
       showSuccess("Profile picture updated successfully!")
@@ -183,9 +203,34 @@ export const UserProfile: React.FC = () => {
       // Clear the file input
       const input = event.target
       input.value = ''
-    } catch (error) {
+      
+      // Manually refetch user data to ensure the new avatar is displayed
+      await refetchUser()
+      
+      // Also refetch seller profile in case it affects seller avatar
+      if (sellerProfile) {
+        await refetchSellerProfile()
+      }
+    } catch (error: any) {
       console.error('Failed to upload avatar:', error)
-      showError("Failed to upload profile picture. Please try again.")
+      console.error('Error details:', {
+        status: error?.status,
+        data: error?.data,
+        message: error?.message
+      })
+      
+      // Show more specific error messages
+      if (error?.data?.message) {
+        showError(`Failed to upload profile picture: ${error.data.message}`)
+      } else if (error?.status === 401) {
+        showError("Authentication failed. Please log in again.")
+      } else if (error?.status === 413) {
+        showError("File is too large. Please select a smaller image.")
+      } else if (error?.status === 400) {
+        showError("Invalid file format. Please select a valid image file.")
+      } else {
+        showError("Failed to upload profile picture. Please try again.")
+      }
     }
   }
 
@@ -214,7 +259,9 @@ export const UserProfile: React.FC = () => {
     }
     
     // If it's a relative path, prepend the backend base URL
-    return `${getBackendBaseUrl()}${avatarPath}?t=${Date.now()}`
+    const baseUrl = getBackendBaseUrl()
+    const cleanPath = avatarPath.startsWith('/') ? avatarPath : `/${avatarPath}`
+    return `${baseUrl}${cleanPath}?t=${Date.now()}`
   }
 
   if (isLoading) {

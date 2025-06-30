@@ -31,7 +31,13 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(
+                "http://localhost:3000", 
+                "http://localhost:5173", 
+                "http://localhost:4173",
+                "https://ibm-team-project-frontend.vercel.app",
+                "https://ibm-team-project-production.up.railway.app"
+              )
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
