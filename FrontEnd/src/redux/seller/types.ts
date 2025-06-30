@@ -57,6 +57,13 @@ export interface ReviewDto {
   }
 }
 
+/** DTO для создания отзыва */
+export interface CreateReviewDto {
+  rating: number
+  comment: string
+  sellerId: number
+}
+
 // Legacy type for backward compatibility
 export interface Seller extends SellerProfileDto {
   id: number

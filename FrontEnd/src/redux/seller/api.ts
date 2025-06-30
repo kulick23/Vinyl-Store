@@ -1,11 +1,19 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { createBaseQuery } from '../base'
-import type { SellerPageDto, SellerProfileCreateDto, SellerProfileDto, SellerProfileUpdateDto } from './types'
+import type {
+  SellerPageDto,
+  SellerProfileCreateDto,
+  SellerProfileDto,
+  SellerProfileUpdateDto,
+  ReviewDto,
+  CreateReviewDto      // ← импортируем новый тип
+} from './types'
 
 export const sellerApi = createApi({
   reducerPath: 'sellerApi',
   baseQuery: createBaseQuery({ baseUrl: '/Seller' }),
-  tagTypes: ['Seller'],
+  tagTypes: ['Seller', 'Reviews'],  // ← добавляем Reviews
+
   endpoints: builder => ({
     /**
      * GET /api/Seller/{sellerId}
@@ -62,6 +70,27 @@ export const sellerApi = createApi({
         }
       },
       invalidatesTags: ['Seller']
+    }),
+
+    // GET /api/reviews/seller/{sellerId}
+    getReviewsBySeller: builder.query<ReviewDto[], number>({
+      query: sellerId => `/reviews/seller/${sellerId}`,
+      providesTags: (result, error, sellerId) =>
+        result
+          ? result.map(r => ({ type: 'Reviews' as const, id: sellerId }))
+          : []
+    }),
+
+    // POST /api/reviews
+    createReview: builder.mutation<void, CreateReviewDto>({
+      query: payload => ({
+        url: '/reviews',
+        method: 'POST',
+        body: payload
+      }),
+      invalidatesTags: (result, error, { sellerId }) => [
+        { type: 'Reviews' as const, id: sellerId }
+      ]
     })
   })
 })
@@ -70,7 +99,9 @@ export const {
   useGetSellerByIdQuery,
   useBecomeSellerMutation,
   useGetCurrentSellerProfileQuery,
-  useUploadSellerAvatarMutation
+  useUploadSellerAvatarMutation,
+  useGetReviewsBySellerQuery,   // ← экспортируем новые хуки
+  useCreateReviewMutation
 } = sellerApi
 
 // Enhanced hook that handles getting seller ID for updates
