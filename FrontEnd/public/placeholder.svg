@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title description">
+  <title id="title">Vinyl Haven record cover</title>
+  <desc id="description">A decorative vinyl record used when album artwork is unavailable.</desc>
+  <defs>
+    <radialGradient id="record" cx="38%" cy="32%" r="68%">
+      <stop offset="0" stop-color="#3b3b42"/>
+      <stop offset="0.45" stop-color="#16161a"/>
+      <stop offset="1" stop-color="#050506"/>
+    </radialGradient>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#efe8da"/>
+      <stop offset="1" stop-color="#cbbfae"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#1a1713" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect width="640" height="640" fill="url(#background)"/>
+  <path d="M0 0h640v92H0z" fill="#171717"/>
+  <text x="40" y="59" fill="#f3eee5" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" letter-spacing="7">VINYL HAVEN</text>
+
+  <g transform="translate(320 352)" filter="url(#shadow)">
+    <circle r="214" fill="url(#record)"/>
+    <g fill="none" stroke="#77777f" stroke-opacity="0.22">
+      <circle r="188"/>
+      <circle r="172"/>
+      <circle r="151"/>
+      <circle r="132"/>
+      <circle r="112"/>
+      <circle r="92"/>
+    </g>
+    <circle r="68" fill="#c74d3e"/>
+    <circle r="48" fill="none" stroke="#f0b9a8" stroke-opacity="0.45"/>
+    <circle r="9" fill="#eee8dc"/>
+    <path d="M-116-166A204 204 0 0 1 78-190" fill="none" stroke="#fff" stroke-linecap="round" stroke-opacity="0.16" stroke-width="7"/>
+  </g>
+
+  <text x="320" y="605" text-anchor="middle" fill="#282521" font-family="Arial, Helvetica, sans-serif" font-size="18" letter-spacing="4">ARTWORK UNAVAILABLE</text>
+</svg>
