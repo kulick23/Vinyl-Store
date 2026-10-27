@@ -1,11 +1,14 @@
 /// <reference types="vite/client" />
 
-// если нужно явно, можно переписать так:
-// interface ImportMetaEnv {
-//   readonly VITE_API_URL: string
-//   // другие VITE_… переменные
-// }
-//
-// interface ImportMeta {
-//   readonly env: ImportMetaEnv
-// }
+interface ImportMetaEnv {
+  readonly VITE_API_URL?: string;
+  readonly VITE_DATA_PROVIDER?: 'api' | 'supabase';
+  readonly VITE_SUPABASE_URL?: string;
+  readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string;
+  readonly VITE_SUPABASE_ANON_KEY?: string;
+  readonly VITE_STRIPE_PUBLISHABLE_KEY?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
