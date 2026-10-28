@@ -116,25 +116,6 @@ export const SignupPage: React.FC = () => {
     initGoogleAuth();
   }, [handleGoogleResponse, showError]);
 
-  const handleSupabaseGoogleLogin = async () => {
-    setIsSupabaseLoading(true);
-
-    try {
-      const { error } = await getSupabaseClient().auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin,
-        },
-      });
-
-      if (error) throw error;
-    } catch (error: any) {
-      console.error('Supabase Google signup error:', error);
-      showError(error.message || 'Google authentication failed');
-      setIsSupabaseLoading(false);
-    }
-  };
-
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -384,37 +365,30 @@ export const SignupPage: React.FC = () => {
           </button>
         </form>
 
-        <div className="signup-divider">
-          <span>{t('signup.orContinueWith')}</span>
-        </div>
-
-        <div className="social-signup">
-          {isSupabaseProvider ? (
-            <button
-              type="button"
-              className="google-login-button"
-              onClick={handleSupabaseGoogleLogin}
-              disabled={isAuthLoading}
-            >
-              Continue with Google
-            </button>
-          ) : (
-            <div
-              ref={googleButtonRef}
-              className="google-button-container"
-              style={{
-                opacity: isGoogleLoading ? 0.6 : 1,
-                pointerEvents: isGoogleLoading ? 'none' : 'auto',
-              }}
-            />
-          )}
-          {(isGoogleLoading || isSupabaseLoading) && (
-            <div className="google-loading">
-              <VinylSpinner size="small" />
-              <span>Signing up with Google...</span>
+        {!isSupabaseProvider && (
+          <>
+            <div className="signup-divider">
+              <span>{t('signup.orContinueWith')}</span>
             </div>
-          )}
-        </div>
+
+            <div className="social-signup">
+              <div
+                ref={googleButtonRef}
+                className="google-button-container"
+                style={{
+                  opacity: isGoogleLoading ? 0.6 : 1,
+                  pointerEvents: isGoogleLoading ? 'none' : 'auto',
+                }}
+              />
+              {isGoogleLoading && (
+                <div className="google-loading">
+                  <VinylSpinner size="small" />
+                  <span>Signing up with Google...</span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
         <div className="login-link">
           {t('signup.haveAccount')}{' '}

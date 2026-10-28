@@ -107,25 +107,6 @@ export const LoginPage: React.FC = () => {
     initGoogleAuth();
   }, [handleGoogleResponse, showError]);
 
-  const handleSupabaseGoogleLogin = async () => {
-    setIsSupabaseLoading(true);
-
-    try {
-      const { error } = await getSupabaseClient().auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin,
-        },
-      });
-
-      if (error) throw error;
-    } catch (error: any) {
-      console.error('Supabase Google login error:', error);
-      showError(error.message || 'Google authentication failed');
-      setIsSupabaseLoading(false);
-    }
-  };
-
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -299,37 +280,30 @@ export const LoginPage: React.FC = () => {
           </button>
         </form>
 
-        <div className="login-divider">
-          <span>{t('login.orContinueWith')}</span>
-        </div>
-
-        <div className="social-login">
-          {isSupabaseProvider ? (
-            <button
-              type="button"
-              className="google-login-button"
-              onClick={handleSupabaseGoogleLogin}
-              disabled={isAuthLoading}
-            >
-              Continue with Google
-            </button>
-          ) : (
-            <div
-              ref={googleButtonRef}
-              className="google-button-container"
-              style={{
-                opacity: isGoogleLoading ? 0.6 : 1,
-                pointerEvents: isGoogleLoading ? 'none' : 'auto',
-              }}
-            />
-          )}
-          {(isGoogleLoading || isSupabaseLoading) && (
-            <div className="google-loading">
-              <VinylSpinner size="small" />
-              <span>Authenticating with Google...</span>
+        {!isSupabaseProvider && (
+          <>
+            <div className="login-divider">
+              <span>{t('login.orContinueWith')}</span>
             </div>
-          )}
-        </div>
+
+            <div className="social-login">
+              <div
+                ref={googleButtonRef}
+                className="google-button-container"
+                style={{
+                  opacity: isGoogleLoading ? 0.6 : 1,
+                  pointerEvents: isGoogleLoading ? 'none' : 'auto',
+                }}
+              />
+              {isGoogleLoading && (
+                <div className="google-loading">
+                  <VinylSpinner size="small" />
+                  <span>Authenticating with Google...</span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
         <div className="signup-link">
           {t('login.noAccount')}{' '}
