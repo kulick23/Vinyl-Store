@@ -7,6 +7,7 @@ import ScrollToTop from './Routes/ScrollToTop';
 import { Header, Footer } from './Layouts/index';
 import { AppRoutes } from './Routes/AppRoutes';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { SupabaseAuthBridge } from './Components/SupabaseAuthBridge/SupabaseAuthBridge';
 
 function App() {
   const { i18n } = useTranslation();
@@ -25,6 +26,7 @@ function App() {
 
   return (
     <NotificationProvider>
+      <SupabaseAuthBridge />
       <div className="App">
         <Header />
         <AppRoutes />

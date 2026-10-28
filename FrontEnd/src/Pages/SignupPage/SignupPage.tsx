@@ -2,17 +2,22 @@ import type React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { useRegisterMutation, useGoogleLoginMutation } from '../../redux/auth/api';
+import {
+  useRegisterMutation,
+  useGoogleLoginMutation,
+} from '../../redux/auth/api';
 import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../redux/auth/authSlice';
 import { useNotification } from '../../hooks/useNotification';
-import { 
-  loadGoogleScript, 
-  initializeGoogleAuth, 
-  renderGoogleButton, 
+import { isSupabaseProvider } from '../../config/dataProvider';
+import { getSupabaseClient } from '../../lib/supabase';
+import {
+  loadGoogleScript,
+  initializeGoogleAuth,
+  renderGoogleButton,
   GOOGLE_CLIENT_ID,
-  type GoogleUser 
+  type GoogleUser,
 } from '../../utils/googleAuth';
 import './SignupPage.scss';
 
@@ -40,7 +45,8 @@ export const SignupPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [register, { isLoading }] = useRegisterMutation();
-  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleLoginMutation();
+  const [googleLogin, { isLoading: isGoogleLoading }] =
+    useGoogleLoginMutation();
   const { showInfo, showError } = useNotification();
   const googleButtonRef = useRef<HTMLDivElement>(null);
 
@@ -53,33 +59,40 @@ export const SignupPage: React.FC = () => {
     agreeToTerms: false,
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isSupabaseLoading, setIsSupabaseLoading] = useState(false);
+  const isAuthLoading = isLoading || isGoogleLoading || isSupabaseLoading;
 
-  const handleGoogleResponse = useCallback(async (response: GoogleUser) => {
-    try {
-      const result = await googleLogin({
-        idToken: response.credential
-      }).unwrap();
+  const handleGoogleResponse = useCallback(
+    async (response: GoogleUser) => {
+      try {
+        const result = await googleLogin({
+          idToken: response.credential,
+        }).unwrap();
 
-      dispatch(
-        setCredentials({
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken,
-        })
-      );
+        dispatch(
+          setCredentials({
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+          })
+        );
 
-      showInfo('Successfully signed up with Google!');
-      navigate('/');
-    } catch (error: any) {
-      console.error('Google signup error:', error);
-      showError(error.data?.message || 'Google authentication failed');
-    }
-  }, [googleLogin, dispatch, showInfo, showError, navigate]);
+        showInfo('Successfully signed up with Google!');
+        navigate('/');
+      } catch (error: any) {
+        console.error('Google signup error:', error);
+        showError(error.data?.message || 'Google authentication failed');
+      }
+    },
+    [googleLogin, dispatch, showInfo, showError, navigate]
+  );
 
   useEffect(() => {
+    if (isSupabaseProvider) return;
+
     const initGoogleAuth = async () => {
       try {
         await loadGoogleScript();
-        
+
         initializeGoogleAuth({
           clientId: GOOGLE_CLIENT_ID,
           callback: handleGoogleResponse,
@@ -102,6 +115,25 @@ export const SignupPage: React.FC = () => {
 
     initGoogleAuth();
   }, [handleGoogleResponse, showError]);
+
+  const handleSupabaseGoogleLogin = async () => {
+    setIsSupabaseLoading(true);
+
+    try {
+      const { error } = await getSupabaseClient().auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      console.error('Supabase Google signup error:', error);
+      showError(error.message || 'Google authentication failed');
+      setIsSupabaseLoading(false);
+    }
+  };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -164,20 +196,45 @@ export const SignupPage: React.FC = () => {
     setErrors({});
 
     try {
+      if (isSupabaseProvider) {
+        setIsSupabaseLoading(true);
+        const { error } = await getSupabaseClient().auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: {
+              first_name: formData.firstName,
+              last_name: formData.lastName,
+              full_name: `${formData.firstName} ${formData.lastName}`,
+            },
+          },
+        });
+
+        if (error) throw error;
+        navigate('/approval?email=' + encodeURIComponent(formData.email));
+        return;
+      }
+
       await register({
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
       }).unwrap();
-      
+
       // Redirect to approval page after successful registration
       navigate('/approval?email=' + encodeURIComponent(formData.email));
     } catch (error: any) {
       console.error('Registration error:', error);
       setErrors({
-        general: error.data?.message || t('signup.errors.registrationFailed'),
+        general:
+          error.data?.message ||
+          error.message ||
+          t('signup.errors.registrationFailed'),
       });
+    } finally {
+      setIsSupabaseLoading(false);
     }
   };
 
@@ -209,7 +266,7 @@ export const SignupPage: React.FC = () => {
                 onChange={handleInputChange}
                 placeholder={t('signup.firstNamePlaceholder')}
                 className={`form-input ${errors.firstName ? 'error' : ''}`}
-                disabled={isLoading || isGoogleLoading}
+                disabled={isAuthLoading}
               />
               {errors.firstName && (
                 <span className="error-message">{errors.firstName}</span>
@@ -228,7 +285,7 @@ export const SignupPage: React.FC = () => {
                 onChange={handleInputChange}
                 placeholder={t('signup.lastNamePlaceholder')}
                 className={`form-input ${errors.lastName ? 'error' : ''}`}
-                disabled={isLoading || isGoogleLoading}
+                disabled={isAuthLoading}
               />
               {errors.lastName && (
                 <span className="error-message">{errors.lastName}</span>
@@ -248,7 +305,7 @@ export const SignupPage: React.FC = () => {
               onChange={handleInputChange}
               placeholder={t('signup.emailPlaceholder')}
               className={`form-input ${errors.email ? 'error' : ''}`}
-              disabled={isLoading || isGoogleLoading}
+              disabled={isAuthLoading}
             />
             {errors.email && (
               <span className="error-message">{errors.email}</span>
@@ -267,7 +324,7 @@ export const SignupPage: React.FC = () => {
               onChange={handleInputChange}
               placeholder={t('signup.passwordPlaceholder')}
               className={`form-input ${errors.password ? 'error' : ''}`}
-              disabled={isLoading || isGoogleLoading}
+              disabled={isAuthLoading}
             />
             {errors.password && (
               <span className="error-message">{errors.password}</span>
@@ -286,7 +343,7 @@ export const SignupPage: React.FC = () => {
               onChange={handleInputChange}
               placeholder={t('signup.confirmPasswordPlaceholder')}
               className={`form-input ${errors.confirmPassword ? 'error' : ''}`}
-              disabled={isLoading || isGoogleLoading}
+              disabled={isAuthLoading}
             />
             {errors.confirmPassword && (
               <span className="error-message">{errors.confirmPassword}</span>
@@ -300,7 +357,7 @@ export const SignupPage: React.FC = () => {
                 name="agreeToTerms"
                 checked={formData.agreeToTerms}
                 onChange={handleInputChange}
-                disabled={isLoading || isGoogleLoading}
+                disabled={isAuthLoading}
               />
               <span className="checkbox-text">
                 {t('signup.agreeToTerms')}{' '}
@@ -314,8 +371,12 @@ export const SignupPage: React.FC = () => {
             )}
           </div>
 
-          <button type="submit" className="signup-button" disabled={isLoading || isGoogleLoading}>
-            {isLoading ? (
+          <button
+            type="submit"
+            className="signup-button"
+            disabled={isAuthLoading}
+          >
+            {isLoading || isSupabaseLoading ? (
               <VinylSpinner size="small" />
             ) : (
               t('signup.signUpButton')
@@ -328,15 +389,26 @@ export const SignupPage: React.FC = () => {
         </div>
 
         <div className="social-signup">
-          <div 
-            ref={googleButtonRef} 
-            className="google-button-container"
-            style={{ 
-              opacity: isGoogleLoading ? 0.6 : 1,
-              pointerEvents: isGoogleLoading ? 'none' : 'auto'
-            }}
-          />
-          {isGoogleLoading && (
+          {isSupabaseProvider ? (
+            <button
+              type="button"
+              className="google-login-button"
+              onClick={handleSupabaseGoogleLogin}
+              disabled={isAuthLoading}
+            >
+              Continue with Google
+            </button>
+          ) : (
+            <div
+              ref={googleButtonRef}
+              className="google-button-container"
+              style={{
+                opacity: isGoogleLoading ? 0.6 : 1,
+                pointerEvents: isGoogleLoading ? 'none' : 'auto',
+              }}
+            />
+          )}
+          {(isGoogleLoading || isSupabaseLoading) && (
             <div className="google-loading">
               <VinylSpinner size="small" />
               <span>Signing up with Google...</span>

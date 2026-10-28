@@ -7,12 +7,14 @@ import VinylSpinner from '../../Components/VinylSpinner/VinylSpinner';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../redux/auth/authSlice';
 import { useNotification } from '../../hooks/useNotification';
-import { 
-  loadGoogleScript, 
-  initializeGoogleAuth, 
-  renderGoogleButton, 
+import { isSupabaseProvider } from '../../config/dataProvider';
+import { getSupabaseClient } from '../../lib/supabase';
+import {
+  loadGoogleScript,
+  initializeGoogleAuth,
+  renderGoogleButton,
   GOOGLE_CLIENT_ID,
-  type GoogleUser 
+  type GoogleUser,
 } from '../../utils/googleAuth';
 import './LoginPage.scss';
 
@@ -33,7 +35,8 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginMutation();
-  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleLoginMutation();
+  const [googleLogin, { isLoading: isGoogleLoading }] =
+    useGoogleLoginMutation();
   const { showInfo, showError } = useNotification();
   const googleButtonRef = useRef<HTMLDivElement>(null);
 
@@ -43,37 +46,44 @@ export const LoginPage: React.FC = () => {
     rememberMe: false,
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isSupabaseLoading, setIsSupabaseLoading] = useState(false);
+  const isAuthLoading = isLoading || isGoogleLoading || isSupabaseLoading;
 
-  const handleGoogleResponse = useCallback(async (response: GoogleUser) => {
-    try {
-      const result = await googleLogin({
-        idToken: response.credential
-      }).unwrap();
+  const handleGoogleResponse = useCallback(
+    async (response: GoogleUser) => {
+      try {
+        const result = await googleLogin({
+          idToken: response.credential,
+        }).unwrap();
 
-      dispatch(
-        setCredentials({
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken,
-        })
-      );
+        dispatch(
+          setCredentials({
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+          })
+        );
 
-      if (formData.rememberMe) {
-        localStorage.setItem('rememberMe', 'true');
+        if (formData.rememberMe) {
+          localStorage.setItem('rememberMe', 'true');
+        }
+
+        showInfo('Successfully logged in with Google!');
+        navigate('/');
+      } catch (error: any) {
+        console.error('Google login error:', error);
+        showError(error.data?.message || 'Google authentication failed');
       }
-
-      showInfo('Successfully logged in with Google!');
-      navigate('/');
-    } catch (error: any) {
-      console.error('Google login error:', error);
-      showError(error.data?.message || 'Google authentication failed');
-    }
-  }, [googleLogin, dispatch, formData.rememberMe, showInfo, showError, navigate]);
+    },
+    [googleLogin, dispatch, formData.rememberMe, showInfo, showError, navigate]
+  );
 
   useEffect(() => {
+    if (isSupabaseProvider) return;
+
     const initGoogleAuth = async () => {
       try {
         await loadGoogleScript();
-        
+
         initializeGoogleAuth({
           clientId: GOOGLE_CLIENT_ID,
           callback: handleGoogleResponse,
@@ -96,6 +106,25 @@ export const LoginPage: React.FC = () => {
 
     initGoogleAuth();
   }, [handleGoogleResponse, showError]);
+
+  const handleSupabaseGoogleLogin = async () => {
+    setIsSupabaseLoading(true);
+
+    try {
+      const { error } = await getSupabaseClient().auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      console.error('Supabase Google login error:', error);
+      showError(error.message || 'Google authentication failed');
+      setIsSupabaseLoading(false);
+    }
+  };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -140,6 +169,28 @@ export const LoginPage: React.FC = () => {
     setErrors({});
 
     try {
+      if (isSupabaseProvider) {
+        setIsSupabaseLoading(true);
+        const { data, error } =
+          await getSupabaseClient().auth.signInWithPassword({
+            email: formData.email,
+            password: formData.password,
+          });
+
+        if (error) throw error;
+        if (!data.session)
+          throw new Error('No authentication session returned');
+
+        dispatch(
+          setCredentials({
+            accessToken: data.session.access_token,
+            refreshToken: data.session.refresh_token,
+          })
+        );
+        navigate('/');
+        return;
+      }
+
       const result = await login({
         email: formData.email,
         password: formData.password,
@@ -158,8 +209,11 @@ export const LoginPage: React.FC = () => {
     } catch (error: any) {
       console.error('Login error:', error);
       setErrors({
-        general: error.data?.message || t('login.errors.loginFailed'),
+        general:
+          error.data?.message || error.message || t('login.errors.loginFailed'),
       });
+    } finally {
+      setIsSupabaseLoading(false);
     }
   };
 
@@ -190,7 +244,7 @@ export const LoginPage: React.FC = () => {
               onChange={handleInputChange}
               placeholder={t('login.emailPlaceholder')}
               className={`form-input ${errors.email ? 'error' : ''}`}
-              disabled={isLoading || isGoogleLoading}
+              disabled={isAuthLoading}
             />
             {errors.email && (
               <span className="error-message">{errors.email}</span>
@@ -209,7 +263,7 @@ export const LoginPage: React.FC = () => {
               onChange={handleInputChange}
               placeholder={t('login.passwordPlaceholder')}
               className={`form-input ${errors.password ? 'error' : ''}`}
-              disabled={isLoading || isGoogleLoading}
+              disabled={isAuthLoading}
             />
             {errors.password && (
               <span className="error-message">{errors.password}</span>
@@ -223,7 +277,7 @@ export const LoginPage: React.FC = () => {
                 name="rememberMe"
                 checked={formData.rememberMe}
                 onChange={handleInputChange}
-                disabled={isLoading || isGoogleLoading}
+                disabled={isAuthLoading}
               />
               {t('login.rememberMe')}
             </label>
@@ -232,8 +286,12 @@ export const LoginPage: React.FC = () => {
             </Link>
           </div>
 
-          <button type="submit" className="login-button" disabled={isLoading || isGoogleLoading}>
-            {isLoading ? (
+          <button
+            type="submit"
+            className="login-button"
+            disabled={isAuthLoading}
+          >
+            {isLoading || isSupabaseLoading ? (
               <VinylSpinner size="small" />
             ) : (
               t('login.signInButton')
@@ -246,15 +304,26 @@ export const LoginPage: React.FC = () => {
         </div>
 
         <div className="social-login">
-          <div 
-            ref={googleButtonRef} 
-            className="google-button-container"
-            style={{ 
-              opacity: isGoogleLoading ? 0.6 : 1,
-              pointerEvents: isGoogleLoading ? 'none' : 'auto'
-            }}
-          />
-          {isGoogleLoading && (
+          {isSupabaseProvider ? (
+            <button
+              type="button"
+              className="google-login-button"
+              onClick={handleSupabaseGoogleLogin}
+              disabled={isAuthLoading}
+            >
+              Continue with Google
+            </button>
+          ) : (
+            <div
+              ref={googleButtonRef}
+              className="google-button-container"
+              style={{
+                opacity: isGoogleLoading ? 0.6 : 1,
+                pointerEvents: isGoogleLoading ? 'none' : 'auto',
+              }}
+            />
+          )}
+          {(isGoogleLoading || isSupabaseLoading) && (
             <div className="google-loading">
               <VinylSpinner size="small" />
               <span>Authenticating with Google...</span>

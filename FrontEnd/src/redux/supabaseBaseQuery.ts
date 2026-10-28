@@ -140,6 +140,40 @@ async function getArtists(supabase: SupabaseClient) {
   return data ?? [];
 }
 
+async function getCurrentUser(supabase: SupabaseClient) {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error) throw error;
+  if (!user) throw new Error('No authenticated Supabase user');
+
+  const fullName = String(user.user_metadata.full_name ?? '').trim();
+  const nameParts = fullName ? fullName.split(/\s+/) : [];
+
+  return {
+    id: user.id,
+    email: user.email ?? '',
+    firstName:
+      user.user_metadata.first_name ??
+      user.user_metadata.given_name ??
+      nameParts[0] ??
+      '',
+    lastName:
+      user.user_metadata.last_name ??
+      user.user_metadata.family_name ??
+      nameParts.slice(1).join(' '),
+    phone: user.phone ?? undefined,
+    isEmailConfirmed: Boolean(user.email_confirmed_at),
+    role: 'Customer',
+    lastLoginAt: user.last_sign_in_at ?? user.created_at,
+    createdAt: user.created_at,
+    avatarPath:
+      user.user_metadata.avatar_url ?? user.user_metadata.picture ?? undefined,
+  };
+}
+
 async function getReleases(supabase: SupabaseClient, params: QueryParams) {
   let query = supabase.from('releases').select(releaseSelect).order('id');
 
@@ -238,6 +272,9 @@ export function createSupabaseBaseQuery(
       }
       if (route === '/catalog/artists') {
         return { data: await getArtists(supabase) };
+      }
+      if (route === '/auth/myAccount') {
+        return { data: await getCurrentUser(supabase) };
       }
       if (route === '/catalog/releases' || route === '/catalog/releases/all') {
         return { data: await getReleases(supabase, params) };

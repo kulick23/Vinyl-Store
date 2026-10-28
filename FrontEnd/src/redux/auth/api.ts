@@ -1,6 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { createBaseQuery } from '../base'
 import type { RegisterRequest, LoginRequest, GoogleAuthRequest, AuthResponse, User, WishlistItem, UserRole } from './types'
+import { isSupabaseProvider } from '../../config/dataProvider'
 
 // Utility function to decode JWT token and extract role
 const extractRoleFromToken = (): UserRole | undefined => {
@@ -58,6 +59,8 @@ export const authApi = createApi({
     getCurrentUser: builder.query<User, void>({
       query: () => ({ url: 'myAccount', method: 'GET' }),
       transformResponse: (response: any) => {
+        if (isSupabaseProvider) return response as User
+
         // Add role from JWT token to the user object
         const role = extractRoleFromToken()
         return {

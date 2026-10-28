@@ -13,6 +13,8 @@ import {
 } from "../../redux/auth/api"
 import type { User } from "../../redux/auth/types"
 import { clearCredentials } from "../../redux/auth/authSlice"
+import { isSupabaseProvider } from "../../config/dataProvider"
+import { getSupabaseClient } from "../../lib/supabase"
 import { useGetCartQuery } from "../../redux/cart/api"
 import { useGetOrdersQuery } from "../../redux/orders/api"
 import type { OrderDto } from "../../redux/orders/types"
@@ -77,7 +79,10 @@ export const UserProfile: React.FC = () => {
     }
   }, [user])
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (isSupabaseProvider) {
+      await getSupabaseClient().auth.signOut()
+    }
     dispatch(clearCredentials())
     navigate("/")
     window.location.reload()
